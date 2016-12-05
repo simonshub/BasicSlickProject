@@ -1,1 +1,3 @@
 # BasicSlickProject
+
+An extensive Slick2D Java project with various editors, scripting / triggers, maps, GUI system and more ...
