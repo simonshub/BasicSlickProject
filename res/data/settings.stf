@@ -1,0 +1,13 @@
+# game settings file
+title 'Some Title'
+sfx_volume 1.0
+music_volume 0.0
+resolution 800x600
+fullscreen 0
+vsync 0
+debug_actors 1
+debug_entities 1
+debug_maps 1
+debug_triggers 1
+debug_draw_tile_net 1
+devmode 1

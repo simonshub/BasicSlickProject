@@ -1,0 +1,38 @@
+#protagonist entity file:
+
+
+#actor:name
+actor:protagonist
+
+
+#color:r g b a
+color:1.0 1.0 1.0 1.0
+
+
+#collider:box/radial/none
+collider:box
+
+#collider_height:height
+collider_height:1
+
+#FOR BOX COLLIDERS
+#box_collider:width height
+box_collider:32 24
+
+#FOR RADIAL COLLIDERS
+#rad_collider:radius
+rad_collider:16
+
+#origin:x y
+origin:16 30
+
+#variables
+#  default values for variables on entity instantiation
+#var:var_type var_name var_value
+var:real damage 5.50505 
+var:integer level 1 
+var:text name String=rest of line,but with .trim() 
+var:integer health 100 
+var:trig test_script test_script 
+
+

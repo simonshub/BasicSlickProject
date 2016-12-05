@@ -1,0 +1,33 @@
+#lady_1 entity file:
+
+
+#actor:name
+actor:lady1
+
+
+#color:r g b a
+color:1.0 1.0 1.0 1.0
+
+
+#collider:box/radial/none
+collider:radial
+
+#collider_height:height
+collider_height:1
+
+#FOR BOX COLLIDERS
+#box_collider:width height
+box_collider:0 0
+
+#FOR RADIAL COLLIDERS
+#rad_collider:radius
+rad_collider:8
+
+#origin:x y
+origin:8 32
+
+#variables
+#  default values for variables on entity instantiation
+#var:var_type var_name var_value
+
+

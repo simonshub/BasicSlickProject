@@ -1,0 +1,50 @@
+#lady2 actor file:
+
+
+#sprite:name
+sprite:rpg_chars_1
+
+
+#default_anim:name
+default_anim:down
+
+#anim:name
+anim:right
+
+#frame:duration x y
+frame:200 6 6
+frame:200 7 6
+frame:200 8 6
+frame:200 7 6
+
+
+#anim:name
+anim:up
+
+#frame:duration x y
+frame:200 6 7
+frame:200 7 7
+frame:200 8 7
+frame:200 7 7
+
+
+#anim:name
+anim:left
+
+#frame:duration x y
+frame:200 6 5
+frame:200 7 5
+frame:200 8 5
+frame:200 7 5
+
+
+#anim:name
+anim:down
+
+#frame:duration x y
+frame:200 6 4
+frame:200 7 4
+frame:200 8 4
+frame:200 7 4
+
+

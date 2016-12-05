@@ -1,0 +1,26 @@
+# list of stuff to load up at game start
+
+sprite:protagonist 'res/sprites/player.png' 64 64
+sprite:rpg_chars_1 'res/sprites/rpg_chars_1.png' 32 48
+sprite:rpg_chars_2 'res/sprites/rpg_chars_2.png' 32 48
+
+sprite:gui_button 'res/gui/menu/test_btn.png' 512 128
+sprite:gui_button_hover 'res/gui/menu/test_btn_hover.png' 512 128
+
+
+
+tileset:grass 'res/tilesets/grass.png' 2
+tileset:dirt 'res/tilesets/dirt.png' 4
+tileset:stone 'res/tilesets/stone.png' 3
+
+
+
+sound:click 'res/sounds/click.wav'
+sound:song 'res/music/song.ogg'
+
+
+
+font:small_font 'Times New Roman' 8 bold
+font:normal_font 'Times New Roman' 24 bold
+font:title 'Times New Roman' 72 bold
+

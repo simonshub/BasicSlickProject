@@ -1,0 +1,6 @@
+var entity = Java.type('engine.game.entities.Entity');
+var log = Java.type('engine.logger.Log');
+
+function console (text) {
+	log.console(text);
+}
