@@ -45,7 +45,7 @@ public abstract class ResMgr {
     public static class onExit extends Thread {
         @Override
         public void run () {
-            Log.log(Log.GENERAL, "Program exited ...\n----------\n");
+            Log.log(Log.GENERAL, "Program exited ...");
             Log.endLog();
         }
     }
