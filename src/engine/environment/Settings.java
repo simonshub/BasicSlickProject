@@ -140,7 +140,7 @@ public abstract class Settings {
             Log.log(Log.GENERAL,"Settings file was created!");
             w.close();
         } catch (IOException e) {
-            Log.log(Log.GENERAL,Log.LogLevel.ERROR,"while trying to write settings file");
+            Log.err(Log.GENERAL,"while trying to write settings file",e);
             System.exit(-1);
         }
     }

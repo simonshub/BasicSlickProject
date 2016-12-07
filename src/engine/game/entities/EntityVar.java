@@ -77,7 +77,7 @@ public class EntityVar {
         } else if (type.equals("null") || type.equals("none")) {
             result = EntityVarType.NULL;
         } else {
-            Log.log(Log.ENTITY,Log.LogLevel.ERROR,"unknown variable type '"+type+"'");
+            Log.err(Log.ENTITY,"unknown variable type '"+type+"'",null);
         }
         
         return result;

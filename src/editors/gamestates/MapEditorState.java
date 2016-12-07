@@ -159,7 +159,7 @@ public class MapEditorState extends BasicGameState {
             });
             t.start();
         } catch (Exception e) {
-            Log.log(Log.MAP,Log.LogLevel.ERROR,"while trying to create map editor toolbar");
+            Log.err(Log.MAP,"while trying to create map editor toolbar",e);
             e.printStackTrace();
         }
     }

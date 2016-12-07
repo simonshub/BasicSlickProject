@@ -125,13 +125,13 @@ public class Trigger {
                 }
             }
         } catch (FileNotFoundException ex) {
-            Log.log(Log.TRIG,Log.LogLevel.ERROR,"trigger '"+file.getPath().replace("\\", "/")+"' could not be parsed! - File not found!");
+            Log.err(Log.TRIG,"trigger '"+file.getPath().replace("\\", "/")+"' could not be parsed! - File not found!",ex);
         } catch (IOException ex) {
-            Log.log(Log.TRIG,Log.LogLevel.ERROR,"trigger '"+file.getPath().replace("\\", "/")+"' could not be parsed! - IOException");
+            Log.err(Log.TRIG,"trigger '"+file.getPath().replace("\\", "/")+"' could not be parsed! - IOException",ex);
         } catch (TriggerException ex) {
-            Log.log(Log.TRIG,Log.LogLevel.ERROR,"trigger '"+file.getPath().replace("\\", "/")+"' could not be parsed! - Script pre-eval line syntax error");
+            Log.err(Log.TRIG,"trigger '"+file.getPath().replace("\\", "/")+"' could not be parsed! - Script pre-eval line syntax error",ex);
         } catch (ScriptException ex) {
-            Log.log(Log.TRIG,Log.LogLevel.ERROR,"trigger '"+file.getPath().replace("\\", "/")+"' could not be parsed! - ScriptException");
+            Log.err(Log.TRIG,"trigger '"+file.getPath().replace("\\", "/")+"' could not be parsed! - ScriptException",ex);
         } /*catch (ClassNotFoundException ex) {
             Log.log(Log.TRIG,Log.LogLevel.ERROR,"trigger '"+file.getPath().replace("\\", "/")+"' could not be parsed! - ClassNotFoundException");
         }*/
@@ -145,9 +145,8 @@ public class Trigger {
                 try {
                     event.injectParams(engine);
                     engine.eval(code);
-                } catch (Exception ex) {
-                    Log.log(Log.TRIG,Log.LogLevel.ERROR,"while trying to evaluate some code at event '"+event+"' ...\nCODE:\n"+code,true);
-                    Log.log(Log.TRIG,Log.LogLevel.ERROR,"error message: "+ex.getMessage());
+                } catch (ScriptException ex) {
+                    Log.err(Log.TRIG,"while trying to evaluate some code at event '"+event+"' ...\nCODE:\n"+code,ex);
                 }
                 break;
             }
@@ -159,9 +158,8 @@ public class Trigger {
     public void run () {
         try {
             engine.eval(code.replace(TriggerMgr.EVENT_NAME_PLACEHOLDER, TriggerMgr.FORCED_EXECUTION_EVENT));
-        } catch (Exception ex) {
-            Log.log(Log.TRIG,Log.LogLevel.ERROR,"while trying to run some code ...\nCODE:\n"+code,true);
-            Log.log(Log.TRIG,Log.LogLevel.ERROR,"error message: "+ex.getMessage());
+        } catch (ScriptException ex) {
+            Log.err(Log.TRIG,"while trying to run some code ...\nCODE:\n"+code,ex);
         }
     }
 }

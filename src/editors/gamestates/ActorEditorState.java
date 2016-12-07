@@ -343,7 +343,7 @@ public class ActorEditorState extends BasicGameState {
             });
             t.start();
         } catch (Exception e) {
-            Log.log(Log.ACTOR,Log.LogLevel.ERROR,"while trying to create actor editor toolbar");
+            Log.err(Log.ACTOR,"while trying to create actor editor toolbar",e);
             e.printStackTrace();
         }
     }

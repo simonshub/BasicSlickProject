@@ -86,25 +86,25 @@ public class Actor {
                         String[] vars = words[1].trim().split(" ");
                         if (vars.length == 3)
                             if (current_animation.isEmpty()) {
-                                Log.log(Log.ACTOR,Log.LogLevel.ERROR,"adding frame without an animation defined - ignoring line");
+                                Log.err(Log.ACTOR,"adding frame without an animation defined - ignoring line",null);
                             } else {
                                 anim_frame_list.add(new AnimFrame (current_animation, Integer.parseInt(vars[0]), Integer.parseInt(vars[1]), Integer.parseInt(vars[2])));
                                 if (Settings.debug_actors) Log.log(Log.ACTOR,"added frame "+vars[1]+","+vars[2]+" to anim '"+current_animation+"'");
                             }
                         else
-                            Log.log(Log.ACTOR,Log.LogLevel.ERROR,"not enough variables for new frame - ignoring line");
+                            Log.err(Log.ACTOR,"not enough variables for new frame - ignoring line",null);
                         break;
 
                     default :
                         if (!words[0].isEmpty())
-                            Log.log(Log.ACTOR,Log.LogLevel.ERROR,"unrecognized property in actor file '"+actorFilePath+"' -> property : '"+words[0]+"'");
+                            Log.err(Log.ACTOR,"unrecognized property in actor file '"+actorFilePath+"' -> property : '"+words[0]+"'",null);
                         break;
                 }
             }
         }
         
         if (anim_frame_list.isEmpty()) {
-            Log.log(Log.ACTOR,Log.LogLevel.ERROR,"no frames found!");
+            Log.err(Log.ACTOR,"no frames found!",null);
             return;
         }
         
@@ -256,7 +256,7 @@ public class Actor {
         try {
             writeToFile (this.actor_file);
         } catch (IOException e) {
-            Log.log(Log.ACTOR,Log.LogLevel.ERROR,"while trying to save actor '"+this.actor_name+"' to file '"+this.actor_file+"'");
+            Log.err(Log.ACTOR,"while trying to save actor '"+this.actor_name+"' to file '"+this.actor_file+"'",e);
         }
     }
     

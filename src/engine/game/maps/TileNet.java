@@ -83,7 +83,7 @@ public class TileNet {
             fillNode (x-1,y, tileset, fillTileset);
             fillNode (x,y-1, tileset, fillTileset);
         } catch (StackOverflowError e) {
-            Log.log(Log.MAP,Log.LogLevel.ERROR,"STACK OVERFLOW ERROR - while filling a huge area of the map.",true);
+            Log.err(Log.MAP,"while filling a huge area of the map",new Exception ("StackOverflowError"));
         }
     }
     

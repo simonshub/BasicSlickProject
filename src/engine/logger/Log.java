@@ -37,6 +37,12 @@ public abstract class Log {
     
     
     
+    public static void err (LogType log, String message, Exception ex) {
+        log (log, LogLevel.ERROR, message, false, false);
+        if (ex!=null)
+            log (log, LogLevel.ERROR, "Exception: "+ex.getClass().getName()+" : "+ex.getMessage(), false, false);
+    }
+    
     public static void log (LogType log, String message) {
         log (log, LogLevel.CONSOLE, message, false, false);
     }
@@ -73,10 +79,10 @@ public abstract class Log {
         log (log, LogLevel.CONSOLE, message, false, true);
     }
     public static void console (String message) {
-        log(Log.TRIG, message, false);
+        log(Log.TRIG, LogLevel.CONSOLE, message, false, false);
     }
     public static void error (String message) {
-        log(Log.TRIG, Log.LogLevel.ERROR, message, false);
+        log(Log.TRIG, Log.LogLevel.ERROR, message, false, false);
     }
     
     
