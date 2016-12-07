@@ -6,7 +6,6 @@
 
 package engine.logger;
 
-import engine.environment.Settings;
 import static engine.logger.Log.log;
 
 /**

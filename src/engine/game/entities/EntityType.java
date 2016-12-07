@@ -58,12 +58,12 @@ public class EntityType {
                         if (rgba.length == 4)
                             filter = new Color (Float.parseFloat(rgba[0]), Float.parseFloat(rgba[1]), Float.parseFloat(rgba[2]), Float.parseFloat(rgba[3]));
                         else
-                            Log.log(Log.ENTITY,Log.LogLevel.ERROR,"found wrong number of arguments for color filter!");
+                            Log.err(Log.ENTITY,"found wrong number of arguments for color filter!",null);
                         break;
 
                     case "collider" :
                         if (!collider.setState(words[1].trim())) {
-                            Log.log(Log.ENTITY,Log.LogLevel.ERROR,"unrecognized collider state '"+words[1].trim()+"'");
+                            Log.err(Log.ENTITY,"unrecognized collider state '"+words[1].trim()+"'",null);
                         }
                         break;
 
@@ -77,7 +77,7 @@ public class EntityType {
                             collider.box_width = Integer.parseInt(box[0].trim());
                             collider.box_height = Integer.parseInt(box[1].trim());
                         } else
-                            Log.log(Log.ENTITY,Log.LogLevel.ERROR,"found wrong number of arguments for box collider!");
+                            Log.err(Log.ENTITY,"found wrong number of arguments for box collider!",null);
                         break;
 
                     case "rad_collider" :
@@ -90,7 +90,7 @@ public class EntityType {
                             this.originX = Integer.parseInt(originArgs[0].trim());
                             this.originY = Integer.parseInt(originArgs[1].trim());
                         } else
-                            Log.log(Log.ENTITY,Log.LogLevel.ERROR,"found wrong number of arguments for origin point!");
+                            Log.err(Log.ENTITY,"found wrong number of arguments for origin point!",null);
                         break;
 
                     case "var" :
@@ -144,7 +144,7 @@ public class EntityType {
      
     public EntityType (String entityName) throws IOException {
         entity_type_name = entityName;
-        entity_type_file = Consts.entity_dump_folder + entity_type_name + "." + Consts.entity_file_extension;
+        entity_type_file = Consts.ENTITY_DUMP_FOLDER + entity_type_name + "." + Consts.ENTITY_FILE_EXTENSION;
         actor_name = "";
         vars = new HashMap <> ();
         collider = new Collider ();
@@ -233,7 +233,7 @@ public class EntityType {
         try {
             writeToFile (this.entity_type_file);
         } catch (IOException ex) {
-            Log.log(Log.ENTITY,Log.LogLevel.ERROR,"while trying to save entity type '"+this.entity_type_name+"' to file '"+this.entity_type_file+"'");
+            Log.err(Log.ENTITY,"while trying to save entity type '"+this.entity_type_name+"' to file '"+this.entity_type_file+"'",ex);
         }
     }
 }

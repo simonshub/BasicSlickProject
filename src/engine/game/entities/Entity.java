@@ -10,7 +10,6 @@ import engine.game.maps.Camera;
 import engine.utils.Location;
 import engine.utils.Vector;
 import engine.logger.Log;
-import engine.environment.ResMgr;
 import engine.environment.Settings;
 import java.util.HashMap;
 import org.newdawn.slick.GameContainer;

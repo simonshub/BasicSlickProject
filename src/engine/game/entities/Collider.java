@@ -7,7 +7,6 @@
 package engine.game.entities;
 
 import engine.logger.Log;
-import engine.environment.ResMgr;
 
 /**
  * @author Emil Simon
@@ -41,7 +40,7 @@ public class Collider {
         } else if (state.equals("none") || state.equals("null")) {
             this.state = ColliderState.NONE;
         } else {
-            Log.log(Log.ENTITY,Log.LogLevel.ERROR,"unknown collider state '"+state+"'");
+            Log.err(Log.ENTITY,"unknown collider state '"+state+"'",null);
             return false;
         }
 

@@ -53,11 +53,11 @@ public abstract class FileUtils {
     
     public static final String getTriggerPath (File f) {
         String path = f.getPath().replace("\\","/");
-        return path.substring(path.lastIndexOf(Consts.trigger_dump_folder));
+        return path.substring(path.lastIndexOf(Consts.TRIGGER_DUMP_FOLDER));
     }
     
     public static final String getTriggerName (File f) {
-        return getNameWithoutExtension(getTriggerPath(f).substring(Consts.trigger_dump_folder.length()));
+        return getNameWithoutExtension(getTriggerPath(f).substring(Consts.TRIGGER_DUMP_FOLDER.length()));
     }
     
 }

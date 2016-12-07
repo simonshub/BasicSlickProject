@@ -189,7 +189,7 @@ public class EntityEditorState extends BasicGameState {
             });
             t.start();
         } catch (Exception e) {
-            Log.log(Log.ENTITY,Log.LogLevel.ERROR,"while trying to create entity editor toolbar");
+            Log.err(Log.ENTITY,"while trying to create entity editor toolbar",e);
             e.printStackTrace();
         }
     }

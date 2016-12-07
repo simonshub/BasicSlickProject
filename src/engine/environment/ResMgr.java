@@ -12,6 +12,7 @@ import engine.game.actors.AnimatedSprite;
 import engine.game.entities.EntityType;
 import engine.game.maps.Tileset;
 import engine.game.triggers.Trigger;
+import engine.game.triggers.TriggerEvent;
 import engine.game.triggers.TriggerMgr;
 import java.awt.Font;
 import java.io.BufferedReader;
@@ -45,7 +46,7 @@ public abstract class ResMgr {
     public static class onExit extends Thread {
         @Override
         public void run () {
-            Log.log(Log.GENERAL, "Program exited ...\n----------\n");
+            Log.log(Log.GENERAL, "Program exited ...");
             Log.endLog();
         }
     }
@@ -86,9 +87,6 @@ public abstract class ResMgr {
             readEntities ();
             Log.log(Log.GENERAL,"Done!");
             
-            for (Trigger t : trigger_lib.values()) {
-                t.update(new String[]{"update", "B"});
-            }
         } catch (SlickException|IOException ex) {
             Log.log(Log.GENERAL,Log.LogLevel.FATAL,"while trying to initialize resources");
             System.exit(-1);
@@ -99,14 +97,14 @@ public abstract class ResMgr {
     
     public static void readLoader () throws FileNotFoundException, IOException, SlickException {
         //try to open and read settings
-        BufferedReader br = new BufferedReader (new FileReader (Consts.loader_file_path));
+        BufferedReader br = new BufferedReader (new FileReader (Consts.LOADER_FILE_PATH));
         String line;
 
         while ((line=br.readLine ())!=null) {
             if (!line.startsWith("#") && !line.trim().isEmpty()) { // COMMENT
                 String[] words = line.trim().split(":");
                 if (words.length != 2)
-                    Log.log(Log.GENERAL,Log.LogLevel.ERROR,"while trying to add '"+line.trim()+"'",true);
+                    Log.err(Log.GENERAL,"while trying to add '"+line.trim()+"'",null);
                 else {
                     String given = words[1].trim();
                     String path = given.substring(given.indexOf("'")+1, given.lastIndexOf("'"));
@@ -116,7 +114,7 @@ public abstract class ResMgr {
                     switch (words[0]) {
                         case "sound" :
                             if (vars.length != 2)
-                                Log.log(Log.GENERAL,Log.LogLevel.ERROR,"while trying to add '"+line.trim()+"' - number of variables must be 2",true);
+                                Log.err(Log.GENERAL,"while trying to add '"+line.trim()+"' - number of variables must be 2",null);
                             else {
                                 sound_lib.put(vars[0], new Sound (path));
                                 Log.log(Log.GENERAL,"Loaded sound '" + vars[0] + "'");
@@ -124,7 +122,7 @@ public abstract class ResMgr {
                             break;
                         case "sprite" :
                             if (vars.length != 4)
-                                Log.log(Log.GENERAL,Log.LogLevel.ERROR,"while trying to add '"+line.trim()+"' - number of variables must be 4",true);
+                                Log.err(Log.GENERAL,"while trying to add '"+line.trim()+"' - number of variables must be 4",null);
                             else {
                                 sprite_lib.put(vars[0], new AnimatedSprite (vars[0], path, Integer.parseInt(vars[2]), Integer.parseInt(vars[3])));
                                 Log.log(Log.GENERAL,"Loaded sprite '" + vars[0] + "'");
@@ -132,9 +130,9 @@ public abstract class ResMgr {
                             break;
                         case "tileset" :
                             if (vars.length != 3)
-                                Log.log(Log.GENERAL,Log.LogLevel.ERROR,"while trying to add '"+line.trim()+"' - number of variables must be 3",true);
+                                Log.err(Log.GENERAL,"while trying to add '"+line.trim()+"' - number of variables must be 3",null);
                             else if ((Integer.parseInt(vars[2])>20) || (Integer.parseInt(vars[2])<0))
-                                Log.log(Log.GENERAL,Log.LogLevel.ERROR,"while trying to add '"+line.trim()+"' - tileset ID must be unique",true);
+                                Log.err(Log.GENERAL,"while trying to add '"+line.trim()+"' - tileset ID must be unique",null);
                             else {
                                 tileset_lib.put(vars[0], new Tileset (vars[0], path, Integer.parseInt(vars[2])));
                                 Log.log(Log.GENERAL,"Loaded tileset '" + vars[0] + "'");
@@ -142,7 +140,7 @@ public abstract class ResMgr {
                             break;
                         case "font" :
                             if (vars.length != 4)
-                                Log.log(Log.GENERAL,Log.LogLevel.ERROR,"while trying to add '"+line.trim()+"' - number of variables must be 4",true);
+                                Log.err(Log.GENERAL,"while trying to add '"+line.trim()+"' - number of variables must be 4",null);
                             else {
                                 int style = vars[3].equals("bold") ? Font.BOLD : (vars[3].equals("italic") ? Font.ITALIC : Font.PLAIN) ;
                                 font_lib.put(vars[0], new TrueTypeFont (new Font (path, style, Integer.valueOf(vars[2])), false));
@@ -161,19 +159,19 @@ public abstract class ResMgr {
      
     public static void readActors () throws FileNotFoundException, IOException {
         //try to open and read settings
-        BufferedReader br = new BufferedReader (new FileReader (Consts.actors_file_path));
+        BufferedReader br = new BufferedReader (new FileReader (Consts.ACTORS_FILE_PATH));
         String line;
 
         while ((line=br.readLine ())!=null) {
             if (!line.startsWith("#") && !line.trim().isEmpty()) { // COMMENT
                 String[] words = line.trim().split(":");
                 if (words.length != 2)
-                    Log.log(Log.GENERAL,Log.LogLevel.ERROR,"while trying to locate '"+words[0]+"' actor",true);
+                    Log.err(Log.GENERAL,"while trying to locate '"+words[0]+"' actor",null);
                 else
                     try {
                         actor_lib.put(words[0], new Actor (words[0],words[1]));
-                    } catch (Exception ex) {
-                        Log.log(Log.GENERAL,Log.LogLevel.ERROR,"while trying to read actor file '"+words[1]+"' for actor '"+words[0]+"'");
+                    } catch (IOException ex) {
+                        Log.err(Log.GENERAL,"while trying to read actor file '"+words[1]+"' for actor '"+words[0]+"'",ex);
                     }
             }
         }
@@ -187,12 +185,12 @@ public abstract class ResMgr {
         }
         
         try {
-            BufferedWriter bw = new BufferedWriter (new FileWriter (new File (Consts.actors_file_path)));
+            BufferedWriter bw = new BufferedWriter (new FileWriter (new File (Consts.ACTORS_FILE_PATH)));
             bw.write(out);
             bw.flush();
             bw.close();
         } catch (IOException ex) {
-            Log.log(Log.GENERAL,Log.LogLevel.ERROR,"could not rewrite actors file ("+Consts.actors_file_path+")");
+            Log.err(Log.GENERAL,"could not rewrite actors file ("+Consts.ACTORS_FILE_PATH+")",ex);
         }
     }
     
@@ -200,20 +198,19 @@ public abstract class ResMgr {
      
     public static void readEntities () throws FileNotFoundException, IOException {
         //try to open and read settings
-        BufferedReader br = new BufferedReader (new FileReader (Consts.entities_file_path));
+        BufferedReader br = new BufferedReader (new FileReader (Consts.ENTITIES_FILE_PATH));
         String line;
 
         while ((line=br.readLine ())!=null) {
             if (!line.startsWith("#") && !line.trim().isEmpty()) { // COMMENT
                 String[] words = line.trim().split(":");
                 if (words.length != 2)
-                    Log.log(Log.GENERAL,Log.LogLevel.ERROR,"while trying to locate '"+words[0]+"' entity",true);
+                    Log.err(Log.GENERAL,"while trying to locate '"+words[0]+"' entity",null);
                 else
                     try {
                         entity_lib.put(words[0], new EntityType (words[0],words[1]));
                     } catch (Exception ex) {
-                        ex.printStackTrace();
-                        Log.log(Log.GENERAL,Log.LogLevel.ERROR,"while trying to read entity file '"+words[1]+"' for entity type '"+words[0]+"'");
+                        Log.err(Log.GENERAL,"while trying to read entity file '"+words[1]+"' for entity type '"+words[0]+"'",ex);
                     }
             }
         }
@@ -227,12 +224,12 @@ public abstract class ResMgr {
         }
         
         try {
-            BufferedWriter bw = new BufferedWriter (new FileWriter (new File (Consts.entities_file_path)));
+            BufferedWriter bw = new BufferedWriter (new FileWriter (new File (Consts.ENTITIES_FILE_PATH)));
             bw.write(out);
             bw.flush();
             bw.close();
         } catch (IOException ex) {
-            Log.log(Log.GENERAL,Log.LogLevel.ERROR,"could not rewrite entities file ("+Consts.entities_file_path+")");
+            Log.err(Log.GENERAL,"could not rewrite entities file ("+Consts.ENTITIES_FILE_PATH+")",ex);
         }
     }
     

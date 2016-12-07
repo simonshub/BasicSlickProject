@@ -1,6 +1,21 @@
+
+var actor = Java.type('engine.game.actors.Actor');
 var entity = Java.type('engine.game.entities.Entity');
-var log = Java.type('engine.logger.Log');
+var entity_type = Java.type('engine.game.entities.EntityType');
+var trigger = Java.type('engine.game.triggers.Trigger');
+var game_map = Java.type('engine.game.maps.GameMap');
+var tile_net = Java.type('engine.game.maps.TileNet');
+
+var _res = Java.type('engine.environment.ResMgr');
+var _consts = Java.type('engine.environment.Consts');
+var _settings = Java.type('engine.environment.Settings');
+var _log = Java.type('engine.logger.Log');
+var _log_level = Java.type('engine.logger.Log.LogLevel');
+var _log_type = Java.type('engine.logger.LogType');
 
 function console (text) {
 	log.console(text);
+}
+function error (text) {
+	log.error(text);
 }
