@@ -41,7 +41,7 @@ public abstract class Settings {
     public static void readSettings () {
         try {
             //try to open and read settings
-            BufferedReader br = new BufferedReader (new FileReader (Consts.settings_file_path));
+            BufferedReader br = new BufferedReader (new FileReader (Consts.SETTINGS_FILE_PATH));
             String line;
 
             while ((line=br.readLine ())!=null) {
@@ -105,7 +105,7 @@ public abstract class Settings {
             }
         } catch (IOException | NumberFormatException ex) {
             //use default settings and create the file if it doesnt exist
-            File settings_file = new File (Consts.settings_file_path);
+            File settings_file = new File (Consts.SETTINGS_FILE_PATH);
             if (!settings_file.exists()) {
                 Log.log(Log.GENERAL,"ERR: Settings file not found!");
                 try {
@@ -121,7 +121,7 @@ public abstract class Settings {
     }
 
     public static void writeSettings () {
-        File settings_file = new File (Consts.settings_file_path);
+        File settings_file = new File (Consts.SETTINGS_FILE_PATH);
         try {
             Writer w = new BufferedWriter (new FileWriter(settings_file, false));
             w.write("# game settings file" + "\n" +

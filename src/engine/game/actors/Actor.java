@@ -39,7 +39,7 @@ public class Actor {
     
     public Actor (String actorName) throws IOException {
         actor_name = actorName;
-        actor_file = Consts.actor_dump_folder + actor_name + "." + Consts.actor_file_extension;
+        actor_file = Consts.ACTOR_DUMP_FOLDER + actor_name + "." + Consts.ACTOR_FILE_EXTENSION;
         sheet = "";
         anims = new HashMap <> ();
         anim_frame_list = new ArrayList <> ();

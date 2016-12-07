@@ -23,9 +23,9 @@ import javax.script.ScriptEngineManager;
  */
 
 public abstract class TriggerMgr {
-    public static final String script_engine_name = "nashorn";
-    public static final String forced_execution_event = "_forced_run";
-    public static final String master_script_path = Consts.trigger_dump_folder+"master.sts";
+    public static final String SCRIPT_ENGINE_NAME = "nashorn";
+    public static final String FORCED_EXECUTION_EVENT = "_forced_run";
+    public static final String MASTER_SCRIPT_PATH = Consts.TRIGGER_DUMP_FOLDER+"master.sts";
     
     public static final String EVENT_NAME_PLACEHOLDER = "_EVENT_NAME";
     
@@ -39,8 +39,8 @@ public abstract class TriggerMgr {
         engine_mgr = new ScriptEngineManager ();
         fired_events = new ArrayList<> ();
         try {
-            if (!new File (master_script_path).exists()) {
-                BufferedWriter bw = new BufferedWriter (new FileWriter (new File (master_script_path)));
+            if (!new File (MASTER_SCRIPT_PATH).exists()) {
+                BufferedWriter bw = new BufferedWriter (new FileWriter (new File (MASTER_SCRIPT_PATH)));
                 String contents = "var entity = Java.type('engine.game.entities.Entity');" + "\n";
                 contents += "var log = Java.type('engine.logger.Log');" + "\n";
                 contents += "function console (text) {\n" +
@@ -54,7 +54,7 @@ public abstract class TriggerMgr {
             master_trigger = new Trigger ();
             master_trigger.run();
         } catch (IOException ex) {
-            Log.log(Log.GENERAL, Log.LogLevel.FATAL, "could not create or read master trigger at '"+master_script_path+"' file!", true);
+            Log.log(Log.GENERAL, Log.LogLevel.FATAL, "could not create or read master trigger at '"+MASTER_SCRIPT_PATH+"' file!", true);
         }
     }
     
@@ -73,11 +73,11 @@ public abstract class TriggerMgr {
     }
     
     public static void autoDetectTriggers () {
-        Log.log(Log.TRIG, "auto-detecting triggers in folder '"+Consts.trigger_dump_folder+"' ...");
-        List<File> files = FileUtils.getAllFiles(Consts.trigger_dump_folder);
+        Log.log(Log.TRIG, "auto-detecting triggers in folder '"+Consts.TRIGGER_DUMP_FOLDER+"' ...");
+        List<File> files = FileUtils.getAllFiles(Consts.TRIGGER_DUMP_FOLDER);
         for (File f : files) {
-            if ((FileUtils.getExtension(f.getPath().replace("\\","/")).equals(Consts.trigger_file_extension)) &&
-                    (!f.getPath().replace("\\","/").equals(TriggerMgr.master_script_path))) {
+            if ((FileUtils.getExtension(f.getPath().replace("\\","/")).equals(Consts.TRIGGER_FILE_EXTENSION)) &&
+                    (!f.getPath().replace("\\","/").equals(TriggerMgr.MASTER_SCRIPT_PATH))) {
                 String trig_name = FileUtils.getTriggerName(f);
                 ResMgr.trigger_lib.put(trig_name, new Trigger (trig_name, f));
                 Log.log(Log.TRIG, "loaded trigger with name '"+trig_name+"' at path '"+FileUtils.getTriggerPath(f)+"'");

@@ -31,8 +31,9 @@ public class GameMap {
     public HashMap <String, Entity> entities;
     
     public String devmode_current_tileset;
-    public static final int info_draw_offset_x = 32;
-    public static final int info_draw_offset_y = 64;
+    public static final int INFO_DRAW_OFFSET_X = 32;
+    public static final int INFO_DRAW_OFFSET_Y = 64;
+    public static final int INFO_DRAW_INCREMENT_Y = 24;
     
     
      
@@ -53,18 +54,18 @@ public class GameMap {
     
     public void drawInfo (GameContainer gc, StateBasedGame sbg, Graphics g) {
         g.setColor(Color.white);
-        g.drawString("Camera: "+cam.location.toString(), info_draw_offset_x, info_draw_offset_y);
-        g.drawString("devmode_current_tileset: "+devmode_current_tileset, info_draw_offset_x, info_draw_offset_y+32);
-        g.drawString("background_tileset: "+background_tileset, info_draw_offset_x, info_draw_offset_y+64);
+        g.drawString("Camera: "+cam.location.toString(), INFO_DRAW_OFFSET_X, INFO_DRAW_OFFSET_Y);
+        g.drawString("devmode_current_tileset: "+devmode_current_tileset, INFO_DRAW_OFFSET_X, INFO_DRAW_OFFSET_Y+32);
+        g.drawString("background_tileset: "+background_tileset, INFO_DRAW_OFFSET_X, INFO_DRAW_OFFSET_Y+64);
     }
     
     public void render (GameContainer gc, StateBasedGame sbg, Graphics g) {
         g.setColor(Color.white);
 
-        int start_render_x = (int)(Math.max(cam.location.x/Consts.tileset_frame_width, 0));
-        int end_render_x = (int)(Math.max(cam.location.x/Consts.tileset_frame_width, 0)) + (Settings.screen_res_w/Consts.tileset_frame_width) + 1;
-        int start_render_y = (int)(Math.max(cam.location.y/Consts.tileset_frame_height, 0));
-        int end_render_y = (int)(Math.max(cam.location.y/Consts.tileset_frame_height, 0)) + (Settings.screen_res_h/Consts.tileset_frame_height) + 2;
+        int start_render_x = (int)(Math.max(cam.location.x/Consts.TILESET_FRAME_WIDTH, 0));
+        int end_render_x = (int)(Math.max(cam.location.x/Consts.TILESET_FRAME_WIDTH, 0)) + (Settings.screen_res_w/Consts.TILESET_FRAME_WIDTH) + 1;
+        int start_render_y = (int)(Math.max(cam.location.y/Consts.TILESET_FRAME_HEIGHT, 0));
+        int end_render_y = (int)(Math.max(cam.location.y/Consts.TILESET_FRAME_HEIGHT, 0)) + (Settings.screen_res_h/Consts.TILESET_FRAME_HEIGHT) + 2;
         
         if ((!background_tileset.isEmpty())) {
             for (int i=start_render_y;i<end_render_y;i++) {
@@ -73,8 +74,8 @@ public class GameMap {
                         Image img = ResMgr.getTileset(background_tileset).getTile(true,true,true,true);
                         if (img!=null)
                             g.drawImage(img,
-                                    j*Consts.tileset_frame_width - cam.location.x,
-                                    i*Consts.tileset_frame_height - cam.location.y);
+                                    j*Consts.TILESET_FRAME_WIDTH - cam.location.x,
+                                    i*Consts.TILESET_FRAME_HEIGHT - cam.location.y);
                     }
                 }
             }
@@ -90,8 +91,8 @@ public class GameMap {
                                                  tile_net.renderTile(tileset_render,  j,i+1),tile_net.renderTile(tileset_render,j+1,i+1));
                             if (img!=null)
                                 g.drawImage(img,
-                                        j*Consts.tileset_frame_width - cam.location.x,
-                                        i*Consts.tileset_frame_height - cam.location.y);
+                                        j*Consts.TILESET_FRAME_WIDTH - cam.location.x,
+                                        i*Consts.TILESET_FRAME_HEIGHT - cam.location.y);
                                         //j-start_render_x-(cam.location.x % ResMgr.tileset_frame_width) ,
                                         //i-start_render_y-(cam.location.y % ResMgr.tileset_frame_height));
                         }

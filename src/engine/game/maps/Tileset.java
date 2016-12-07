@@ -50,7 +50,7 @@ public class Tileset extends AnimatedSprite {
     public int id;
      
     public Tileset(String name, String spriteSheetPath, int id) throws SlickException {
-        super(name, spriteSheetPath, Consts.tileset_frame_width, Consts.tileset_frame_height);
+        super(name, spriteSheetPath, Consts.TILESET_FRAME_WIDTH, Consts.TILESET_FRAME_HEIGHT);
         this.id = id;
     }
      

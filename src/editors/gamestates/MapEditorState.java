@@ -62,9 +62,9 @@ public class MapEditorState extends BasicGameState {
         
         if ((tilePainterX>=0) && (tilePainterX<=currentMap.tiles_width) && (tilePainterY>=0) && (tilePainterY<=currentMap.tiles_height)) {
             g.setColor(new Color (1f,1f,1f,0.5f));
-            g.fillRect(tilePainterX*Consts.tileset_frame_width - currentMap.cam.location.x - (Consts.tileset_frame_width / 2),
-                       tilePainterY*Consts.tileset_frame_height - currentMap.cam.location.y - (Consts.tileset_frame_height / 2), 
-                       Consts.tileset_frame_width, Consts.tileset_frame_height);
+            g.fillRect(tilePainterX*Consts.TILESET_FRAME_WIDTH - currentMap.cam.location.x - (Consts.TILESET_FRAME_WIDTH / 2),
+                       tilePainterY*Consts.TILESET_FRAME_HEIGHT - currentMap.cam.location.y - (Consts.TILESET_FRAME_HEIGHT / 2), 
+                       Consts.TILESET_FRAME_WIDTH, Consts.TILESET_FRAME_HEIGHT);
             g.setColor(Color.white);
             g.drawString("Selector: "+tilePainterX+","+tilePainterY, 32, 128);
         }
@@ -122,8 +122,8 @@ public class MapEditorState extends BasicGameState {
             dragOriginY = -1;
             
             if (map_toolbar.editMode == MapEditorToolbar.EditMode.TILESET) {
-                tilePainterX = ((gc.getInput().getMouseX() + (Consts.tileset_frame_width/2) + currentMap.cam.location.x) / Consts.tileset_frame_width);
-                tilePainterY = ((gc.getInput().getMouseY() + (Consts.tileset_frame_height/2) + currentMap.cam.location.y) / Consts.tileset_frame_height);
+                tilePainterX = ((gc.getInput().getMouseX() + (Consts.TILESET_FRAME_WIDTH/2) + currentMap.cam.location.x) / Consts.TILESET_FRAME_WIDTH);
+                tilePainterY = ((gc.getInput().getMouseY() + (Consts.TILESET_FRAME_HEIGHT/2) + currentMap.cam.location.y) / Consts.TILESET_FRAME_HEIGHT);
             } else {
                 tilePainterX = -1;
                 tilePainterY = -1;

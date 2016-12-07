@@ -163,19 +163,19 @@ public class TileNet {
         if (Settings.debug_draw_tile_net) {
             g.setColor(Color.white);
             
-            int start_render_x = (int)(Math.max(c.location.x/Consts.tileset_frame_width, 0));
-            int end_render_x = (int)(Math.max(c.location.x/Consts.tileset_frame_width, 0)) + (Settings.screen_res_w/Consts.tileset_frame_width) + 1;
-            int start_render_y = (int)(Math.max(c.location.y/Consts.tileset_frame_height, 0));
-            int end_render_y = (int)(Math.max(c.location.y/Consts.tileset_frame_height, 0)) + (Settings.screen_res_h/Consts.tileset_frame_height) + 2;
+            int start_render_x = (int)(Math.max(c.location.x/Consts.TILESET_FRAME_WIDTH, 0));
+            int end_render_x = (int)(Math.max(c.location.x/Consts.TILESET_FRAME_WIDTH, 0)) + (Settings.screen_res_w/Consts.TILESET_FRAME_WIDTH) + 1;
+            int start_render_y = (int)(Math.max(c.location.y/Consts.TILESET_FRAME_HEIGHT, 0));
+            int end_render_y = (int)(Math.max(c.location.y/Consts.TILESET_FRAME_HEIGHT, 0)) + (Settings.screen_res_h/Consts.TILESET_FRAME_HEIGHT) + 2;
             int tileset_id = getTilesetId (debug_tileset);
             
             for (int i=start_render_y;i<end_render_y;i++) {
                 for (int j=start_render_x;j<end_render_x;j++) {
                     if (!((i<0) || (i>height) || (j<0) || (j>width))) {
                         if (map[i][j] != tileset_id)
-                            g.drawRect(j*Consts.tileset_frame_width-2 - c.location.x, i*Consts.tileset_frame_height-2 - c.location.y, 4, 4);
+                            g.drawRect(j*Consts.TILESET_FRAME_WIDTH-2 - c.location.x, i*Consts.TILESET_FRAME_HEIGHT-2 - c.location.y, 4, 4);
                         else
-                            g.fillRect(j*Consts.tileset_frame_width-2 - c.location.x, i*Consts.tileset_frame_height-2 - c.location.y, 4, 4);
+                            g.fillRect(j*Consts.TILESET_FRAME_WIDTH-2 - c.location.x, i*Consts.TILESET_FRAME_HEIGHT-2 - c.location.y, 4, 4);
                     }
                 }
             }

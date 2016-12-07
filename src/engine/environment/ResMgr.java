@@ -99,7 +99,7 @@ public abstract class ResMgr {
     
     public static void readLoader () throws FileNotFoundException, IOException, SlickException {
         //try to open and read settings
-        BufferedReader br = new BufferedReader (new FileReader (Consts.loader_file_path));
+        BufferedReader br = new BufferedReader (new FileReader (Consts.LOADER_FILE_PATH));
         String line;
 
         while ((line=br.readLine ())!=null) {
@@ -161,7 +161,7 @@ public abstract class ResMgr {
      
     public static void readActors () throws FileNotFoundException, IOException {
         //try to open and read settings
-        BufferedReader br = new BufferedReader (new FileReader (Consts.actors_file_path));
+        BufferedReader br = new BufferedReader (new FileReader (Consts.ACTORS_FILE_PATH));
         String line;
 
         while ((line=br.readLine ())!=null) {
@@ -187,12 +187,12 @@ public abstract class ResMgr {
         }
         
         try {
-            BufferedWriter bw = new BufferedWriter (new FileWriter (new File (Consts.actors_file_path)));
+            BufferedWriter bw = new BufferedWriter (new FileWriter (new File (Consts.ACTORS_FILE_PATH)));
             bw.write(out);
             bw.flush();
             bw.close();
         } catch (IOException ex) {
-            Log.log(Log.GENERAL,Log.LogLevel.ERROR,"could not rewrite actors file ("+Consts.actors_file_path+")");
+            Log.log(Log.GENERAL,Log.LogLevel.ERROR,"could not rewrite actors file ("+Consts.ACTORS_FILE_PATH+")");
         }
     }
     
@@ -200,7 +200,7 @@ public abstract class ResMgr {
      
     public static void readEntities () throws FileNotFoundException, IOException {
         //try to open and read settings
-        BufferedReader br = new BufferedReader (new FileReader (Consts.entities_file_path));
+        BufferedReader br = new BufferedReader (new FileReader (Consts.ENTITIES_FILE_PATH));
         String line;
 
         while ((line=br.readLine ())!=null) {
@@ -227,12 +227,12 @@ public abstract class ResMgr {
         }
         
         try {
-            BufferedWriter bw = new BufferedWriter (new FileWriter (new File (Consts.entities_file_path)));
+            BufferedWriter bw = new BufferedWriter (new FileWriter (new File (Consts.ENTITIES_FILE_PATH)));
             bw.write(out);
             bw.flush();
             bw.close();
         } catch (IOException ex) {
-            Log.log(Log.GENERAL,Log.LogLevel.ERROR,"could not rewrite entities file ("+Consts.entities_file_path+")");
+            Log.log(Log.GENERAL,Log.LogLevel.ERROR,"could not rewrite entities file ("+Consts.ENTITIES_FILE_PATH+")");
         }
     }
     

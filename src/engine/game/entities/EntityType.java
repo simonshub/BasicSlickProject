@@ -144,7 +144,7 @@ public class EntityType {
      
     public EntityType (String entityName) throws IOException {
         entity_type_name = entityName;
-        entity_type_file = Consts.entity_dump_folder + entity_type_name + "." + Consts.entity_file_extension;
+        entity_type_file = Consts.ENTITY_DUMP_FOLDER + entity_type_name + "." + Consts.ENTITY_FILE_EXTENSION;
         actor_name = "";
         vars = new HashMap <> ();
         collider = new Collider ();

@@ -7,7 +7,6 @@
 package engine.game.entities;
 
 import engine.logger.Log;
-import engine.environment.ResMgr;
 
 /**
  * @author Emil Simon

@@ -17,8 +17,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -42,16 +40,16 @@ public class Trigger {
         name = "master";
         code = "";
         events = new HashSet<> ();
-        engine = TriggerMgr.engine_mgr.getEngineByName(TriggerMgr.script_engine_name);
+        engine = TriggerMgr.engine_mgr.getEngineByName(TriggerMgr.SCRIPT_ENGINE_NAME);
         engine_bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
-        loadScript(TriggerMgr.master_script_path, false);
+        loadScript(TriggerMgr.MASTER_SCRIPT_PATH, false);
     }
     public Trigger (String name, String path) {
         Log.log(Log.TRIG, "loading trigger '"+name+"' at path '"+path+"'");
         this.name = name;
         code = "var event = '"+TriggerMgr.EVENT_NAME_PLACEHOLDER+"';\n";
         events = new HashSet<> ();
-        engine = TriggerMgr.engine_mgr.getEngineByName(TriggerMgr.script_engine_name);
+        engine = TriggerMgr.engine_mgr.getEngineByName(TriggerMgr.SCRIPT_ENGINE_NAME);
         engine_bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
         loadScript(path, true);
     }
@@ -60,7 +58,7 @@ public class Trigger {
         this.name = name;
         code = "var event = '"+TriggerMgr.EVENT_NAME_PLACEHOLDER+"';\n";
         events = new HashSet<> ();
-        engine = TriggerMgr.engine_mgr.getEngineByName(TriggerMgr.script_engine_name);
+        engine = TriggerMgr.engine_mgr.getEngineByName(TriggerMgr.SCRIPT_ENGINE_NAME);
         engine_bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
         loadScript(file, true);
     }
@@ -113,7 +111,7 @@ public class Trigger {
                                 Log.log(Log.TRIG, "added event '"+words[1].trim()+"' in trigger '"+name+"'");
                                 break;
                             case "load" :
-                                loadScript(Consts.trigger_dump_folder+words[1].trim(), false);
+                                loadScript(Consts.TRIGGER_DUMP_FOLDER+words[1].trim(), false);
                                 Log.log(Log.TRIG, "read trigger '"+FileUtils.getNameWithoutExtension(words[1].trim())+"' for trigger '"+name+"'");
                                 break;
                             default :
@@ -159,7 +157,7 @@ public class Trigger {
     
     public void run () {
         try {
-            engine.eval(code.replace(TriggerMgr.EVENT_NAME_PLACEHOLDER, TriggerMgr.forced_execution_event));
+            engine.eval(code.replace(TriggerMgr.EVENT_NAME_PLACEHOLDER, TriggerMgr.FORCED_EXECUTION_EVENT));
         } catch (Exception ex) {
             Log.log(Log.TRIG,Log.LogLevel.ERROR,"while trying to run some code ...\nCODE:\n"+code,true);
             Log.log(Log.TRIG,Log.LogLevel.ERROR,"error message: "+ex.getMessage());

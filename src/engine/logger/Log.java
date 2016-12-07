@@ -50,13 +50,10 @@ public abstract class Log {
         log (log, lvl, message, divider, false);
     }
     public static void log (LogType log, LogLevel lvl, String message, boolean divider, boolean silent) {
-        if ((log == ENTITY) && (!Settings.debug_entities)) {
-            return;
-        } else if ((log == ACTOR) && (!Settings.debug_actors)) {
-            return;
-        } else if ((log == MAP) && (!Settings.debug_maps)) {
-            return;
-        } else if ((log == TRIG) && (!Settings.debug_triggers)) {
+        if (((log == ENTITY) && (!Settings.debug_entities)) ||
+                ((log == ACTOR) && (!Settings.debug_actors)) ||
+                ((log == MAP) && (!Settings.debug_maps)) ||
+                ((log == TRIG) && (!Settings.debug_triggers))) {
             return;
         }
         
@@ -76,6 +73,9 @@ public abstract class Log {
     public static void console (String message) {
         log(Log.TRIG, message, false);
     }
+    public static void error (String message) {
+        log(Log.TRIG, Log.LogLevel.ERROR, message, false);
+    }
     
     
     
@@ -90,11 +90,11 @@ public abstract class Log {
     
     
     public static void init () {
-        ENTITY = new LogType ("ENT : ",Consts.log_file_path_ent);
-        ACTOR = new LogType ("ACT : ",Consts.log_file_path_act);
-        MAP = new LogType ("MAP : ",Consts.log_file_path_map);
-        TRIG = new LogType ("TRIG : ",Consts.log_file_path_script);
-        GENERAL = new LogType ("LOG : ",Consts.log_file_path_general);
+        ENTITY = new LogType ("ENT : ",Consts.LOG_FILE_PATH_ENT);
+        ACTOR = new LogType ("ACT : ",Consts.LOG_FILE_PATH_ACT);
+        MAP = new LogType ("MAP : ",Consts.LOG_FILE_PATH_MAP);
+        TRIG = new LogType ("TRIG : ",Consts.LOG_FILE_PATH_TRIG);
+        GENERAL = new LogType ("LOG : ",Consts.LOG_FILE_PATH_GENERAL);
     }
     
     
@@ -128,6 +128,6 @@ public abstract class Log {
     
     
     public static String getTimestamp () {
-        return Consts.log_timestamp_form.format(new Date());
+        return Consts.LOG_TIMESTAMP_FORM.format(new Date());
     }
 }

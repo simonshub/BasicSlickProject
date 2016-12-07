@@ -14,7 +14,7 @@ import engine.environment.ResMgr;
  */
 
 public class EntityVar {
-    public enum EntityVarType { INTEGER, REAL, TEXT, BOOL, MAP, TRIGGER, ENTITY_TYPE, ENTITY, ACTOR, REFERENCE, NULL };
+    public enum EntityVarType { INTEGER, REAL, TEXT, BOOL, MAP, TRIGGER, ENTITY_TYPE, ENTITY, ACTOR, NULL };
     public String name;
     public String value;
     public EntityVarType type;
@@ -42,8 +42,6 @@ public class EntityVar {
                     break;
                 case ACTOR :
                     break;
-                case NULL :
-                    return (value.equals("null") || value.equals("none"));
                 default :
                     return false;
             }
@@ -76,8 +74,6 @@ public class EntityVar {
             result = EntityVarType.ENTITY;
         } else if (type.equals("act") || type.equals("actor")) {
             result = EntityVarType.ACTOR;
-        } else if (type.equals("ref") || type.equals("reference")) {
-            result = EntityVarType.REFERENCE;
         } else if (type.equals("null") || type.equals("none")) {
             result = EntityVarType.NULL;
         } else {
