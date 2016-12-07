@@ -10,7 +10,6 @@ import editors.toolbars.MapEditorToolbar;
 import engine.game.maps.GameMap;
 import engine.environment.Consts;
 import engine.logger.Log;
-import engine.environment.ResMgr;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -46,7 +45,7 @@ public class MapEditorState extends BasicGameState {
      
     @Override
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
-        currentMap = new GameMap (100,100);
+        currentMap = new GameMap ("untitled",100,100,false);
         dragX=-1;
         dragY=-1;
         dragOriginX=-1;
@@ -66,15 +65,24 @@ public class MapEditorState extends BasicGameState {
                        tilePainterY*Consts.TILESET_FRAME_HEIGHT - currentMap.cam.location.y - (Consts.TILESET_FRAME_HEIGHT / 2), 
                        Consts.TILESET_FRAME_WIDTH, Consts.TILESET_FRAME_HEIGHT);
             g.setColor(Color.white);
-            g.drawString("Selector: "+tilePainterX+","+tilePainterY, 32, 128);
+            //g.drawString("Selector: "+tilePainterX+","+tilePainterY, 32, 128);
         }
         
     }
      
     @Override
     public void update(GameContainer gc, StateBasedGame sbg, int i) throws SlickException {
-        currentMap.devmode_current_tileset = map_toolbar.getCurrentTileset();
-        currentMap.background_tileset = map_toolbar.getCurrentBackgroundTileset();
+        switch (map_toolbar.editMode) {
+            case TILES :
+                currentMap.devmode_current_tileset = map_toolbar.getCurrentTileset();
+                currentMap.background_tileset = map_toolbar.getCurrentBackgroundTileset();
+                break;
+            case ENTITIES :
+                currentMap.devmode_current_tileset = null;
+                break;
+            default :
+                break;
+        }
         
         //called on game's logical update loop; PUT GAME/LOGIC CODE HERE
         if (gc.getInput().isKeyDown(Input.KEY_LCONTROL) && gc.getInput().isKeyPressed(Input.KEY_A)) {
@@ -121,7 +129,7 @@ public class MapEditorState extends BasicGameState {
             dragOriginX = -1;
             dragOriginY = -1;
             
-            if (map_toolbar.editMode == MapEditorToolbar.EditMode.TILESET) {
+            if (map_toolbar.editMode == MapEditorToolbar.EditMode.TILES) {
                 tilePainterX = ((gc.getInput().getMouseX() + (Consts.TILESET_FRAME_WIDTH/2) + currentMap.cam.location.x) / Consts.TILESET_FRAME_WIDTH);
                 tilePainterY = ((gc.getInput().getMouseY() + (Consts.TILESET_FRAME_HEIGHT/2) + currentMap.cam.location.y) / Consts.TILESET_FRAME_HEIGHT);
             } else {
@@ -130,7 +138,7 @@ public class MapEditorState extends BasicGameState {
             }
         }
         
-        if ((map_toolbar.editMode == MapEditorToolbar.EditMode.TILESET) && (gc.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON))) {
+        if ((map_toolbar.editMode == MapEditorToolbar.EditMode.TILES) && (gc.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON))) {
             if ((tilePainterX>=0) && (tilePainterX<=currentMap.tiles_width)
                     && (tilePainterY>=0) && (tilePainterY<=currentMap.tiles_height)
                     && (currentMap.devmode_current_tileset!=null)) {
@@ -145,6 +153,12 @@ public class MapEditorState extends BasicGameState {
                         break;
                 }
             }
+        }
+        
+        if ((map_toolbar.editMode == MapEditorToolbar.EditMode.ENTITIES) && (gc.getInput().isMousePressed(Input.MOUSE_LEFT_BUTTON))) {
+            currentMap.placeEntity(map_toolbar.getSelectedEntityType(),
+                    (gc.getInput().getMouseX() + currentMap.cam.location.x),
+                    (gc.getInput().getMouseY() + currentMap.cam.location.y));
         }
     }
      

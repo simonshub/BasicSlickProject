@@ -8,6 +8,7 @@ package editors.toolbars;
 import engine.game.actors.Actor;
 import engine.game.actors.AnimFrame;
 import engine.environment.ResMgr;
+import engine.environment.StringRes;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -35,7 +36,7 @@ public class ActorEditorToolbar extends javax.swing.JFrame {
     // Custom ComboBox (drop down list) model class
     public class ActorDropDown extends AbstractListModel implements ComboBoxModel {
         public String[] data = ResMgr.actor_lib.keySet().toArray ( new String [ResMgr.actor_lib.keySet().size()] );
-        public String selection = data!=null ? data[0] : "None found!";
+        public String selection = data!=null ? data[0] : StringRes.EDITOR_TOOLBAR_NONE_FOUND;
         
         @Override
         public int getSize() {
@@ -58,7 +59,7 @@ public class ActorEditorToolbar extends javax.swing.JFrame {
     // Custom ComboBox (drop down list) model class
     public class SpriteDropDown extends AbstractListModel implements ComboBoxModel {
         public String[] data = ResMgr.sprite_lib.keySet().toArray ( new String [ResMgr.sprite_lib.keySet().size()] );
-        public String selection = data!=null ? data[0] : "None found!";
+        public String selection = data!=null ? data[0] : StringRes.EDITOR_TOOLBAR_NONE_FOUND;
         
         @Override
         public int getSize() {
@@ -179,7 +180,7 @@ public class ActorEditorToolbar extends javax.swing.JFrame {
     
     // Utility function for updating all lists to display actor info correctly
     public void loadActor () {
-        if (currentActorName.equals("None found!"))
+        if (currentActorName.equals(StringRes.EDITOR_TOOLBAR_NONE_FOUND))
             return;
         
         currentActorName = actorDropDown.getSelectedItem().toString();

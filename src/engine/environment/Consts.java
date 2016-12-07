@@ -34,6 +34,8 @@ public abstract class Consts {
     public static final int TILESET_FRAME_WIDTH = 32;
     public static final int TILESET_FRAME_HEIGHT = 32;
     
+    public static final int ENTITY_OFFSCREEN_DRAW_MARGIN = 128;
+    
     public static final String ACTOR_FILE_EXTENSION = "act";
     public static final String ENTITY_FILE_EXTENSION = "ent";
     public static final String TRIGGER_FILE_EXTENSION = "sts";

@@ -49,6 +49,15 @@ public class Location {
     
     
     
+    public boolean isInBounds (Location upper_left, Location lower_right) {
+        return !((x < upper_left.x) || (x > lower_right.x) || (y < upper_left.y) || (y > lower_right.y));
+    }
+    public boolean isInBoundsWithDiff (Location upper_left, Location lower_right, int margin) {
+        return isInBounds (new Location (upper_left.x-margin, upper_left.y-margin), new Location (lower_right.x+margin, lower_right.y+margin));
+    }
+    
+    
+    
     @Override
     public String toString () {
         return x+","+y;

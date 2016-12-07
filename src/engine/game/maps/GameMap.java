@@ -10,6 +10,8 @@ import engine.game.entities.Entity;
 import engine.environment.Consts;
 import engine.environment.ResMgr;
 import engine.environment.Settings;
+import engine.game.entities.EntityType;
+import engine.logger.Log;
 import java.util.Arrays;
 import java.util.HashMap;
 import org.newdawn.slick.Color;
@@ -25,10 +27,13 @@ import org.newdawn.slick.state.StateBasedGame;
 public class GameMap {
     public String name;
     public String background_tileset;
-    public int tiles_width, tiles_height; // IN TILES
+    
     public Camera cam;
     public TileNet tile_net;
+    public boolean persistent;
+    public int tiles_width, tiles_height; // IN TILES
     public HashMap <String, Entity> entities;
+    public HashMap <String, Integer> entity_counters;
     
     public String devmode_current_tileset;
     public static final int INFO_DRAW_OFFSET_X = 32;
@@ -37,17 +42,37 @@ public class GameMap {
     
     
      
-    public GameMap (int width, int height) {
+    public GameMap (String name, int width, int height, boolean persistent) {
         tiles_width = width;
         tiles_height = height;
         
-        entities = new HashMap <> ();
-        tile_net = new TileNet (width,height);
+        this.name = name;
+        this.persistent = persistent;
+        
         cam = new Camera ();
+        entities = new HashMap <> ();
+        entity_counters = new HashMap <> ();
+        tile_net = new TileNet (width,height);
         
         background_tileset = "";
         devmode_current_tileset = "";
         tile_net = new TileNet (width, height);
+    }
+    
+    
+    
+    public void placeEntity (EntityType entity_type, int x, int y) {
+        int counter = 0;
+        
+        if (entity_counters.containsKey(entity_type.entity_type_name)) {
+            counter = entity_counters.get(entity_type.entity_type_name);
+            entity_counters.put(entity_type.entity_type_name, counter+1);
+        } else {
+            entity_counters.put(entity_type.entity_type_name, counter);
+        }
+        
+        entities.put(entity_type.entity_type_name+"_"+String.format("%06d",counter), new Entity (entity_type, counter, x, y));
+        Log.log(Log.MAP, "placed entity '"+entity_type.entity_type_name+"_"+String.format("%06d",counter)+"' at "+x+","+y+" of type '"+entity_type.entity_type_name+"'");
     }
     
     
@@ -106,6 +131,10 @@ public class GameMap {
                 }
             }
         }
+        
+        for (Entity entity : entities.values()) {
+            entity.render(gc, sbg, g, cam);
+        }
     }
     
     
@@ -134,9 +163,9 @@ public class GameMap {
         content += "#\tgenerated entity info" + "\n";
         content += "#entity end" + "\n";
         String[] entityNames = entities.keySet().toArray(new String [entities.size()]);
-        for (int i=0;i<entityNames.length;i++) {
+        for (String entityName : entityNames) {
             content += "entity define" + "\n";
-            content += entities.get(entityNames[i]).getWritten("\t") + "\n";
+            content += entities.get(entityName).getWritten("\t") + "\n";
             content += "entity end" + "\n";
         }
         content += "\n\n";

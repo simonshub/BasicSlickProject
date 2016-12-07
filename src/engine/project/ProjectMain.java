@@ -109,6 +109,10 @@ public class ProjectMain extends StateBasedGame {
             this.addState (new MapEditorState ());
         }
         
+        if (Settings.devmode) {
+            ResMgr.trigger_lib.get("test_script").run();
+        }
+        
         this.enterState(MenuState.ID);
     }
     

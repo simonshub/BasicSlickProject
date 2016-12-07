@@ -10,9 +10,9 @@ import engine.logger.Log;
 import engine.game.actors.Actor;
 import engine.game.actors.AnimatedSprite;
 import engine.game.entities.EntityType;
+import engine.game.maps.GameMap;
 import engine.game.maps.Tileset;
 import engine.game.triggers.Trigger;
-import engine.game.triggers.TriggerEvent;
 import engine.game.triggers.TriggerMgr;
 import java.awt.Font;
 import java.io.BufferedReader;
@@ -39,6 +39,7 @@ public abstract class ResMgr {
     public static HashMap<String, EntityType> entity_lib;
     public static HashMap<String, Actor> actor_lib;
     public static HashMap<String, Tileset> tileset_lib;
+    public static HashMap<String, GameMap> map_lib;
     public static HashMap<String, Trigger> trigger_lib;
     
     
@@ -314,6 +315,12 @@ public abstract class ResMgr {
         else
             return null;
     }
+    public static GameMap getMap (String map) {
+        if (map_lib.containsKey(map))
+            return map_lib.get(map);
+        else
+            return null;
+    }
     
     
     
@@ -338,6 +345,9 @@ public abstract class ResMgr {
     public static boolean hasTileset (String tileset) {
         return tileset_lib.containsKey(tileset);
     }
+    public static boolean hasMap (String map) {
+        return map_lib.containsKey(map);
+    }
     
     
     
@@ -358,6 +368,9 @@ public abstract class ResMgr {
     }
     public static void addTileset (String name, Tileset tileset) {
         tileset_lib.put(name, tileset);
+    }
+    public static void addMap (String name, GameMap map) {
+        map_lib.put(name, map);
     }
     
     

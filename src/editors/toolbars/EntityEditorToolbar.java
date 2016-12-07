@@ -9,6 +9,7 @@ import engine.game.entities.Collider;
 import engine.game.entities.EntityType;
 import engine.game.entities.EntityVar;
 import engine.environment.ResMgr;
+import engine.environment.StringRes;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
@@ -37,7 +38,7 @@ public class EntityEditorToolbar extends javax.swing.JFrame {
     // Custom ComboBox (drop down list) model class
     public class EntityDropDown extends AbstractListModel implements ComboBoxModel {
         public String[] data = ResMgr.entity_lib.keySet().toArray ( new String [ResMgr.entity_lib.keySet().size()] );
-        public String selection = data!=null ? data[0] : "None found!";
+        public String selection = data!=null ? data[0] : StringRes.EDITOR_TOOLBAR_NONE_FOUND;
         
         @Override
         public int getSize() {
@@ -60,7 +61,7 @@ public class EntityEditorToolbar extends javax.swing.JFrame {
     // Custom ComboBox (drop down list) model class
     public class ActorDropDown extends AbstractListModel implements ComboBoxModel {
         public String[] data = ResMgr.actor_lib.keySet().toArray ( new String [ResMgr.actor_lib.keySet().size()] );
-        public String selection = data!=null ? data[0] : "None found!";
+        public String selection = data!=null ? data[0] : StringRes.EDITOR_TOOLBAR_NONE_FOUND;
         
         @Override
         public int getSize() {
@@ -83,7 +84,7 @@ public class EntityEditorToolbar extends javax.swing.JFrame {
     // Custom ComboBox (drop down list) model class
     public class VarTypeDropDown extends AbstractListModel implements ComboBoxModel {
         public Object[] data = EntityVar.EntityVarType.values();
-        public Object selection = data!=null ? data[0] : "None found!";
+        public Object selection = data!=null ? data[0] : StringRes.EDITOR_TOOLBAR_NONE_FOUND;
         
         @Override
         public int getSize() {
@@ -218,7 +219,7 @@ public class EntityEditorToolbar extends javax.swing.JFrame {
     public final void loadEntity () {
         currentEntityName = entityDropDown.getSelectedItem().toString();
         
-        if (currentEntityName.equals("None found!"))
+        if (currentEntityName.equals(StringRes.EDITOR_TOOLBAR_NONE_FOUND))
             return;
         
         currentEntity = ResMgr.getEntityType(currentEntityName);
@@ -246,7 +247,7 @@ public class EntityEditorToolbar extends javax.swing.JFrame {
     public final void updateVars () {
         DefaultTableModel model = (DefaultTableModel) varsTable.getModel();
         model.setRowCount(0);
-        if (currentEntityName.equals("") || currentEntityName.equals("None found!")) { return; }
+        if (currentEntityName.equals("") || currentEntityName.equals(StringRes.EDITOR_TOOLBAR_NONE_FOUND)) { return; }
         
         EntityVar[] vars = currentEntity.getVars();
         for (int i=0;i<currentEntity.vars.size();i++) {

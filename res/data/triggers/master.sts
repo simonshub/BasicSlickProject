@@ -1,10 +1,14 @@
 
+
+
 var actor = Java.type('engine.game.actors.Actor');
 var entity = Java.type('engine.game.entities.Entity');
 var entity_type = Java.type('engine.game.entities.EntityType');
 var trigger = Java.type('engine.game.triggers.Trigger');
 var game_map = Java.type('engine.game.maps.GameMap');
 var tile_net = Java.type('engine.game.maps.TileNet');
+
+
 
 var _res = Java.type('engine.environment.ResMgr');
 var _consts = Java.type('engine.environment.Consts');
@@ -13,9 +17,23 @@ var _log = Java.type('engine.logger.Log');
 var _log_level = Java.type('engine.logger.Log.LogLevel');
 var _log_type = Java.type('engine.logger.LogType');
 
+
+
 function console (text) {
-	log.console(text);
+	_log.console(text);
 }
 function error (text) {
-	log.error(text);
+	_log.error(text);
+}
+
+
+
+function get_entity_type (name) {
+	return _res.getEntityType(name);
+}
+function get_actor (name) {
+	return _res.getActor(name);
+}
+function get_map (name) {
+	return _res.getMap(name);
 }

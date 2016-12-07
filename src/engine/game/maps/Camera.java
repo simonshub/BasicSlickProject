@@ -9,7 +9,6 @@ package engine.game.maps;
 import engine.game.entities.Entity;
 import engine.utils.Location;
 import engine.utils.Vector;
-import engine.environment.ResMgr;
 import engine.environment.Settings;
 
 /**
@@ -50,6 +49,12 @@ public class Camera {
         zoom = 1.0f;
         force_x = 0;
         force_y = 0;
+    }
+    
+    
+    
+    public Location getLowerRight () {
+        return new Location (location.x+Settings.screen_res_w, location.y+Settings.screen_res_h);
     }
     
     

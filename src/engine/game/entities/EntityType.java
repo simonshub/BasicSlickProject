@@ -8,7 +8,6 @@ package engine.game.entities;
 
 import engine.environment.Consts;
 import engine.logger.Log;
-import engine.environment.ResMgr;
 import engine.environment.Settings;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;

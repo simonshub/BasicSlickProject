@@ -6,12 +6,16 @@
 
 package engine.game.entities;
 
+import engine.environment.Consts;
+import engine.environment.ResMgr;
 import engine.game.maps.Camera;
 import engine.utils.Location;
 import engine.utils.Vector;
 import engine.logger.Log;
 import engine.environment.Settings;
+import engine.game.actors.Actor;
 import java.util.HashMap;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.state.StateBasedGame;
@@ -23,6 +27,9 @@ import org.newdawn.slick.state.StateBasedGame;
 public class Entity {
     public String name;
     public String type;
+    public String current_anim;
+    public Actor actor;
+    public Color filter;
     public HashMap<String, EntityVar> vars;
     public Location location;
     public Vector result_force;
@@ -31,18 +38,22 @@ public class Entity {
     
     public Entity (EntityType type, int counter, int locX, int locY) {
         this.type = type.entity_type_name;
-        this.name = this.type + "_" + counter;
+        this.name = this.type + "_" + String.format("%06d", counter);
         this.vars = new HashMap <> (type.vars);
+        this.actor = ResMgr.getActor(type.actor_name);
         this.location = new Location (locX,locY);
         this.result_force = new Vector (0,0);
+        this.current_anim = ResMgr.getActor(type.actor_name).default_anim;
     }
 
     public Entity (Entity parent, int counter) {
         this.type = parent.type;
-        this.name = type + "_" + counter;
+        this.name = type + "_" + String.format("%06d", counter);
         this.vars = new HashMap <> (parent.vars);
+        this.actor = parent.actor;
         this.location = parent.location;
         this.result_force = parent.result_force;
+        this.current_anim = ResMgr.getActor(ResMgr.getEntityType(parent.type).actor_name).default_anim;
     }
     
     public Entity (String[] lines) {
@@ -119,6 +130,9 @@ public class Entity {
                 }
             }
         }
+        
+        this.actor = ResMgr.getActor(ResMgr.getEntityType(type).actor_name);
+        this.current_anim = actor.default_anim;
     }
     
     
@@ -152,6 +166,11 @@ public class Entity {
    
     
     public void render (GameContainer gc, StateBasedGame sbg, Graphics g, Camera c) {
+        if (this.location.isInBoundsWithDiff(c.location, c.getLowerRight(), Consts.ENTITY_OFFSCREEN_DRAW_MARGIN)) {
+            int trans_x = location.x - c.location.x;
+            int trans_y = location.y - c.location.y;
+            actor.render(trans_x, trans_y, filter, current_anim);
+        }
     }
 
     
