@@ -10,4 +10,5 @@ if (event == 'attack') {
 	console('UPDATE LOOP PRINT WOOP');
 	cmd.out.println('UPDATE LOOP PRINT WOOP');
 	cmd.out.println(hello_man);
+	cmd.out.println(updater);
 }

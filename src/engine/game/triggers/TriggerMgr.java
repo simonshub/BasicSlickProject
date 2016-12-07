@@ -31,7 +31,7 @@ public abstract class TriggerMgr {
     
     public static ScriptEngineManager engine_mgr;
     public static Trigger master_trigger;
-    public static List<String> fired_events;
+    public static List<TriggerEvent> fired_events;
     
     
     
@@ -62,13 +62,13 @@ public abstract class TriggerMgr {
     
     public static void update () {
         for (Trigger trig : ResMgr.trigger_lib.values()) {
-            trig.update((String[]) fired_events.toArray());
+            trig.update((TriggerEvent[]) fired_events.toArray());
         }
         
         fired_events.clear();
     }
     
-    public static void fire (String event) {
+    public static void fire (TriggerEvent event) {
         if (!fired_events.contains(event)) fired_events.add(event);
     }
     

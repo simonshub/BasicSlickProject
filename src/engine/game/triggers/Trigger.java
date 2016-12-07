@@ -139,10 +139,11 @@ public class Trigger {
     
     
     
-    public void update (String[] event_list) {
-        for (String event : event_list) {
-            if (events.contains(event)) {
+    public void update (TriggerEvent[] event_list) {
+        for (TriggerEvent event : event_list) {
+            if (events.contains(event.eventName)) {
                 try {
+                    event.injectParams(engine);
                     engine.eval(code);
                 } catch (Exception ex) {
                     Log.log(Log.TRIG,Log.LogLevel.ERROR,"while trying to evaluate some code at event '"+event+"' ...\nCODE:\n"+code,true);

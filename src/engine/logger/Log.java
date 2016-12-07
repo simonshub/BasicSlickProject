@@ -63,6 +63,8 @@ public abstract class Log {
         tolog += StringUtils.capitalizeFirstChar(message);
         
         writeToLog (log.log_file, tolog, divider, silent);
+        
+        if (lvl==LogLevel.FATAL) System.exit(1);
     }
     
     

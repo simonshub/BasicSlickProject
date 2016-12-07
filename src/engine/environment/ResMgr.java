@@ -12,6 +12,7 @@ import engine.game.actors.AnimatedSprite;
 import engine.game.entities.EntityType;
 import engine.game.maps.Tileset;
 import engine.game.triggers.Trigger;
+import engine.game.triggers.TriggerEvent;
 import engine.game.triggers.TriggerMgr;
 import java.awt.Font;
 import java.io.BufferedReader;
@@ -86,9 +87,6 @@ public abstract class ResMgr {
             readEntities ();
             Log.log(Log.GENERAL,"Done!");
             
-            for (Trigger t : trigger_lib.values()) {
-                t.update(new String[]{"update", "B"});
-            }
         } catch (SlickException|IOException ex) {
             Log.log(Log.GENERAL,Log.LogLevel.FATAL,"while trying to initialize resources");
             System.exit(-1);
