@@ -9,6 +9,7 @@ package editors.gamestates;
 import editors.toolbars.MapEditorToolbar;
 import engine.game.maps.GameMap;
 import engine.environment.Consts;
+import engine.environment.ResMgr;
 import engine.logger.Log;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -66,6 +67,10 @@ public class MapEditorState extends BasicGameState {
                        Consts.TILESET_FRAME_WIDTH, Consts.TILESET_FRAME_HEIGHT);
             g.setColor(Color.white);
             //g.drawString("Selector: "+tilePainterX+","+tilePainterY, 32, 128);
+        } else if (map_toolbar.editMode == map_toolbar.editMode.ENTITIES) {
+            ResMgr.getActor(map_toolbar.getSelectedEntityType().actor_name)
+                    .render(gc.getInput().getMouseX(), gc.getInput().getMouseY(), new Color (1f,1f,1f,0.5f),
+                            ResMgr.getActor(map_toolbar.getSelectedEntityType().actor_name).default_anim);
         }
         
     }
