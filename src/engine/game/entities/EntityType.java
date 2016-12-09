@@ -7,8 +7,10 @@
 package engine.game.entities;
 
 import engine.environment.Consts;
+import engine.environment.ResMgr;
 import engine.logger.Log;
 import engine.environment.Settings;
+import engine.game.actors.Actor;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -181,6 +183,12 @@ public class EntityType {
             if (Settings.debug_entities)
                 Log.log(Log.ENTITY,"added variable '"+name+"' with value: ("+type.toString()+") '"+value+"'");
         }
+    }
+    
+    
+    
+    public Actor getActor () {
+        return ResMgr.getActor(actor_name);
     }
     
     

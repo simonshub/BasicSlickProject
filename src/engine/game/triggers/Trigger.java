@@ -32,31 +32,35 @@ public class Trigger {
     public String code;
     public ScriptEngine engine;
     public Bindings engine_bindings;
+    public boolean async;
     
     
     
-    public Trigger () {
+    public Trigger () throws TriggerException {
         Log.log(Log.TRIG, "loading master trigger");
         name = "master";
         code = "";
+        async = false;
         events = new HashSet<> ();
         engine = TriggerMgr.engine_mgr.getEngineByName(TriggerMgr.SCRIPT_ENGINE_NAME);
         engine_bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
         loadScript(TriggerMgr.MASTER_SCRIPT_PATH, false);
     }
-    public Trigger (String name, String path) {
+    public Trigger (String name, String path) throws TriggerException {
         Log.log(Log.TRIG, "loading trigger '"+name+"' at path '"+path+"'");
         this.name = name;
         code = "var event = '"+TriggerMgr.EVENT_NAME_PLACEHOLDER+"';\n";
+        async = false;
         events = new HashSet<> ();
         engine = TriggerMgr.engine_mgr.getEngineByName(TriggerMgr.SCRIPT_ENGINE_NAME);
         engine_bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
         loadScript(path, true);
     }
-    public Trigger (String name, File file) {
+    public Trigger (String name, File file) throws TriggerException {
         Log.log(Log.TRIG, "loading trigger '"+name+"' at path '"+FileUtils.getTriggerPath(file)+"'");
         this.name = name;
         code = "var event = '"+TriggerMgr.EVENT_NAME_PLACEHOLDER+"';\n";
+        async = false;
         events = new HashSet<> ();
         engine = TriggerMgr.engine_mgr.getEngineByName(TriggerMgr.SCRIPT_ENGINE_NAME);
         engine_bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
@@ -65,10 +69,10 @@ public class Trigger {
     
     
     
-    public final void loadScript (String path, boolean require_master) {
+    public final void loadScript (String path, boolean require_master) throws TriggerException {
         Trigger.this.loadScript (new File (path), require_master);
     }
-    public final void loadScript (File file, boolean require_master) {
+    public final void loadScript (File file, boolean require_master) throws TriggerException {
         try {
             if (require_master){
                 Log.log(Log.TRIG, "including master trigger for '"+this.name+"'");
@@ -88,7 +92,7 @@ public class Trigger {
             BufferedReader r = new BufferedReader (new FileReader (file));
             String line;
             while ((line=r.readLine())!=null) {
-                if (line.startsWith("@")) {
+                if (line.trim().startsWith("@")) {
                     String[] words = line.substring(1).trim().split(" ");
                     if (words.length == 3) {
                         switch (words[0].trim().toLowerCase()) {
@@ -113,6 +117,14 @@ public class Trigger {
                             case "load" :
                                 loadScript(Consts.TRIGGER_DUMP_FOLDER+words[1].trim(), false);
                                 Log.log(Log.TRIG, "read trigger '"+FileUtils.getNameWithoutExtension(words[1].trim())+"' for trigger '"+name+"'");
+                                break;
+                            default :
+                                throw new TriggerException ();
+                        }
+                    } else if (words.length == 1) {
+                        switch (words[0].trim().toLowerCase()) {
+                            case "async" :
+                                this.async = true;
                                 break;
                             default :
                                 throw new TriggerException ();

@@ -17,14 +17,14 @@ collider_height:1
 
 #FOR BOX COLLIDERS
 #box_collider:width height
-box_collider:32 24
+box_collider:24 24
 
 #FOR RADIAL COLLIDERS
 #rad_collider:radius
-rad_collider:16
+rad_collider:8
 
 #origin:x y
-origin:16 30
+origin:32 42
 
 #variables
 #  default values for variables on entity instantiation
@@ -33,6 +33,6 @@ var:real damage 5.50505
 var:integer level 1 
 var:text name String=rest of line,but with .trim() 
 var:integer health 100 
-var:trig test_script test_script 
+var:trigger test_script test_script 
 
 

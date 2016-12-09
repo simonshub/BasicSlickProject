@@ -75,47 +75,42 @@ public class EntityEditorState extends BasicGameState {
                     g.drawRect(gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2, gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2, ResMgr.sprite_lib.get(a.sheet).dimX, ResMgr.sprite_lib.get(a.sheet).dimY);
                     
                     g.setColor(new Color (255,0,0,100));
-                    int centerX=0, centerY=0;
                     if (e.collider.state == Collider.ColliderState.BOX) {
-                        g.drawRect(gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2 + e.originX,
-                                   gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2 + e.originY,
+                        g.drawRect(gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2 + e.originX - e.collider.box_width/2,
+                                   gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2 + e.originY - e.collider.box_height/2,
                                    e.collider.box_width, e.collider.box_height);
-                        g.fillRect(gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2 + e.originX,
-                                   gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2 + e.originY,
+                        g.fillRect(gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2 + e.originX - e.collider.box_width/2,
+                                   gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2 + e.originY - e.collider.box_height/2,
                                    e.collider.box_width, e.collider.box_height);
-                        centerX = e.collider.box_width/2;
-                        centerY = e.collider.box_height/2;
                     } else if (e.collider.state == Collider.ColliderState.RADIAL) {
-                        g.drawOval(gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2 + e.originX,
-                                   gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2 + e.originY,
+                        g.drawOval(gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2 + e.originX - e.collider.radius,
+                                   gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2 + e.originY - e.collider.radius,
                                    e.collider.radius*2, e.collider.radius*2);
-                        g.fillOval(gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2 + e.originX,
-                                   gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2 + e.originY,
+                        g.fillOval(gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2 + e.originX - e.collider.radius,
+                                   gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2 + e.originY - e.collider.radius,
                                    e.collider.radius*2, e.collider.radius*2);
-                        centerX = e.collider.radius;
-                        centerY = e.collider.radius;
                     }
                     g.setColor(new Color (255,255,255,255));
-                    g.fillOval(gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2 + e.originX + centerX,
-                               gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2 + e.originY + centerY,
+                    g.fillOval(gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2 + e.originX,
+                               gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2 + e.originY,
                                2, 2);
                     g.setColor(new Color (255,255,255,150));
                     g.drawLine(gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2,
                                gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2,
-                               gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2 + e.originX + centerX,
-                               gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2 + e.originY + centerY);
+                               gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2 + e.originX,
+                               gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2 + e.originY);
                     g.drawLine(gc.getWidth()/2+ResMgr.sprite_lib.get(a.sheet).dimX/2,
                                gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2,
-                               gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2 + e.originX + centerX,
-                               gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2 + e.originY + centerY);
+                               gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2 + e.originX,
+                               gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2 + e.originY);
                     g.drawLine(gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2,
                                gc.getHeight()/2+ResMgr.sprite_lib.get(a.sheet).dimY/2,
-                               gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2 + e.originX + centerX,
-                               gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2 + e.originY + centerY);
+                               gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2 + e.originX,
+                               gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2 + e.originY);
                     g.drawLine(gc.getWidth()/2+ResMgr.sprite_lib.get(a.sheet).dimX/2,
                                gc.getHeight()/2+ResMgr.sprite_lib.get(a.sheet).dimY/2,
-                               gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2 + e.originX + centerX,
-                               gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2 + e.originY + centerY);
+                               gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2 + e.originX,
+                               gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2 + e.originY);
                 }
             }
         }
@@ -162,8 +157,8 @@ public class EntityEditorState extends BasicGameState {
                         EntityType e = entity_toolbar.currentEntity;
                         Actor a = ResMgr.getActor(e.actor_name);
 
-                        int clickX = gc.getInput().getMouseX() - gc.getWidth()/2 + ResMgr.sprite_lib.get(a.sheet).dimX/2 - e.collider.radius;
-                        int clickY = gc.getInput().getMouseY() - gc.getHeight()/2 + ResMgr.sprite_lib.get(a.sheet).dimY/2 - e.collider.radius;
+                        int clickX = gc.getInput().getMouseX() - gc.getWidth()/2 + ResMgr.sprite_lib.get(a.sheet).dimX/2;
+                        int clickY = gc.getInput().getMouseY() - gc.getHeight()/2 + ResMgr.sprite_lib.get(a.sheet).dimY/2;
                         
                         entity_toolbar.setOrigin(clickX, clickY);
                     }

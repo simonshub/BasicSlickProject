@@ -181,6 +181,7 @@ public class Actor {
         sets.toArray(return_sets);
         return return_sets;
     }
+    
     public void reAddFrames (String anim) {
         addAnim(anim);
         for (int i=0;i<anim_frame_list.size();i++) {
@@ -189,6 +190,7 @@ public class Actor {
             }
         }
     }
+    
     public void removeFrame (String anim, int index) {
         int counter=0;
         for (int i=0;i<anim_frame_list.size();i++) {
@@ -204,10 +206,13 @@ public class Actor {
         reAddFrames(anim);
     }
     
+    
+    
     public void addAnim (String anim) {
         anims.put(anim, new Animation ());
         anims.get(anim).setAutoUpdate(true);
     }
+    
     public void removeAnim (String anim) {
         for (int i=0;i<anim_frame_list.size();i++) {
             if (anim_frame_list.get(i).animation.equals(anim)) {
@@ -217,6 +222,13 @@ public class Actor {
         }
         anims.remove(anim);
     }
+    
+    
+    
+    public AnimatedSprite getSprite() {
+        return ResMgr.getAnimatedSprite(sheet);
+    }
+    
     
      
     public String getWritten () {
@@ -259,6 +271,8 @@ public class Actor {
             Log.err(Log.ACTOR,"while trying to save actor '"+this.actor_name+"' to file '"+this.actor_file+"'",e);
         }
     }
+    
+    
     
     public void render (int x, int y, Color filter, String anim) {
         if (anims.containsKey(anim)) {

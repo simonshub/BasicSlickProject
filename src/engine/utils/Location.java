@@ -6,6 +6,8 @@
 
 package engine.utils;
 
+import engine.game.maps.Camera;
+
 /**
  * @author Emil Simon
  */
@@ -45,6 +47,31 @@ public class Location {
         double dx = Math.abs(loc1.x-loc2.x);
         double dy = Math.abs(loc1.y-loc2.y);
         return Math.sqrt(dx*dx + dy*dy);
+    }
+    
+    
+    
+    public Location offset (int x, int y) {
+        return new Location (this.x+x, this.y+y);
+    }
+    public Location offset (Location loc) {
+        return new Location (this.x+loc.x, this.y+loc.y);
+    }
+    
+    
+    
+    public Location screenToWorldLoc (Camera c) {
+        return new Location (this.x+c.location.x, this.y+c.location.y);
+    }
+    public Location worldToScreenLoc (Camera c) {
+        return new Location (this.x-c.location.x, this.y-c.location.y);
+    }
+    
+    public static Location screenToWorldLoc (Location loc, Camera c) {
+        return new Location (loc.x+c.location.x, loc.y+c.location.y);
+    }
+    public static Location worldToScreenLoc (Location loc, Camera c) {
+        return new Location (loc.x-c.location.x, loc.y-c.location.y);
     }
     
     

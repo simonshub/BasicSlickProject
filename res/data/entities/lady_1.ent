@@ -24,7 +24,7 @@ box_collider:0 0
 rad_collider:8
 
 #origin:x y
-origin:8 32
+origin:16 42
 
 #variables
 #  default values for variables on entity instantiation

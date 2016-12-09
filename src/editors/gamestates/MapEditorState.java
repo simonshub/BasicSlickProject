@@ -10,6 +10,7 @@ import editors.toolbars.MapEditorToolbar;
 import engine.game.maps.GameMap;
 import engine.environment.Consts;
 import engine.environment.ResMgr;
+import engine.game.entities.EntityType;
 import engine.logger.Log;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -67,10 +68,10 @@ public class MapEditorState extends BasicGameState {
                        Consts.TILESET_FRAME_WIDTH, Consts.TILESET_FRAME_HEIGHT);
             g.setColor(Color.white);
             //g.drawString("Selector: "+tilePainterX+","+tilePainterY, 32, 128);
-        } else if (map_toolbar.editMode == map_toolbar.editMode.ENTITIES) {
-            ResMgr.getActor(map_toolbar.getSelectedEntityType().actor_name)
-                    .render(gc.getInput().getMouseX(), gc.getInput().getMouseY(), new Color (1f,1f,1f,0.5f),
-                            ResMgr.getActor(map_toolbar.getSelectedEntityType().actor_name).default_anim);
+        } else if (map_toolbar.editMode == MapEditorToolbar.EditMode.ENTITIES) {
+            EntityType cur_entity = map_toolbar.getSelectedEntityType();
+            cur_entity.getActor().render(gc.getInput().getMouseX()-cur_entity.originX, gc.getInput().getMouseY()-cur_entity.originY,
+                            new Color (1f,1f,1f,0.5f), cur_entity.getActor().default_anim);
         }
         
     }
@@ -94,24 +95,28 @@ public class MapEditorState extends BasicGameState {
             map_toolbar.dispose();
             map_toolbar = null;
             sbg.enterState(ActorEditorState.ID);
+            return;
         }
 
         if (gc.getInput().isKeyDown(Input.KEY_LCONTROL) && gc.getInput().isKeyPressed(Input.KEY_E)) {
             map_toolbar.dispose();
             map_toolbar = null;
             sbg.enterState(EntityEditorState.ID);
+            return;
         }
 
         if (gc.getInput().isKeyDown(Input.KEY_LCONTROL) && gc.getInput().isKeyPressed(Input.KEY_M)) {
             map_toolbar.dispose();
             map_toolbar = null;
             sbg.enterState(MapEditorState.ID);
+            return;
         }
 
         if (gc.getInput().isKeyDown(Input.KEY_LCONTROL) && gc.getInput().isKeyPressed(Input.KEY_T)) {
             map_toolbar.dispose();
             map_toolbar = null;
             sbg.enterState(ActorEditorState.ID);
+            return;
         }
         
         if (gc.getInput().isMouseButtonDown(Input.MOUSE_RIGHT_BUTTON)) {

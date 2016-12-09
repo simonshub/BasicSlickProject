@@ -32,6 +32,7 @@ public abstract class Settings {
     public static boolean debug_maps = true;
     public static boolean debug_triggers = true;
     public static boolean debug_draw_tile_net = true;
+    public static boolean debug_draw_entity_debug = true;
     public static boolean devmode = true;
     
     public static boolean force_default_settings = false;
@@ -94,6 +95,10 @@ public abstract class Settings {
                             debug_draw_tile_net = Integer.valueOf(lines[1])>0;
                             Log.log(Log.GENERAL,"Draw TileNet Debug Mode set to "+debug_draw_tile_net);
                             break;
+                        case "debug_draw_entity_debug" :
+                            debug_draw_entity_debug = Integer.valueOf(lines[1])>0;
+                            Log.log(Log.GENERAL,"Draw Entity Debug Mode set to "+debug_draw_entity_debug);
+                            break;
                         case "devmode" :
                             devmode = Integer.valueOf(lines[1])>0;
                             Log.log(Log.GENERAL,"Dev Mode set to "+devmode);
@@ -136,6 +141,7 @@ public abstract class Settings {
                     "debug_maps " + (debug_maps?"1":"0") + "\n" +
                     "debug_triggers " + (debug_triggers?"1":"0") + "\n" +
                     "debug_draw_tile_net " + (debug_draw_tile_net?"1":"0") + "\n" +
+                    "debug_draw_entity_debug " + (debug_draw_entity_debug?"1":"0") + "\n" +
                     "devmode " + (devmode?"1":"0") + "\n");
             Log.log(Log.GENERAL,"Settings file was created!");
             w.close();

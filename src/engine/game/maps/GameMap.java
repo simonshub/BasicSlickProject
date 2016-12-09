@@ -12,8 +12,11 @@ import engine.environment.ResMgr;
 import engine.environment.Settings;
 import engine.game.entities.EntityType;
 import engine.logger.Log;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -65,10 +68,10 @@ public class GameMap {
         int counter = 0;
         
         if (entity_counters.containsKey(entity_type.entity_type_name)) {
-            counter = entity_counters.get(entity_type.entity_type_name);
-            entity_counters.put(entity_type.entity_type_name, counter+1);
-        } else {
+            counter = entity_counters.get(entity_type.entity_type_name)+1;
             entity_counters.put(entity_type.entity_type_name, counter);
+        } else {
+            entity_counters.put(entity_type.entity_type_name, 0);
         }
         
         entities.put(entity_type.entity_type_name+"_"+String.format("%06d",counter), new Entity (entity_type, counter, x, y));
@@ -132,8 +135,20 @@ public class GameMap {
             }
         }
         
-        for (Entity entity : entities.values()) {
+        
+        
+//        Entity[] sorted_ents = (Entity[]) entities.values().toArray();
+//        Arrays.sort(sorted_ents);
+        List<Entity> sorted_ents = new ArrayList<> (entities.values());
+        Collections.sort(sorted_ents);
+        sorted_ents.stream().forEach((entity) -> {
             entity.render(gc, sbg, g, cam);
+        });
+        
+        if (Settings.debug_draw_entity_debug) {
+            sorted_ents.stream().forEach((entity) -> {
+                entity.renderDebug(gc, sbg, g, cam);
+            });
         }
     }
     

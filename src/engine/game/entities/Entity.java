@@ -14,19 +14,21 @@ import engine.utils.Vector;
 import engine.logger.Log;
 import engine.environment.Settings;
 import engine.game.actors.Actor;
+import engine.game.actors.AnimatedSprite;
 import java.util.HashMap;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.state.StateBasedGame;
 
 /**
  * @author Emil Simon
  */
 
-public class Entity {
+public class Entity implements Comparable<Entity> {
     public String name;
-    public String type;
+    public EntityType parent_type;
     public String current_anim;
     public Actor actor;
     public Color filter;
@@ -37,23 +39,23 @@ public class Entity {
     
     
     public Entity (EntityType type, int counter, int locX, int locY) {
-        this.type = type.entity_type_name;
-        this.name = this.type + "_" + String.format("%06d", counter);
+        this.parent_type = type;
+        this.name = this.parent_type.entity_type_name + "_" + String.format("%06d", counter);
         this.vars = new HashMap <> (type.vars);
         this.actor = ResMgr.getActor(type.actor_name);
         this.location = new Location (locX,locY);
         this.result_force = new Vector (0,0);
-        this.current_anim = ResMgr.getActor(type.actor_name).default_anim;
+        this.current_anim = ResMgr.getActor(parent_type.actor_name).default_anim;
     }
 
     public Entity (Entity parent, int counter) {
-        this.type = parent.type;
-        this.name = type + "_" + String.format("%06d", counter);
+        this.parent_type = parent.parent_type;
+        this.name = parent_type.entity_type_name + "_" + String.format("%06d", counter);
         this.vars = new HashMap <> (parent.vars);
         this.actor = parent.actor;
         this.location = parent.location;
         this.result_force = parent.result_force;
-        this.current_anim = ResMgr.getActor(ResMgr.getEntityType(parent.type).actor_name).default_anim;
+        this.current_anim = ResMgr.getActor(parent_type.actor_name).default_anim;
     }
     
     public Entity (String[] lines) {
@@ -72,7 +74,7 @@ public class Entity {
                         break;
                         
                     case "type" :
-                        type = words[1].trim();
+                        parent_type = ResMgr.hasEntityType(words[1].trim()) ? ResMgr.getEntityType(words[1].trim()) : null;
                         break;
                         
                     case "location" :
@@ -131,7 +133,7 @@ public class Entity {
             }
         }
         
-        this.actor = ResMgr.getActor(ResMgr.getEntityType(type).actor_name);
+        this.actor = ResMgr.getActor(parent_type.actor_name);
         this.current_anim = actor.default_anim;
     }
     
@@ -167,10 +169,39 @@ public class Entity {
     
     public void render (GameContainer gc, StateBasedGame sbg, Graphics g, Camera c) {
         if (this.location.isInBoundsWithDiff(c.location, c.getLowerRight(), Consts.ENTITY_OFFSCREEN_DRAW_MARGIN)) {
-            int trans_x = location.x - c.location.x;
-            int trans_y = location.y - c.location.y;
+            int trans_x = location.x - c.location.x - parent_type.originX;
+            int trans_y = location.y - c.location.y - parent_type.originY;
             actor.render(trans_x, trans_y, filter, current_anim);
         }
+    }
+    
+    public void renderDebug (GameContainer gc, StateBasedGame sbg, Graphics g, Camera c) {
+        AnimatedSprite sprite = ResMgr.getAnimatedSprite(actor.sheet);
+
+        g.setColor(new Color (255,255,255,150));
+//        g.drawRect(location.x-sprite.dimX/2, location.y-sprite.dimY/2, sprite.dimX, sprite.dimY);
+        g.drawRect(location.x - c.location.x - parent_type.originX, location.y - c.location.y - parent_type.originY, sprite.dimX, sprite.dimY);
+        
+        g.setColor(new Color (255,0,0,100));
+        if (parent_type.collider.state == Collider.ColliderState.BOX) {
+            g.drawRect(location.x - c.location.x - parent_type.collider.box_width/2,
+                       location.y - c.location.y - parent_type.collider.box_height/2,
+                       parent_type.collider.box_width, parent_type.collider.box_height);
+            g.fillRect(location.x - c.location.x - parent_type.collider.box_width/2,
+                       location.y - c.location.y - parent_type.collider.box_height/2,
+                       parent_type.collider.box_width, parent_type.collider.box_height);
+        } else if (parent_type.collider.state == Collider.ColliderState.RADIAL) {
+            g.drawOval(location.x - c.location.x - parent_type.collider.radius,
+                       location.y - c.location.y - parent_type.collider.radius,
+                       parent_type.collider.radius*2, parent_type.collider.radius*2);
+            g.fillOval(location.x - c.location.x - parent_type.collider.radius,
+                       location.y - c.location.y - parent_type.collider.radius,
+                       parent_type.collider.radius*2, parent_type.collider.radius*2);
+        }
+        g.setColor(new Color (255,255,255,255));
+        g.fillOval(location.x - c.location.x - 1,
+                   location.y - c.location.y - 1,
+                   2, 2);
     }
 
     
@@ -200,12 +231,18 @@ public class Entity {
         content += prefix + "#  default values for variables on entity instantiation" + "\n";
         content += prefix + "#var:var_type var_name var_value" + "\n";
         String[] varNames = vars.keySet().toArray(new String [vars.size()]);
-        for (int i=0;i<varNames.length;i++) {
-            String whichVar = varNames[i];
+        for (String whichVar : varNames) {
             content += prefix + "var:"+vars.get(whichVar).type.toString().toLowerCase()+" "+vars.get(whichVar).name+" "+vars.get(whichVar).value+" "+ "\n";
         }
         content += "\n";
         
         return content;
+    }
+    
+    
+    
+    @Override
+    public int compareTo(Entity other_entity) {
+        return ((this.location.y - this.parent_type.originY) - (other_entity.location.y - other_entity.parent_type.originY));
     }
 }
