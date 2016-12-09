@@ -17,6 +17,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -156,7 +158,18 @@ public class Trigger {
             if (events.contains(event.eventName)) {
                 try {
                     event.injectParams(engine);
-                    engine.eval(code);
+                    if (this.async) {
+                        Thread t = new Thread (() -> {
+                            try {
+                                engine.eval(code);
+                            } catch (ScriptException ex) {
+                                Log.err(Log.TRIG,"while trying to evaluate some code at async event '"+event+"' ...\nCODE:\n"+code,ex);
+                            }
+                        });
+                        t.start();
+                    } else {
+                        engine.eval(code);
+                    }
                 } catch (ScriptException ex) {
                     Log.err(Log.TRIG,"while trying to evaluate some code at event '"+event+"' ...\nCODE:\n"+code,ex);
                 }
@@ -169,7 +182,18 @@ public class Trigger {
     
     public void run () {
         try {
-            engine.eval(code.replace(TriggerMgr.EVENT_NAME_PLACEHOLDER, TriggerMgr.FORCED_EXECUTION_EVENT));
+            if (this.async) {
+                Thread t = new Thread (() -> {
+                    try {
+                        engine.eval(code.replace(TriggerMgr.EVENT_NAME_PLACEHOLDER, TriggerMgr.FORCED_EXECUTION_EVENT));
+                    } catch (ScriptException ex) {
+                        Log.err(Log.TRIG,"while trying to evaluate some code at async ...\nCODE:\n"+code,ex);
+                    }
+                });
+                t.start();
+            } else {
+                engine.eval(code.replace(TriggerMgr.EVENT_NAME_PLACEHOLDER, TriggerMgr.FORCED_EXECUTION_EVENT));
+            }
         } catch (ScriptException ex) {
             Log.err(Log.TRIG,"while trying to run some code ...\nCODE:\n"+code,ex);
         }
