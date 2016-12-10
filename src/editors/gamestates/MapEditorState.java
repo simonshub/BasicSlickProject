@@ -9,13 +9,13 @@ package editors.gamestates;
 import editors.toolbars.MapEditorToolbar;
 import engine.game.maps.GameMap;
 import engine.environment.Consts;
-import engine.environment.ResMgr;
 import engine.game.entities.EntityType;
 import engine.logger.Log;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
+import org.newdawn.slick.MouseListener;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
@@ -24,11 +24,8 @@ import org.newdawn.slick.state.StateBasedGame;
  * @author Emil Simon
  */
 
-public class MapEditorState extends BasicGameState {
+public class MapEditorState extends BasicGameState implements MouseListener {
     public static final int ID=102;
-     
-    public enum Tool {
-        None, TilePaint, TileErase, EntityPaint, EntityErase, EntityModify };
      
     public GameMap currentMap;
     public MapEditorToolbar map_toolbar;
@@ -59,6 +56,14 @@ public class MapEditorState extends BasicGameState {
     @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
         currentMap.render(gc,sbg,g);
+        if (map_toolbar.entityTool == MapEditorToolbar.EntityTool.DELETE) {
+            if (currentMap.getMouseOverEntity(gc) != null)
+                currentMap.getMouseOverEntity(gc).renderWithFilter(gc, sbg, g, currentMap.cam, new Color (1f,0f,0f,0.5f));
+        } else if (map_toolbar.entityTool == MapEditorToolbar.EntityTool.EDIT) {
+            if (currentMap.getMouseOverEntity(gc) != null)
+                currentMap.getMouseOverEntity(gc).renderWithFilter(gc, sbg, g, currentMap.cam, new Color (0f,1f,0f,0.5f));
+        }
+        
         currentMap.drawInfo(gc,sbg,g);
         
         if ((tilePainterX>=0) && (tilePainterX<=currentMap.tiles_width) && (tilePainterY>=0) && (tilePainterY<=currentMap.tiles_height)) {
@@ -68,10 +73,22 @@ public class MapEditorState extends BasicGameState {
                        Consts.TILESET_FRAME_WIDTH, Consts.TILESET_FRAME_HEIGHT);
             g.setColor(Color.white);
             //g.drawString("Selector: "+tilePainterX+","+tilePainterY, 32, 128);
-        } else if (map_toolbar.editMode == MapEditorToolbar.EditMode.ENTITIES) {
+        } else if ((map_toolbar.editMode == MapEditorToolbar.EditMode.ENTITIES) && (map_toolbar.entityTool == MapEditorToolbar.EntityTool.PLACE)) {
             EntityType cur_entity = map_toolbar.getSelectedEntityType();
+            Color filter = new Color (1f,1f,1f,0.5f);
+            Color collider_filter = new Color (0f,1f,0f,0.5f);
+            
+            if (!currentMap.canPlaceEntity(cur_entity,
+                                         (gc.getInput().getMouseX() + currentMap.cam.location.x),
+                                         (gc.getInput().getMouseY() + currentMap.cam.location.y))) {
+                filter = new Color (1f,0f,0f,0.5f);
+                collider_filter = new Color (1f,0f,0f,0.5f);
+            }
+            
             cur_entity.getActor().render(gc.getInput().getMouseX()-cur_entity.originX, gc.getInput().getMouseY()-cur_entity.originY,
-                            new Color (1f,1f,1f,0.5f), cur_entity.getActor().default_anim);
+                            filter, cur_entity.getActor().default_anim, currentMap.cam.zoom);
+            
+            cur_entity.collider.renderExplicit(g, gc.getInput().getMouseX(), gc.getInput().getMouseY(), collider_filter);
         }
         
     }
@@ -165,12 +182,32 @@ public class MapEditorState extends BasicGameState {
             }
         }
         
-        if ((map_toolbar.editMode == MapEditorToolbar.EditMode.ENTITIES) && (gc.getInput().isMousePressed(Input.MOUSE_LEFT_BUTTON))) {
-            currentMap.placeEntity(map_toolbar.getSelectedEntityType(),
-                    (gc.getInput().getMouseX() + currentMap.cam.location.x),
-                    (gc.getInput().getMouseY() + currentMap.cam.location.y));
+        if ((map_toolbar.editMode == MapEditorToolbar.EditMode.ENTITIES) && (map_toolbar.entityTool == MapEditorToolbar.EntityTool.PLACE) && (gc.getInput().isMousePressed(Input.MOUSE_LEFT_BUTTON))) {
+            if (currentMap.canPlaceEntity(map_toolbar.getSelectedEntityType(),
+                                         (gc.getInput().getMouseX() + currentMap.cam.location.x),
+                                         (gc.getInput().getMouseY() + currentMap.cam.location.y)))
+                currentMap.placeEntity(map_toolbar.getSelectedEntityType(),
+                                      (gc.getInput().getMouseX() + currentMap.cam.location.x),
+                                      (gc.getInput().getMouseY() + currentMap.cam.location.y));
+        }
+        
+        if ((map_toolbar.editMode == MapEditorToolbar.EditMode.ENTITIES) && (map_toolbar.entityTool == MapEditorToolbar.EntityTool.EDIT) && (gc.getInput().isMousePressed(Input.MOUSE_LEFT_BUTTON))) {
+            currentMap.destroyEntity(currentMap.getMouseOverEntity(gc));
+        }
+        
+        if ((map_toolbar.editMode == MapEditorToolbar.EditMode.ENTITIES) && (map_toolbar.entityTool == MapEditorToolbar.EntityTool.DELETE) && (gc.getInput().isMousePressed(Input.MOUSE_LEFT_BUTTON))) {
+            currentMap.destroyEntity(currentMap.getMouseOverEntity(gc));
         }
     }
+    
+    
+    
+//    @Override
+//    public void mouseWheelMoved (int change) {
+//        currentMap.cam.zoom += change/100;
+//    }
+    
+    
      
     @Override
     public void enter (GameContainer gc, StateBasedGame sbg) throws SlickException {

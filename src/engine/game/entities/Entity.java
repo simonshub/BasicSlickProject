@@ -168,40 +168,41 @@ public class Entity implements Comparable<Entity> {
    
     
     public void render (GameContainer gc, StateBasedGame sbg, Graphics g, Camera c) {
+        this.renderWithFilter(gc, sbg, g, c, filter);
+    }
+    
+    public void renderWithFilter (GameContainer gc, StateBasedGame sbg, Graphics g, Camera c, Color filter) {
         if (this.location.isInBoundsWithDiff(c.location, c.getLowerRight(), Consts.ENTITY_OFFSCREEN_DRAW_MARGIN)) {
             int trans_x = location.x - c.location.x - parent_type.originX;
             int trans_y = location.y - c.location.y - parent_type.originY;
-            actor.render(trans_x, trans_y, filter, current_anim);
+            actor.render((int)(trans_x*c.zoom), (int)(trans_y*c.zoom), filter, current_anim, c.zoom);
         }
     }
     
-    public void renderDebug (GameContainer gc, StateBasedGame sbg, Graphics g, Camera c) {
+    public void renderDebug (GameContainer gc, StateBasedGame sbg, Graphics g, Camera c, Color sprite_bound_filter) {
         AnimatedSprite sprite = ResMgr.getAnimatedSprite(actor.sheet);
 
-        g.setColor(new Color (255,255,255,150));
+        g.setColor(sprite_bound_filter);
 //        g.drawRect(location.x-sprite.dimX/2, location.y-sprite.dimY/2, sprite.dimX, sprite.dimY);
         g.drawRect(location.x - c.location.x - parent_type.originX, location.y - c.location.y - parent_type.originY, sprite.dimX, sprite.dimY);
+        parent_type.collider.render(g, location, c, new Color (1f,0f,0f,0.5f));
         
-        g.setColor(new Color (255,0,0,100));
-        if (parent_type.collider.state == Collider.ColliderState.BOX) {
-            g.drawRect(location.x - c.location.x - parent_type.collider.box_width/2,
-                       location.y - c.location.y - parent_type.collider.box_height/2,
-                       parent_type.collider.box_width, parent_type.collider.box_height);
-            g.fillRect(location.x - c.location.x - parent_type.collider.box_width/2,
-                       location.y - c.location.y - parent_type.collider.box_height/2,
-                       parent_type.collider.box_width, parent_type.collider.box_height);
-        } else if (parent_type.collider.state == Collider.ColliderState.RADIAL) {
-            g.drawOval(location.x - c.location.x - parent_type.collider.radius,
-                       location.y - c.location.y - parent_type.collider.radius,
-                       parent_type.collider.radius*2, parent_type.collider.radius*2);
-            g.fillOval(location.x - c.location.x - parent_type.collider.radius,
-                       location.y - c.location.y - parent_type.collider.radius,
-                       parent_type.collider.radius*2, parent_type.collider.radius*2);
-        }
-        g.setColor(new Color (255,255,255,255));
+        g.setColor(Color.white);
         g.fillOval(location.x - c.location.x - 1,
                    location.y - c.location.y - 1,
                    2, 2);
+    }
+    
+    public boolean moveWithCollisionDetection (Entity[] entity_list, int d_x, int d_y) {
+        Location old_loc = location;
+        location = location.offset(d_x,d_y);
+        for (Entity e : entity_list) {
+            if (e.intersectsCollider(this)) {
+                location = old_loc;
+                return false;
+            }
+        }
+        return true;
     }
 
     
@@ -237,6 +238,111 @@ public class Entity implements Comparable<Entity> {
         content += "\n";
         
         return content;
+    }
+    
+    
+    
+    public boolean isPointInside (Location loc) {
+        Collider c = parent_type.collider;
+        switch (c.state) {
+            case RADIAL :
+                return loc.isInRange(this.location, c.radius);
+            case BOX :
+                return loc.isInBounds(this.location.offset(-c.box_width/2,-c.box_height/2),
+                                      this.location.offset( c.box_width/2, c.box_height/2));
+            case NONE :
+                AnimatedSprite s = ResMgr.getAnimatedSprite(parent_type.getActor().sheet);
+                return loc.isInBounds(this.location.offset(-s.dimX/2,-s.dimY/2),
+                                      this.location.offset( s.dimX/2, s.dimY/2));
+            default :
+                break;
+        }
+        
+        return false;
+    }
+    public boolean isPointInside (int x, int y) {
+        Location loc = new Location (x,y);
+        Collider c = parent_type.collider;
+        switch (c.state) {
+            case RADIAL :
+                return loc.isInRange(this.location, c.radius);
+            case BOX :
+                return loc.isInBounds(this.location.offset(-c.box_width/2,-c.box_height/2),
+                                      this.location.offset( c.box_width/2, c.box_height/2));
+            default :
+                break;
+        }
+        
+        return false;
+    }
+    
+    public boolean intersectsCollider (Entity e) {
+        Collider t_c = parent_type.collider;
+        Collider e_c = e.parent_type.collider;
+        
+        if (t_c.state == Collider.ColliderState.BOX) {
+            if (e_c.state == Collider.ColliderState.BOX) {
+                return isPointInside(e.location.offset(-e_c.box_width/2,-e_c.box_height/2)) ||
+                       isPointInside(e.location.offset(-e_c.box_width/2, e_c.box_height/2)) ||
+                       isPointInside(e.location.offset( e_c.box_width/2,-e_c.box_height/2)) ||
+                       isPointInside(e.location.offset( e_c.box_width/2, e_c.box_height/2));
+            } else if (e_c.state == Collider.ColliderState.RADIAL) {
+                return location.offset(-t_c.box_width/2,-t_c.box_height/2).isInRange(e.location, e_c.radius) ||
+                       location.offset(-t_c.box_width/2, t_c.box_height/2).isInRange(e.location, e_c.radius) ||
+                       location.offset( t_c.box_width/2,-t_c.box_height/2).isInRange(e.location, e_c.radius) ||
+                       location.offset( t_c.box_width/2, t_c.box_height/2).isInRange(e.location, e_c.radius) ||
+                       location.isInRange(e.location, e_c.radius+t_c.box_height/2) ||
+                       location.isInRange(e.location, e_c.radius+t_c.box_width/2);
+            }
+        } else if (t_c.state == Collider.ColliderState.RADIAL) {
+            if (e_c.state == Collider.ColliderState.BOX) {
+                return e.location.offset(-e_c.box_width/2,-e_c.box_height/2).isInRange(location, t_c.radius) ||
+                       e.location.offset(-e_c.box_width/2, e_c.box_height/2).isInRange(location, t_c.radius) ||
+                       e.location.offset( e_c.box_width/2,-e_c.box_height/2).isInRange(location, t_c.radius) ||
+                       e.location.offset( e_c.box_width/2, e_c.box_height/2).isInRange(location, t_c.radius) ||
+                       e.location.offset( e_c.box_width/2,-e_c.box_height/2).isInRange(location, t_c.radius) ||
+                       e.location.isInRange(location, t_c.radius+e_c.box_height/2) ||
+                       e.location.isInRange(location, t_c.radius+e_c.box_width/2);
+            } else if (e_c.state == Collider.ColliderState.RADIAL) {
+                return location.isInRange(e.location, t_c.radius+e_c.radius);
+            }
+        }
+        
+        return false;
+    }
+    public boolean intersectsCollider (EntityType e_t, int x, int y) {
+        Collider t_c = parent_type.collider;
+        Collider e_c = e_t.collider;
+        Location loc = new Location (x,y);
+        
+        if (t_c.state == Collider.ColliderState.BOX) {
+            if (e_c.state == Collider.ColliderState.BOX) {
+                return isPointInside(loc.offset(-e_c.box_width/2,-e_c.box_height/2)) ||
+                       isPointInside(loc.offset(-e_c.box_width/2, e_c.box_height/2)) ||
+                       isPointInside(loc.offset( e_c.box_width/2,-e_c.box_height/2)) ||
+                       isPointInside(loc.offset( e_c.box_width/2, e_c.box_height/2));
+            } else if (e_c.state == Collider.ColliderState.RADIAL) {
+                return location.offset(-t_c.box_width/2,-t_c.box_height/2).isInRange(loc, e_c.radius) ||
+                       location.offset(-t_c.box_width/2, t_c.box_height/2).isInRange(loc, e_c.radius) ||
+                       location.offset( t_c.box_width/2,-t_c.box_height/2).isInRange(loc, e_c.radius) ||
+                       location.offset( t_c.box_width/2, t_c.box_height/2).isInRange(loc, e_c.radius) ||
+                       location.isInRange(loc, e_c.radius+t_c.box_height/2) ||
+                       location.isInRange(loc, e_c.radius+t_c.box_width/2);
+            }
+        } else if (t_c.state == Collider.ColliderState.RADIAL) {
+            if (e_c.state == Collider.ColliderState.BOX) {
+                return loc.offset(-e_c.box_width/2,-e_c.box_height/2).isInRange(location, t_c.radius) ||
+                       loc.offset(-e_c.box_width/2, e_c.box_height/2).isInRange(location, t_c.radius) ||
+                       loc.offset( e_c.box_width/2,-e_c.box_height/2).isInRange(location, t_c.radius) ||
+                       loc.offset( e_c.box_width/2, e_c.box_height/2).isInRange(location, t_c.radius) ||
+                       loc.isInRange(location, t_c.radius+e_c.box_height/2) ||
+                       loc.isInRange(location, t_c.radius+e_c.box_width/2);
+            } else if (e_c.state == Collider.ColliderState.RADIAL) {
+                return location.isInRange(loc, t_c.radius+e_c.radius);
+            }
+        }
+        
+        return false;
     }
     
     

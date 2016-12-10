@@ -185,8 +185,6 @@ public class EntityType {
         }
     }
     
-    
-    
     public Actor getActor () {
         return ResMgr.getActor(actor_name);
     }

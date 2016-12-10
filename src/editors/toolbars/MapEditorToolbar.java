@@ -163,7 +163,7 @@ public class MapEditorToolbar extends javax.swing.JFrame {
         switch (mode.toLowerCase()) {
             case "tiles" :
                 entityFrame.setVisible(false);
-                tilesetFrame.setSize(240, 300);
+                tilesetFrame.setSize(240, 350);
                 tilesetFrame.setVisible(true);
                 tilesetFrame.setLocationRelativeTo(this);
                 tilesetFrame.setLocation(250, 0);
@@ -172,7 +172,7 @@ public class MapEditorToolbar extends javax.swing.JFrame {
                 break;
             case "entities" :
                 tilesetFrame.setVisible(false);
-                entityFrame.setSize(230, 165);
+                entityFrame.setSize(230, 200);
                 entityFrame.setVisible(true);
                 entityFrame.setLocationRelativeTo(this);
                 entityFrame.setLocation(250, 0);
@@ -403,7 +403,7 @@ public class MapEditorToolbar extends javax.swing.JFrame {
         });
 
         entityEditToolBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/editors/res/black-edit-property-16.png"))); // NOI18N
-        entityEditToolBtn.setToolTipText("Paint");
+        entityEditToolBtn.setToolTipText("Edit");
         entityEditToolBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 entityEditToolBtnActionPerformed(evt);
@@ -411,7 +411,7 @@ public class MapEditorToolbar extends javax.swing.JFrame {
         });
 
         entityRemoveToolBtn.setIcon(new javax.swing.ImageIcon(getClass().getResource("/editors/res/black-delete-property-16.png"))); // NOI18N
-        entityRemoveToolBtn.setToolTipText("Paint");
+        entityRemoveToolBtn.setToolTipText("Delete");
         entityRemoveToolBtn.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 entityRemoveToolBtnActionPerformed(evt);
@@ -517,15 +517,15 @@ public class MapEditorToolbar extends javax.swing.JFrame {
     }//GEN-LAST:event_tilesetFillToolBtnActionPerformed
 
     private void entityPlaceToolBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_entityPlaceToolBtnActionPerformed
-        // TODO add your handling code here:
+        setEntityTool(EntityTool.PLACE);
     }//GEN-LAST:event_entityPlaceToolBtnActionPerformed
 
     private void entityEditToolBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_entityEditToolBtnActionPerformed
-        // TODO add your handling code here:
+        setEntityTool(EntityTool.EDIT);
     }//GEN-LAST:event_entityEditToolBtnActionPerformed
 
     private void entityRemoveToolBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_entityRemoveToolBtnActionPerformed
-        // TODO add your handling code here:
+        setEntityTool(EntityTool.DELETE);
     }//GEN-LAST:event_entityRemoveToolBtnActionPerformed
 
     

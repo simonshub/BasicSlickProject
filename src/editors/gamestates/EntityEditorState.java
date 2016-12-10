@@ -70,7 +70,7 @@ public class EntityEditorState extends BasicGameState {
                     EntityType e = entity_toolbar.currentEntity;
                     Actor a = ResMgr.getActor(e.actor_name);
                     
-                    a.render(gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2, gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2, Color.white, a.default_anim);
+                    a.render(gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2, gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2, Color.white, a.default_anim, 1f);
                     g.setColor(new Color (255,255,255,150));
                     g.drawRect(gc.getWidth()/2-ResMgr.sprite_lib.get(a.sheet).dimX/2, gc.getHeight()/2-ResMgr.sprite_lib.get(a.sheet).dimY/2, ResMgr.sprite_lib.get(a.sheet).dimX, ResMgr.sprite_lib.get(a.sheet).dimY);
                     

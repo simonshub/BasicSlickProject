@@ -6,7 +6,13 @@
 
 package engine.game.entities;
 
+import engine.environment.ResMgr;
+import engine.game.actors.AnimatedSprite;
+import engine.game.maps.Camera;
 import engine.logger.Log;
+import engine.utils.Location;
+import org.newdawn.slick.Color;
+import org.newdawn.slick.Graphics;
 
 /**
  * @author Emil Simon
@@ -45,5 +51,45 @@ public class Collider {
         }
 
         return true;
+    }
+    
+    public void render (Graphics g, Location loc, Camera c, Color filter) {
+        render (g,loc.x,loc.y,c,filter);
+    }
+    public void render (Graphics g, int x, int y, Camera c, Color filter) {
+        g.setColor(filter);
+        if (state == Collider.ColliderState.BOX) {
+            g.drawRect(x - c.location.x - box_width/2,
+                       y - c.location.y - box_height/2,
+                       box_width, box_height);
+            g.fillRect(x - c.location.x - box_width/2,
+                       y - c.location.y - box_height/2,
+                       box_width, box_height);
+        } else if (state == Collider.ColliderState.RADIAL) {
+            g.drawOval(x - c.location.x - radius,
+                       y - c.location.y - radius,
+                       radius*2, radius*2);
+            g.fillOval(x - c.location.x - radius,
+                       y - c.location.y - radius,
+                       radius*2, radius*2);
+        }
+    }
+    public void renderExplicit (Graphics g, int x, int y, Color filter) {
+        g.setColor(filter);
+        if (state == Collider.ColliderState.BOX) {
+            g.drawRect(x - box_width/2,
+                       y - box_height/2,
+                       box_width, box_height);
+            g.fillRect(x - box_width/2,
+                       y - box_height/2,
+                       box_width, box_height);
+        } else if (state == Collider.ColliderState.RADIAL) {
+            g.drawOval(x - radius,
+                       y - radius,
+                       radius*2, radius*2);
+            g.fillOval(x - radius,
+                       y - radius,
+                       radius*2, radius*2);
+        }
     }
 }

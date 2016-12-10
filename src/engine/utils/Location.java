@@ -83,6 +83,10 @@ public class Location {
         return isInBounds (new Location (upper_left.x-margin, upper_left.y-margin), new Location (lower_right.x+margin, lower_right.y+margin));
     }
     
+    public boolean isInRange (Location loc, int range) {
+        return (this.getDistanceF(loc) <= range);
+    }
+    
     
     
     @Override
