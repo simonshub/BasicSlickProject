@@ -36,8 +36,8 @@ public class Vector {
     public void fromString (String str) {
         String[] args = str.trim().split(",");
         if (args.length == 2) {
-            x = Integer.parseInt(args[0].trim());
-            y = Integer.parseInt(args[1].trim());
+            x = Float.parseFloat(args[0].trim());
+            y = Float.parseFloat(args[1].trim());
         }
     }
 }

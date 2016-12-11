@@ -30,6 +30,7 @@ public abstract class Consts {
     public static final String ACTOR_DUMP_FOLDER = "res/data/actors/";
     public static final String ENTITY_DUMP_FOLDER = "res/data/entities/";
     public static final String TRIGGER_DUMP_FOLDER = "res/data/triggers/";
+    public static final String MAP_DUMP_FOLDER = "res/data/maps/";
      
     public static final int TILESET_FRAME_WIDTH = 32;
     public static final int TILESET_FRAME_HEIGHT = 32;
@@ -39,4 +40,5 @@ public abstract class Consts {
     public static final String ACTOR_FILE_EXTENSION = "act";
     public static final String ENTITY_FILE_EXTENSION = "ent";
     public static final String TRIGGER_FILE_EXTENSION = "sts";
+    public static final String MAP_FILE_EXTENSION = "map";
 }

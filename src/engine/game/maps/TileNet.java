@@ -41,6 +41,7 @@ public class TileNet {
         boolean readingMap = false;
         String mapInfo = "";
         for (String line : lines) {
+            line=line.trim();
             if (!line.startsWith("#") && !line.isEmpty()) {
                 // COMMENT
                 if (!readingMap) {
@@ -63,6 +64,9 @@ public class TileNet {
                 }
             }
         }
+        
+        map = new int [height+1][width+1];
+        
         readMap(mapInfo);
     }
     
@@ -152,7 +156,8 @@ public class TileNet {
         String[] args = content.split(" ");
         for (int i=0;i<=height;i++) {
             for (int j=0;j<=width;j++) {
-                map[i][j] = Integer.parseInt(args[i*height+j]);
+                if (!args[i*height+j].isEmpty())
+                    map[i][j] = Integer.parseInt(args[i*height+j]);
             }
         }
     }

@@ -60,4 +60,11 @@ public abstract class FileUtils {
         return getNameWithoutExtension(getTriggerPath(f).substring(Consts.TRIGGER_DUMP_FOLDER.length()));
     }
     
+    
+    
+    public static final String getMapPath (File f) {
+        String path = f.getPath().replace("\\", "/");
+        return path.substring(path.lastIndexOf(Consts.MAP_DUMP_FOLDER));
+    }
+    
 }

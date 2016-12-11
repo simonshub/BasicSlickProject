@@ -8,6 +8,7 @@ package engine.game.triggers;
 
 import engine.environment.Consts;
 import engine.environment.ResMgr;
+import engine.game.maps.GameMap;
 import engine.logger.Log;
 import engine.utils.FileUtils;
 import java.io.BufferedReader;
@@ -17,8 +18,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.script.Bindings;
 import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
@@ -153,7 +152,7 @@ public class Trigger {
     
     
     
-    public void update (TriggerEvent[] event_list) {
+    public void update (TriggerEvent[] event_list, GameMap context) {
         for (TriggerEvent event : event_list) {
             if (events.contains(event.eventName)) {
                 try {

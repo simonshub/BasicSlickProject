@@ -19,7 +19,6 @@ import java.util.HashMap;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.state.StateBasedGame;
 
 /**
@@ -133,8 +132,12 @@ public class Entity implements Comparable<Entity> {
             }
         }
         
-        this.actor = ResMgr.getActor(parent_type.actor_name);
-        this.current_anim = actor.default_anim;
+        if (parent_type!=null) {
+            this.actor = ResMgr.getActor(parent_type.actor_name);
+            this.current_anim = actor.default_anim;
+        } else {
+            Log.err(Log.ENTITY, "while creating entity '"+name+"' - no defined parent type!", null);
+        }
     }
     
     
@@ -204,6 +207,40 @@ public class Entity implements Comparable<Entity> {
         }
         return true;
     }
+    public boolean moveWithCollisionDetection (HashMap<String,Entity> entity_list, int d_x, int d_y) {
+        Location old_loc = location;
+        location = location.offset(d_x,d_y);
+        for (Entity e : entity_list.values()) {
+            if (e.intersectsCollider(this)) {
+                location = old_loc;
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    public boolean moveToWithCollisionDetection (Entity[] entity_list, int x, int y) {
+        Location old_loc = location;
+        location = new Location (x,y);
+        for (Entity e : entity_list) {
+            if (e.intersectsCollider(this)) {
+                location = old_loc;
+                return false;
+            }
+        }
+        return true;
+    }
+    public boolean moveToWithCollisionDetection (HashMap<String,Entity> entity_list, int x, int y) {
+        Location old_loc = location;
+        location = new Location (x,y);
+        for (Entity e : entity_list.values()) {
+            if (e.intersectsCollider(this)) {
+                location = old_loc;
+                return false;
+            }
+        }
+        return true;
+    }
 
     
     
@@ -220,7 +257,7 @@ public class Entity implements Comparable<Entity> {
         content += prefix + "name:"+name + "\n\n";
         
         content += prefix + "#type:entity_type_name" + "\n";
-        content += prefix + "type:"+name + "\n\n";
+        content += prefix + "type:"+parent_type.entity_type_name + "\n\n";
         
         content += prefix + "#location:x,y" + "\n";
         content += prefix + "location:"+location.toString() + "\n\n";

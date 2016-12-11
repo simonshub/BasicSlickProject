@@ -11,6 +11,7 @@ import engine.game.maps.GameMap;
 import engine.environment.Consts;
 import engine.game.entities.EntityType;
 import engine.logger.Log;
+import java.io.File;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -32,11 +33,9 @@ public class MapEditorState extends BasicGameState implements MouseListener {
     public int dragX,dragY;
     public int dragOriginX,dragOriginY;
     public int tilePainterX,tilePainterY;
+    
+    
 
-    /**
-     *
-     * @return
-     */
     @Override
     public int getID() {
         return ID;
@@ -52,7 +51,9 @@ public class MapEditorState extends BasicGameState implements MouseListener {
         tilePainterX=-1;
         tilePainterY=-1;
     }
-     
+    
+    
+    
     @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
         currentMap.render(gc,sbg,g);
@@ -105,6 +106,12 @@ public class MapEditorState extends BasicGameState implements MouseListener {
                 break;
             default :
                 break;
+        }
+        
+        if ((map_toolbar.currentlySelectedEntity != null) && (!map_toolbar.currentlySelectedEntity.name.equals(map_toolbar.oldEntityName))) {
+            Log.log(Log.MAP, "changed entity '"+map_toolbar.oldEntityName+"' name to '"+map_toolbar.getNewName()+"'");
+            currentMap.changeEntityName(map_toolbar.oldEntityName, map_toolbar.getNewName());
+            map_toolbar.oldEntityName = map_toolbar.getNewName();
         }
         
         //called on game's logical update loop; PUT GAME/LOGIC CODE HERE
@@ -192,11 +199,27 @@ public class MapEditorState extends BasicGameState implements MouseListener {
         }
         
         if ((map_toolbar.editMode == MapEditorToolbar.EditMode.ENTITIES) && (map_toolbar.entityTool == MapEditorToolbar.EntityTool.EDIT) && (gc.getInput().isMousePressed(Input.MOUSE_LEFT_BUTTON))) {
-            currentMap.destroyEntity(currentMap.getMouseOverEntity(gc));
+            if (currentMap.getMouseOverEntity(gc)!=null) {
+                map_toolbar.setSelectedEntity(currentMap.getMouseOverEntity(gc));
+            } else if (map_toolbar.currentlySelectedEntity!=null) {
+                map_toolbar.currentlySelectedEntity.moveToWithCollisionDetection(currentMap.entities,
+                            gc.getInput().getMouseX()+currentMap.cam.location.x, gc.getInput().getMouseY()+currentMap.cam.location.y);
+            }
         }
         
         if ((map_toolbar.editMode == MapEditorToolbar.EditMode.ENTITIES) && (map_toolbar.entityTool == MapEditorToolbar.EntityTool.DELETE) && (gc.getInput().isMousePressed(Input.MOUSE_LEFT_BUTTON))) {
             currentMap.destroyEntity(currentMap.getMouseOverEntity(gc));
+        }
+        
+        if (map_toolbar.save) {
+            currentMap.save();
+            map_toolbar.save = false;
+        }
+        
+        if (!map_toolbar.load.isEmpty()) {
+            currentMap = new GameMap (new File (map_toolbar.load));
+            map_toolbar.setBackgroundTileset(currentMap.background_tileset);
+            map_toolbar.load = "";
         }
     }
     

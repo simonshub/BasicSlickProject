@@ -37,6 +37,9 @@ public abstract class Log {
     
     
     
+    public static void err (LogType log, String message) {
+        log (log, LogLevel.ERROR, message, false, false);
+    }
     public static void err (LogType log, String message, Exception ex) {
         log (log, LogLevel.ERROR, message, false, false);
         if (ex!=null)

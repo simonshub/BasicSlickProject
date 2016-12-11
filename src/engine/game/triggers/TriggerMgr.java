@@ -55,6 +55,8 @@ public abstract class TriggerMgr {
             master_trigger.run();
         } catch (IOException ex) {
             Log.log(Log.GENERAL, Log.LogLevel.FATAL, "could not create or read master trigger at '"+MASTER_SCRIPT_PATH+"' file!", true);
+        } catch (TriggerException ex) {
+            Log.log(Log.GENERAL, Log.LogLevel.FATAL, "could not create or read master trigger at '"+MASTER_SCRIPT_PATH+"' file!", true);
         }
     }
     
@@ -79,8 +81,12 @@ public abstract class TriggerMgr {
             if ((FileUtils.getExtension(f.getPath().replace("\\","/")).equals(Consts.TRIGGER_FILE_EXTENSION)) &&
                     (!f.getPath().replace("\\","/").equals(TriggerMgr.MASTER_SCRIPT_PATH))) {
                 String trig_name = FileUtils.getTriggerName(f);
-                ResMgr.trigger_lib.put(trig_name, new Trigger (trig_name, f));
-                Log.log(Log.TRIG, "loaded trigger with name '"+trig_name+"' at path '"+FileUtils.getTriggerPath(f)+"'");
+                try {
+                    ResMgr.trigger_lib.put(trig_name, new Trigger (trig_name, f));
+                    Log.log(Log.TRIG, "loaded trigger with name '"+trig_name+"' at path '"+FileUtils.getTriggerPath(f)+"'");
+                } catch (TriggerException ex) {
+                    Log.err(Log.TRIG, "could not load trigger with name '"+trig_name+"' at path '"+FileUtils.getTriggerPath(f)+"'", ex);
+                }
             }
         }
     }

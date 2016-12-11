@@ -12,6 +12,14 @@ import engine.environment.ResMgr;
 import engine.environment.Settings;
 import engine.game.entities.EntityType;
 import engine.logger.Log;
+import engine.utils.StringUtils;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -55,11 +63,32 @@ public class GameMap {
         cam = new Camera ();
         entities = new HashMap <> ();
         entity_counters = new HashMap <> ();
-        tile_net = new TileNet (width,height);
         
         background_tileset = "";
         devmode_current_tileset = "";
         tile_net = new TileNet (width, height);
+    }
+    
+    public GameMap (File f) {
+        cam = new Camera ();
+        entities = new HashMap <> ();
+        entity_counters = new HashMap <> ();
+        background_tileset = "";
+        devmode_current_tileset = "";
+        
+        try {
+            BufferedReader br = new BufferedReader (new FileReader (f));
+            List<String> lines = new ArrayList<> ();
+            String line;
+            while ((line=br.readLine())!=null) {
+                lines.add(line);
+            }
+            this.fromWritten(StringUtils.listToArray(lines));
+        } catch (FileNotFoundException ex) {
+            Log.err(Log.MAP, "error while loading map from file '"+f.getPath()+"'", ex);
+        } catch (IOException ex) {
+            Log.err(Log.MAP, "error while loading map from file '"+f.getPath()+"'", ex);
+        }
     }
     
     
@@ -89,6 +118,17 @@ public class GameMap {
     public void destroyEntity (Entity ent) {
         if ((ent != null) && (entities.containsValue(ent))) {
             entities.remove(ent.name);
+        }
+    }
+    
+    public void changeEntityName (String old_name, String new_name) {
+        if (entities.containsKey(old_name)) {
+            Entity e = entities.get(old_name);
+            entities.remove(old_name);
+            e.name = new_name;
+            entities.put(new_name, e);
+        } else {
+            Log.log(Log.MAP, Log.LogLevel.ERROR, "could not rename entity '"+old_name+"' because it doesn't exist!");
         }
     }
     
@@ -153,7 +193,8 @@ public class GameMap {
 
                 if (devmode_current_tileset!=null) {
                     if ((!devmode_current_tileset.isEmpty())) {
-                        tile_net.render(gc, sbg, g, cam, devmode_current_tileset);
+//                        if (tile_net!=null)
+                            tile_net.render(gc, sbg, g, cam, devmode_current_tileset);
                     }
                 }
             }
@@ -191,6 +232,12 @@ public class GameMap {
         content += "#name:map_name" + "\n";
         content += "name:"+name + "\n\n\n";
         
+        content += "#background_tileset:tileset_name" + "\n";
+        content += "background_tileset:"+background_tileset + "\n\n";
+        
+        content += "#persistent:true" + "\n";
+        content += "persistent:"+String.valueOf(persistent) + "\n\n";
+        
         content += "#tile_net define" + "\n";
         content += "#\tgenerated tile_net info" + "\n";
         content += "#tile_net end" + "\n";
@@ -210,5 +257,74 @@ public class GameMap {
         content += "\n\n";
         
         return content;
+    }
+    
+    public final void fromWritten (String[] lines) {
+        boolean read_for_entity=false;
+        boolean read_for_tiles=false;
+        List<String> entity_lines = new ArrayList<> ();
+        List<String> tiles_lines = new ArrayList<> ();
+        
+        for (String line : lines) {
+            if (!line.startsWith("#")) {
+                if (read_for_entity) {
+                    if (line.trim().contains("entity end")) {
+                        read_for_entity = false;
+                        Entity e = new Entity (StringUtils.listToArray(entity_lines));
+                        entities.put(e.name, e);
+                        entity_lines.clear();
+                        Log.log(Log.MAP, "added entity '"+e.name+"'");
+                    } else {
+                        entity_lines.add(line);
+                    }
+                } else if (read_for_tiles) {
+                    if (line.trim().contains("tile_net end")) {
+                        read_for_tiles = false;
+                        this.tile_net = new TileNet (StringUtils.listToArray(tiles_lines));
+                        tiles_lines.clear();
+                        
+                        this.tiles_width = tile_net.width;
+                        this.tiles_height = tile_net.height;
+                        
+                        Log.log(Log.MAP, "read tilenet info ...");
+                    } else {
+                        tiles_lines.add(line);
+                    }
+                } else
+
+                if (line.trim().contains("entity define")) {
+                    read_for_entity = true;
+                    Log.log(Log.MAP, "defining entity ...");
+                } else if (line.trim().contains("tile_net define")) {
+                    read_for_tiles = true;
+                    Log.log(Log.MAP, "defining tilenet ...");
+                } else
+
+                if (line.trim().startsWith("name")) {
+                    this.name = line.trim().substring(line.trim().indexOf(":")+1).trim();
+                } else if (line.trim().startsWith("background_tileset")) {
+                    this.background_tileset = line.trim().substring(line.trim().indexOf(":")+1).trim();
+                } else if (line.trim().startsWith("persistent")) {
+                    this.persistent = Boolean.parseBoolean(line.trim().substring(line.trim().indexOf(":")+1).trim());
+                }
+            }
+        }
+        
+        Log.log(Log.MAP, "map '"+name+"' finished loading!");
+    }
+    
+    public boolean save ()  {
+        String file_name = Consts.MAP_DUMP_FOLDER + name + "." + Consts.MAP_FILE_EXTENSION;
+        
+        try (BufferedWriter bw = new BufferedWriter (new FileWriter (new File (file_name)))) {
+            bw.write(this.getWritten());
+            bw.flush();
+        } catch (IOException e) {
+            Log.log(Log.MAP, Log.LogLevel.ERROR, "while saving map '"+name+"' to file '"+file_name+"'");
+            return false;
+        }
+        
+        Log.log(Log.MAP, "saved map '"+name+"' in file '"+file_name+"'");
+        return true;
     }
 }
