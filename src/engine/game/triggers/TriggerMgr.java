@@ -8,6 +8,7 @@ package engine.game.triggers;
 
 import engine.environment.Consts;
 import engine.environment.ResMgr;
+import engine.game.maps.GameMap;
 import engine.logger.Log;
 import engine.utils.FileUtils;
 import java.io.BufferedWriter;
@@ -26,11 +27,13 @@ public abstract class TriggerMgr {
     public static final String SCRIPT_ENGINE_NAME = "nashorn";
     public static final String FORCED_EXECUTION_EVENT = "_forced_run";
     public static final String MASTER_SCRIPT_PATH = Consts.TRIGGER_DUMP_FOLDER+"master.sts";
+    public static final String EVENT_LIST_SCRIPT_PATH = Consts.TRIGGER_DUMP_FOLDER+"event_list.sts";
     
     public static final String EVENT_NAME_PLACEHOLDER = "_EVENT_NAME";
     
     public static ScriptEngineManager engine_mgr;
     public static Trigger master_trigger;
+    public static Trigger event_list;
     public static List<TriggerEvent> fired_events;
     
     
@@ -53,18 +56,27 @@ public abstract class TriggerMgr {
             
             master_trigger = new Trigger ();
             master_trigger.run();
-        } catch (IOException ex) {
-            Log.log(Log.GENERAL, Log.LogLevel.FATAL, "could not create or read master trigger at '"+MASTER_SCRIPT_PATH+"' file!", true);
-        } catch (TriggerException ex) {
-            Log.log(Log.GENERAL, Log.LogLevel.FATAL, "could not create or read master trigger at '"+MASTER_SCRIPT_PATH+"' file!", true);
+            
+            if (!new File (EVENT_LIST_SCRIPT_PATH).exists()) {
+                BufferedWriter bw = new BufferedWriter (new FileWriter (new File (EVENT_LIST_SCRIPT_PATH)));
+                String contents = "";
+                bw.write(contents);
+                bw.flush();
+                bw.close();
+            }
+            
+            event_list = new Trigger ();
+            event_list.run();
+        } catch (IOException | TriggerException ex) {
+            Log.err(Log.GENERAL, "could not create or read master trigger at '"+MASTER_SCRIPT_PATH+"' file!", ex);
         }
     }
     
     
     
-    public static void update () {
+    public static void update (GameMap context) {
         for (Trigger trig : ResMgr.trigger_lib.values()) {
-            trig.update((TriggerEvent[]) fired_events.toArray());
+            trig.update((TriggerEvent[]) fired_events.toArray(),context);
         }
         
         fired_events.clear();
@@ -79,7 +91,8 @@ public abstract class TriggerMgr {
         List<File> files = FileUtils.getAllFiles(Consts.TRIGGER_DUMP_FOLDER);
         for (File f : files) {
             if ((FileUtils.getExtension(f.getPath().replace("\\","/")).equals(Consts.TRIGGER_FILE_EXTENSION)) &&
-                    (!f.getPath().replace("\\","/").equals(TriggerMgr.MASTER_SCRIPT_PATH))) {
+                    (!f.getPath().replace("\\","/").equals(TriggerMgr.MASTER_SCRIPT_PATH)) &&
+                    (!f.getPath().replace("\\","/").equals(TriggerMgr.EVENT_LIST_SCRIPT_PATH))) {
                 String trig_name = FileUtils.getTriggerName(f);
                 try {
                     ResMgr.trigger_lib.put(trig_name, new Trigger (trig_name, f));

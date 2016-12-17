@@ -25,4 +25,22 @@ public abstract class StringUtils {
         return Arrays.copyOf(list.toArray(), list.size(), String[].class);
     }
     
+    
+    
+    public static final String concatLinesFromList (List<String> lines) {
+        String res = "";
+        for (String line : lines) {
+            res += line + "\n";
+        }
+        return res;
+    }
+    
+    public static final String concatLinesFromArray (String[] lines) {
+        String res = "";
+        for (String line : lines) {
+            res += line + "\n";
+        }
+        return res;
+    }
+    
 }

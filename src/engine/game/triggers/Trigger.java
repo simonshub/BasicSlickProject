@@ -31,6 +31,7 @@ public class Trigger {
     public Set<String> events;
     public String name;
     public String code;
+    public String description;
     public ScriptEngine engine;
     public Bindings engine_bindings;
     public boolean async;
@@ -41,6 +42,7 @@ public class Trigger {
         Log.log(Log.TRIG, "loading master trigger");
         name = "master";
         code = "";
+        description = "Master trigger - this code is included automatically for every trigger.";
         async = false;
         events = new HashSet<> ();
         engine = TriggerMgr.engine_mgr.getEngineByName(TriggerMgr.SCRIPT_ENGINE_NAME);
@@ -50,7 +52,8 @@ public class Trigger {
     public Trigger (String name, String path) throws TriggerException {
         Log.log(Log.TRIG, "loading trigger '"+name+"' at path '"+path+"'");
         this.name = name;
-        code = "var event = '"+TriggerMgr.EVENT_NAME_PLACEHOLDER+"';\n";
+        code = "";
+        description = "";
         async = false;
         events = new HashSet<> ();
         engine = TriggerMgr.engine_mgr.getEngineByName(TriggerMgr.SCRIPT_ENGINE_NAME);
@@ -60,7 +63,8 @@ public class Trigger {
     public Trigger (String name, File file) throws TriggerException {
         Log.log(Log.TRIG, "loading trigger '"+name+"' at path '"+FileUtils.getTriggerPath(file)+"'");
         this.name = name;
-        code = "var event = '"+TriggerMgr.EVENT_NAME_PLACEHOLDER+"';\n";
+        code = "";
+        description = "";
         async = false;
         events = new HashSet<> ();
         engine = TriggerMgr.engine_mgr.getEngineByName(TriggerMgr.SCRIPT_ENGINE_NAME);
@@ -131,7 +135,11 @@ public class Trigger {
                                 throw new TriggerException ();
                         }
                     } else {
-                        throw new TriggerException ();
+                        if (words[0].trim().toLowerCase().equals("descr")) {
+                            this.description = line.replaceFirst("@","").replaceFirst("descr","");
+                        } else {
+                            throw new TriggerException ();
+                        }
                     }
                 } else {
                     code += line + "\n";
@@ -180,21 +188,23 @@ public class Trigger {
     
     
     public void run () {
+        String eval_code = (Consts.TRIGGER_EVENT_DECLARATION + code).replace(TriggerMgr.EVENT_NAME_PLACEHOLDER, TriggerMgr.FORCED_EXECUTION_EVENT);
+        
         try {
             if (this.async) {
                 Thread t = new Thread (() -> {
                     try {
-                        engine.eval(code.replace(TriggerMgr.EVENT_NAME_PLACEHOLDER, TriggerMgr.FORCED_EXECUTION_EVENT));
+                        engine.eval(eval_code);
                     } catch (ScriptException ex) {
                         Log.err(Log.TRIG,"while trying to evaluate some code at async ...\nCODE:\n"+code,ex);
                     }
                 });
                 t.start();
             } else {
-                engine.eval(code.replace(TriggerMgr.EVENT_NAME_PLACEHOLDER, TriggerMgr.FORCED_EXECUTION_EVENT));
+                engine.eval(eval_code);
             }
         } catch (ScriptException ex) {
-            Log.err(Log.TRIG,"while trying to run some code ...\nCODE:\n"+code,ex);
+            Log.err(Log.TRIG,"while trying to run some code ...\nCODE:\n"+eval_code,ex);
         }
     }
 }

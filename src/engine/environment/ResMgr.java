@@ -321,6 +321,12 @@ public abstract class ResMgr {
         else
             return null;
     }
+    public static Trigger getTrigger (String trig) {
+        if (trigger_lib.containsKey(trig))
+            return trigger_lib.get(trig);
+        else
+            return null;
+    }
     
     
     
@@ -348,6 +354,9 @@ public abstract class ResMgr {
     public static boolean hasMap (String map) {
         return map_lib.containsKey(map);
     }
+    public static boolean hasTrigger (String trig) {
+        return trigger_lib.containsKey(trig);
+    }
     
     
     
@@ -371,6 +380,9 @@ public abstract class ResMgr {
     }
     public static void addMap (String name, GameMap map) {
         map_lib.put(name, map);
+    }
+    public static void loadTrigger (String name, Trigger trig) {
+        trigger_lib.put(name, trig);
     }
     
     

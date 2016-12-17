@@ -67,7 +67,6 @@ public class CombatState extends BasicGameState {
         //called on game's logical update loop; PUT GAME/LOGIC CODE HERE
         
         gui.update(gc);
-        TriggerMgr.update();
     }
     
 }

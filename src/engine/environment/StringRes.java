@@ -13,5 +13,6 @@ package engine.environment;
 public abstract class StringRes {
     
     public static final String EDITOR_TOOLBAR_NONE_FOUND = "None found!";
+    public static final String EDITOR_TRIGGER_CURRENTLY_LOADED = "Currently Loaded Trigger: ";
     
 }

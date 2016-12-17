@@ -123,9 +123,44 @@ tile_net define
 
 
 tile_net end
+
+#header define
+#    javascript / nashorn code ...
+#header end
+header define
+
+
+
+header end
+
+uses trigger sum_folder/test_script
+uses trigger test_script
+
 #entity define
 #	generated entity info
 #entity end
+entity define
+	#lady_2_000002 entity :
+
+	#name:entity_name
+	name:lady_2_000002
+
+	#type:entity_type_name
+	type:lady_2
+
+	#location:x,y
+	location:192,232
+
+	#force:x,y
+	force:0.0,0.0
+
+	#variables
+	#  default values for variables on entity instantiation
+	#var:var_type var_name var_value
+
+
+entity end
+
 entity define
 	#lady_2_000000 entity :
 
@@ -147,6 +182,29 @@ entity define
 
 
 entity end
+
+entity define
+	#lady_2_000001 entity :
+
+	#name:entity_name
+	name:lady_2_000001
+
+	#type:entity_type_name
+	type:lady_2
+
+	#location:x,y
+	location:200,163
+
+	#force:x,y
+	force:0.0,0.0
+
+	#variables
+	#  default values for variables on entity instantiation
+	#var:var_type var_name var_value
+
+
+entity end
+
 entity define
 	#lady_1_000000 entity :
 
@@ -168,6 +226,7 @@ entity define
 
 
 entity end
+
 entity define
 	#protagoni entity :
 
@@ -194,5 +253,4 @@ entity define
 
 
 entity end
-
 

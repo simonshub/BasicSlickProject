@@ -6,12 +6,14 @@
 
 package editors.gamestates;
 
-import editors.toolbars.MapEditorToolbar;
+import editors.toolbars.MapTrigEditorToolbar;
 import engine.game.maps.GameMap;
 import engine.environment.Consts;
+import engine.environment.ResMgr;
 import engine.game.entities.EntityType;
 import engine.logger.Log;
 import java.io.File;
+import java.util.HashMap;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -29,7 +31,7 @@ public class MapEditorState extends BasicGameState implements MouseListener {
     public static final int ID=102;
      
     public GameMap currentMap;
-    public MapEditorToolbar map_toolbar;
+    public MapTrigEditorToolbar map_toolbar;
     public int dragX,dragY;
     public int dragOriginX,dragOriginY;
     public int tilePainterX,tilePainterY;
@@ -57,10 +59,10 @@ public class MapEditorState extends BasicGameState implements MouseListener {
     @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
         currentMap.render(gc,sbg,g);
-        if (map_toolbar.entityTool == MapEditorToolbar.EntityTool.DELETE) {
+        if (map_toolbar.entityTool == MapTrigEditorToolbar.EntityTool.DELETE) {
             if (currentMap.getMouseOverEntity(gc) != null)
                 currentMap.getMouseOverEntity(gc).renderWithFilter(gc, sbg, g, currentMap.cam, new Color (1f,0f,0f,0.5f));
-        } else if (map_toolbar.entityTool == MapEditorToolbar.EntityTool.EDIT) {
+        } else if (map_toolbar.entityTool == MapTrigEditorToolbar.EntityTool.EDIT) {
             if (currentMap.getMouseOverEntity(gc) != null)
                 currentMap.getMouseOverEntity(gc).renderWithFilter(gc, sbg, g, currentMap.cam, new Color (0f,1f,0f,0.5f));
         }
@@ -74,7 +76,7 @@ public class MapEditorState extends BasicGameState implements MouseListener {
                        Consts.TILESET_FRAME_WIDTH, Consts.TILESET_FRAME_HEIGHT);
             g.setColor(Color.white);
             //g.drawString("Selector: "+tilePainterX+","+tilePainterY, 32, 128);
-        } else if ((map_toolbar.editMode == MapEditorToolbar.EditMode.ENTITIES) && (map_toolbar.entityTool == MapEditorToolbar.EntityTool.PLACE)) {
+        } else if ((map_toolbar.editMode == MapTrigEditorToolbar.EditMode.ENTITIES) && (map_toolbar.entityTool == MapTrigEditorToolbar.EntityTool.PLACE)) {
             EntityType cur_entity = map_toolbar.getSelectedEntityType();
             Color filter = new Color (1f,1f,1f,0.5f);
             Color collider_filter = new Color (0f,1f,0f,0.5f);
@@ -163,7 +165,7 @@ public class MapEditorState extends BasicGameState implements MouseListener {
             dragOriginX = -1;
             dragOriginY = -1;
             
-            if (map_toolbar.editMode == MapEditorToolbar.EditMode.TILES) {
+            if (map_toolbar.editMode == MapTrigEditorToolbar.EditMode.TILES) {
                 tilePainterX = ((gc.getInput().getMouseX() + (Consts.TILESET_FRAME_WIDTH/2) + currentMap.cam.location.x) / Consts.TILESET_FRAME_WIDTH);
                 tilePainterY = ((gc.getInput().getMouseY() + (Consts.TILESET_FRAME_HEIGHT/2) + currentMap.cam.location.y) / Consts.TILESET_FRAME_HEIGHT);
             } else {
@@ -172,7 +174,7 @@ public class MapEditorState extends BasicGameState implements MouseListener {
             }
         }
         
-        if ((map_toolbar.editMode == MapEditorToolbar.EditMode.TILES) && (gc.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON))) {
+        if ((map_toolbar.editMode == MapTrigEditorToolbar.EditMode.TILES) && (gc.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON))) {
             if ((tilePainterX>=0) && (tilePainterX<=currentMap.tiles_width)
                     && (tilePainterY>=0) && (tilePainterY<=currentMap.tiles_height)
                     && (currentMap.devmode_current_tileset!=null)) {
@@ -189,7 +191,7 @@ public class MapEditorState extends BasicGameState implements MouseListener {
             }
         }
         
-        if ((map_toolbar.editMode == MapEditorToolbar.EditMode.ENTITIES) && (map_toolbar.entityTool == MapEditorToolbar.EntityTool.PLACE) && (gc.getInput().isMousePressed(Input.MOUSE_LEFT_BUTTON))) {
+        if ((map_toolbar.editMode == MapTrigEditorToolbar.EditMode.ENTITIES) && (map_toolbar.entityTool == MapTrigEditorToolbar.EntityTool.PLACE) && (gc.getInput().isMousePressed(Input.MOUSE_LEFT_BUTTON))) {
             if (currentMap.canPlaceEntity(map_toolbar.getSelectedEntityType(),
                                          (gc.getInput().getMouseX() + currentMap.cam.location.x),
                                          (gc.getInput().getMouseY() + currentMap.cam.location.y)))
@@ -198,7 +200,7 @@ public class MapEditorState extends BasicGameState implements MouseListener {
                                       (gc.getInput().getMouseY() + currentMap.cam.location.y));
         }
         
-        if ((map_toolbar.editMode == MapEditorToolbar.EditMode.ENTITIES) && (map_toolbar.entityTool == MapEditorToolbar.EntityTool.EDIT) && (gc.getInput().isMousePressed(Input.MOUSE_LEFT_BUTTON))) {
+        if ((map_toolbar.editMode == MapTrigEditorToolbar.EditMode.ENTITIES) && (map_toolbar.entityTool == MapTrigEditorToolbar.EntityTool.EDIT) && (gc.getInput().isMousePressed(Input.MOUSE_LEFT_BUTTON))) {
             if (currentMap.getMouseOverEntity(gc)!=null) {
                 map_toolbar.setSelectedEntity(currentMap.getMouseOverEntity(gc));
             } else if (map_toolbar.currentlySelectedEntity!=null) {
@@ -207,7 +209,7 @@ public class MapEditorState extends BasicGameState implements MouseListener {
             }
         }
         
-        if ((map_toolbar.editMode == MapEditorToolbar.EditMode.ENTITIES) && (map_toolbar.entityTool == MapEditorToolbar.EntityTool.DELETE) && (gc.getInput().isMousePressed(Input.MOUSE_LEFT_BUTTON))) {
+        if ((map_toolbar.editMode == MapTrigEditorToolbar.EditMode.ENTITIES) && (map_toolbar.entityTool == MapTrigEditorToolbar.EntityTool.DELETE) && (gc.getInput().isMousePressed(Input.MOUSE_LEFT_BUTTON))) {
             currentMap.destroyEntity(currentMap.getMouseOverEntity(gc));
         }
         
@@ -216,9 +218,24 @@ public class MapEditorState extends BasicGameState implements MouseListener {
             map_toolbar.save = false;
         }
         
+        if (map_toolbar.triggers_changed) {
+            currentMap.trigger_store.clear();
+            for (String trig : map_toolbar.triggerNamesList)
+                if (ResMgr.hasTrigger(trig))
+                    currentMap.trigger_store.put(trig, ResMgr.getTrigger(trig));
+            map_toolbar.triggers_changed = false;
+        }
+        
         if (!map_toolbar.load.isEmpty()) {
             currentMap = new GameMap (new File (map_toolbar.load));
+            
             map_toolbar.setBackgroundTileset(currentMap.background_tileset);
+            map_toolbar.triggerNamesList.clear();
+            for (String trig : currentMap.trigger_store.keySet()) {
+                map_toolbar.triggerNamesList.add(trig);
+                map_toolbar.forceUpdateTriggerList();
+            }
+            
             map_toolbar.load = "";
         }
     }
@@ -237,7 +254,7 @@ public class MapEditorState extends BasicGameState implements MouseListener {
         super.enter(gc, sbg);
         
         try {
-            map_toolbar = new MapEditorToolbar ();
+            map_toolbar = new MapTrigEditorToolbar ();
             Thread t = new Thread ( () -> {
                 map_toolbar.setVisible(true);
             });

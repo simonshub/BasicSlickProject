@@ -11,6 +11,7 @@ import engine.environment.Consts;
 import engine.environment.ResMgr;
 import engine.environment.Settings;
 import engine.game.entities.EntityType;
+import engine.game.triggers.Trigger;
 import engine.logger.Log;
 import engine.utils.StringUtils;
 import java.io.BufferedReader;
@@ -37,6 +38,7 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public class GameMap {
     public String name;
+    public String trigger_header;
     public String background_tileset;
     
     public Camera cam;
@@ -45,6 +47,7 @@ public class GameMap {
     public int tiles_width, tiles_height; // IN TILES
     public HashMap <String, Entity> entities;
     public HashMap <String, Integer> entity_counters;
+    public HashMap <String, Trigger> trigger_store;
     
     public String devmode_current_tileset;
     public static final int INFO_DRAW_OFFSET_X = 32;
@@ -63,7 +66,9 @@ public class GameMap {
         cam = new Camera ();
         entities = new HashMap <> ();
         entity_counters = new HashMap <> ();
+        trigger_store = new HashMap <> ();
         
+        trigger_header = "";
         background_tileset = "";
         devmode_current_tileset = "";
         tile_net = new TileNet (width, height);
@@ -73,6 +78,8 @@ public class GameMap {
         cam = new Camera ();
         entities = new HashMap <> ();
         entity_counters = new HashMap <> ();
+        trigger_store = new HashMap <> ();
+        trigger_header = "";
         background_tileset = "";
         devmode_current_tileset = "";
         
@@ -243,7 +250,19 @@ public class GameMap {
         content += "#tile_net end" + "\n";
         content += "tile_net define" + "\n";
         content += tile_net.getWritten("\t") + "\n";
-        content += "tile_net end" + "\n";
+        content += "tile_net end" + "\n\n";
+        
+        content += "#header define" + "\n";
+        content += "#    javascript / nashorn code ..." + "\n";
+        content += "#header end" + "\n";
+        content += "header define" + "\n";
+        content += trigger_header + "\n";
+        content += "header end" + "\n\n";
+        
+        for (Trigger trig : trigger_store.values()) {
+            content += "uses trigger "+trig.name+"\n";
+        }
+        content += "\n";
         
         content += "#entity define" + "\n";
         content += "#\tgenerated entity info" + "\n";
@@ -252,9 +271,8 @@ public class GameMap {
         for (String entityName : entityNames) {
             content += "entity define" + "\n";
             content += entities.get(entityName).getWritten("\t") + "\n";
-            content += "entity end" + "\n";
+            content += "entity end" + "\n\n";
         }
-        content += "\n\n";
         
         return content;
     }
@@ -262,8 +280,10 @@ public class GameMap {
     public final void fromWritten (String[] lines) {
         boolean read_for_entity=false;
         boolean read_for_tiles=false;
+        boolean read_for_header=false;
         List<String> entity_lines = new ArrayList<> ();
         List<String> tiles_lines = new ArrayList<> ();
+        List<String> header_lines = new ArrayList<> ();
         
         for (String line : lines) {
             if (!line.startsWith("#")) {
@@ -271,9 +291,18 @@ public class GameMap {
                     if (line.trim().contains("entity end")) {
                         read_for_entity = false;
                         Entity e = new Entity (StringUtils.listToArray(entity_lines));
+                        
+                        int counter = 0;
+                        if (entity_counters.containsKey(e.parent_type.entity_type_name)) {
+                            counter = entity_counters.get(e.parent_type.entity_type_name)+1;
+                            entity_counters.put(e.parent_type.entity_type_name, counter);
+                        } else {
+                            entity_counters.put(e.parent_type.entity_type_name, 0);
+                        }
+                        
                         entities.put(e.name, e);
                         entity_lines.clear();
-                        Log.log(Log.MAP, "added entity '"+e.name+"'");
+                        Log.log(Log.MAP, "added entity '"+e.name+"'!");
                     } else {
                         entity_lines.add(line);
                     }
@@ -286,9 +315,19 @@ public class GameMap {
                         this.tiles_width = tile_net.width;
                         this.tiles_height = tile_net.height;
                         
-                        Log.log(Log.MAP, "read tilenet info ...");
+                        Log.log(Log.MAP, "read tilenet info!");
                     } else {
                         tiles_lines.add(line);
+                    }
+                } else if (read_for_header) {
+                    if (line.trim().contains("header end")) {
+                        read_for_header = false;
+                        this.trigger_header = StringUtils.concatLinesFromList(header_lines);
+                        header_lines.clear();
+                        
+                        Log.log(Log.MAP, "read header code!");
+                    } else {
+                        header_lines.add(line);
                     }
                 } else
 
@@ -298,6 +337,9 @@ public class GameMap {
                 } else if (line.trim().contains("tile_net define")) {
                     read_for_tiles = true;
                     Log.log(Log.MAP, "defining tilenet ...");
+                } else if (line.trim().contains("header define")) {
+                    read_for_header = true;
+                    Log.log(Log.MAP, "reading header code ...");
                 } else
 
                 if (line.trim().startsWith("name")) {
@@ -306,6 +348,14 @@ public class GameMap {
                     this.background_tileset = line.trim().substring(line.trim().indexOf(":")+1).trim();
                 } else if (line.trim().startsWith("persistent")) {
                     this.persistent = Boolean.parseBoolean(line.trim().substring(line.trim().indexOf(":")+1).trim());
+                } else if (line.trim().startsWith("uses trigger ")) {
+                    String trig_name = line.trim().substring("uses trigger ".length()+1);
+                    if (ResMgr.hasTrigger(trig_name)) {
+                        this.trigger_store.put(trig_name, ResMgr.getTrigger(trig_name)) ;
+                        Log.log(Log.MAP, "included trigger '"+trig_name+"'");
+                    } else {
+                        Log.err(Log.MAP, "trigger '"+trig_name+"' could not be found!");
+                    }
                 }
             }
         }

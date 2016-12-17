@@ -6,6 +6,7 @@
 
 package engine.environment;
 
+import engine.game.triggers.TriggerMgr;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -41,4 +42,9 @@ public abstract class Consts {
     public static final String ENTITY_FILE_EXTENSION = "ent";
     public static final String TRIGGER_FILE_EXTENSION = "sts";
     public static final String MAP_FILE_EXTENSION = "map";
+    
+    
+    
+    public static final String TRIGGER_EVENT_DECLARATION = "var event = '"+TriggerMgr.EVENT_NAME_PLACEHOLDER+"';"+"\n";
+
 }
