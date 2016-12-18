@@ -11,6 +11,7 @@ import engine.environment.StringRes;
 import engine.game.entities.Entity;
 import engine.game.entities.EntityType;
 import engine.game.entities.EntityVar;
+import engine.logger.Log;
 import engine.utils.FileUtils;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
+import javax.swing.DefaultListSelectionModel;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.event.DocumentEvent;
@@ -195,7 +197,7 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
     // Custom ComboBox (drop down list) model class
     public class TriggerDropDown extends AbstractListModel implements ComboBoxModel {
         public Object[] data = ResMgr.trigger_lib.keySet().toArray();
-        public Object selection = data!=null ? data[0] : StringRes.EDITOR_TOOLBAR_NONE_FOUND;
+        public Object selection = null;
         
         @Override
         public int getSize() {
@@ -212,6 +214,14 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
         @Override
         public Object getSelectedItem() {
             return selection;
+        }
+    }
+    
+    // Custom ListSelection model class which disables selection
+    class DisabledItemSelectionModel extends DefaultListSelectionModel {
+        @Override
+        public void setSelectionInterval(int index0, int index1) {
+            super.setSelectionInterval(-1, -1);
         }
     }
     
@@ -282,7 +292,8 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (loadedTriggerDropDown.getSelectedItem()!=null) {
-                loadedTriggerDescrArea.setText(ResMgr.trigger_lib.get(loadedTriggerDropDown.getSelectedItem().toString()).description);
+                selectedTriggerDescPane.setText(ResMgr.trigger_lib.get(loadedTriggerDropDown.getSelectedItem().toString()).description);
+                triggerList.setSelectedValue(null, false);
             }
         }
     }
@@ -311,7 +322,7 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
                 setEntityTool (EntityTool.PLACE);
                 break;
             case "triggers" :
-                triggerEditor.setSize(900, 900);
+                triggerEditor.setSize(700, 900);
                 triggerEditor.setVisible(true);
                 triggerEditor.setLocationRelativeTo(this);
                 triggerEditor.setLocation(250, 0);
@@ -401,12 +412,6 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
         backgroundTilesetDropDown.updateUI();
     }
     
-    public void forceUpdateTriggerList () {
-        triggerList.setListData(triggerNamesList.toArray());
-    }
-    
-    
-    
     public void updateVars () {
         DefaultTableModel model = (DefaultTableModel) varsTable.getModel();
         model.setRowCount(0);
@@ -420,6 +425,10 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
             Object[] row = {name, type, value};
             model.addRow(row);
         }
+    }
+    
+    public void updateTriggerList (String[] triggers) {
+        triggerList.setListData(triggers);
     }
     
     
@@ -446,6 +455,9 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
         entityTypeDropDown.addActionListener(new EntityTypeDropDownListener ());
         entityTypeDropDown.setModel(new EntityTypeDropDown ());
         
+        triggerList.setSelectionModel(new DisabledItemSelectionModel ());
+        
+        loadedTriggerDropDown.addActionListener(new TriggerDropDownListener ());
         loadedTriggerDropDown.setModel(new TriggerDropDown ());
         
         locationXField.getDocument().addDocumentListener(new FormattedFieldListener (0));
@@ -519,16 +531,6 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
         loadMapChooser = new javax.swing.JFileChooser();
         triggerEditor = new javax.swing.JFrame();
         menuPanels = new javax.swing.JPanel();
-        eventPanel = new javax.swing.JPanel();
-        eventListScrollPane = new javax.swing.JScrollPane();
-        eventList = new javax.swing.JList();
-        loadedEventsDropDown = new javax.swing.JComboBox();
-        includeEventFromDropDownBtn = new javax.swing.JButton();
-        removeEventFromListBtn = new javax.swing.JButton();
-        eventsLabel = new javax.swing.JLabel();
-        eventListLabel = new javax.swing.JLabel();
-        loadedEventDescrScrollPane = new javax.swing.JScrollPane();
-        loadedEventDescrArea = new javax.swing.JTextArea();
         triggerPanel = new javax.swing.JPanel();
         triggerListScrollPane = new javax.swing.JScrollPane();
         triggerList = new javax.swing.JList();
@@ -537,8 +539,8 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
         removeTriggerFromListBtn = new javax.swing.JButton();
         triggersLabel = new javax.swing.JLabel();
         triggerListLabel = new javax.swing.JLabel();
-        loadedTriggerDescrScrollPane = new javax.swing.JScrollPane();
-        loadedTriggerDescrArea = new javax.swing.JTextArea();
+        selectedTriggerDescScrollPane = new javax.swing.JScrollPane();
+        selectedTriggerDescPane = new javax.swing.JTextArea();
         editorPanel = new javax.swing.JPanel();
         newTriggerBtn = new javax.swing.JButton();
         openTriggerBtn = new javax.swing.JButton();
@@ -549,7 +551,7 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
         testCodeBtn = new javax.swing.JButton();
         currentlyLoadedTriggerLabel = new javax.swing.JLabel();
         hidePanelsBtn = new javax.swing.JButton();
-        jScrollPane1 = new javax.swing.JScrollPane();
+        textEditorScrollPane = new javax.swing.JScrollPane();
         textEditorPane = new javax.swing.JTextPane();
         triggerQuickReferenceFrame = new javax.swing.JFrame();
         testConsoleDialog = new javax.swing.JDialog();
@@ -1076,81 +1078,11 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
 
         menuPanels.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
 
-        eventPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
-
-        eventList.setFont(new java.awt.Font("Lucida Console", 0, 10)); // NOI18N
-        eventList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
-        eventListScrollPane.setViewportView(eventList);
-
-        loadedEventsDropDown.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        loadedEventsDropDown.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        includeEventFromDropDownBtn.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        includeEventFromDropDownBtn.setText("Include Selected");
-
-        removeEventFromListBtn.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        removeEventFromListBtn.setText("Remove Event");
-
-        eventsLabel.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        eventsLabel.setText("EVENTS:");
-
-        eventListLabel.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        eventListLabel.setText("Used in this Trigger:");
-
-        loadedEventDescrArea.setEditable(false);
-        loadedEventDescrArea.setColumns(20);
-        loadedEventDescrArea.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        loadedEventDescrArea.setRows(5);
-        loadedEventDescrScrollPane.setViewportView(loadedEventDescrArea);
-
-        javax.swing.GroupLayout eventPanelLayout = new javax.swing.GroupLayout(eventPanel);
-        eventPanel.setLayout(eventPanelLayout);
-        eventPanelLayout.setHorizontalGroup(
-            eventPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, eventPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(eventPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(loadedEventDescrScrollPane)
-                    .addGroup(eventPanelLayout.createSequentialGroup()
-                        .addGroup(eventPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(eventPanelLayout.createSequentialGroup()
-                                .addComponent(eventsLabel)
-                                .addGap(0, 0, Short.MAX_VALUE))
-                            .addComponent(eventListLabel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(eventListScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(loadedEventsDropDown, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(includeEventFromDropDownBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(removeEventFromListBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        eventPanelLayout.setVerticalGroup(
-            eventPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(eventPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(eventPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(eventPanelLayout.createSequentialGroup()
-                        .addComponent(eventsLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(eventListLabel)
-                        .addGap(0, 0, Short.MAX_VALUE))
-                    .addComponent(eventListScrollPane))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(loadedEventsDropDown, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(includeEventFromDropDownBtn)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(removeEventFromListBtn)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(loadedEventDescrScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap())
-        );
-
         triggerPanel.setBorder(javax.swing.BorderFactory.createLineBorder(new java.awt.Color(0, 0, 0)));
         triggerPanel.setPreferredSize(new java.awt.Dimension(260, 335));
 
+        triggerList.setBackground(new java.awt.Color(240, 240, 240));
         triggerList.setFont(new java.awt.Font("Lucida Console", 0, 10)); // NOI18N
-        triggerList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
         triggerListScrollPane.setViewportView(triggerList);
 
         loadedTriggerDropDown.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
@@ -1178,33 +1110,30 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
         triggerListLabel.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         triggerListLabel.setText("Used in this Map:");
 
-        loadedTriggerDescrArea.setEditable(false);
-        loadedTriggerDescrArea.setColumns(20);
-        loadedTriggerDescrArea.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        loadedTriggerDescrArea.setRows(5);
-        loadedTriggerDescrScrollPane.setViewportView(loadedTriggerDescrArea);
+        selectedTriggerDescPane.setColumns(20);
+        selectedTriggerDescPane.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        selectedTriggerDescPane.setLineWrap(true);
+        selectedTriggerDescPane.setRows(5);
+        selectedTriggerDescPane.setWrapStyleWord(true);
+        selectedTriggerDescScrollPane.setViewportView(selectedTriggerDescPane);
 
         javax.swing.GroupLayout triggerPanelLayout = new javax.swing.GroupLayout(triggerPanel);
         triggerPanel.setLayout(triggerPanelLayout);
         triggerPanelLayout.setHorizontalGroup(
             triggerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(triggerPanelLayout.createSequentialGroup()
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, triggerPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(triggerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(loadedTriggerDescrScrollPane, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, triggerPanelLayout.createSequentialGroup()
-                        .addGroup(triggerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(triggerPanelLayout.createSequentialGroup()
-                                .addGap(0, 13, Short.MAX_VALUE)
-                                .addComponent(triggerListLabel))
-                            .addGroup(triggerPanelLayout.createSequentialGroup()
-                                .addComponent(triggersLabel)
-                                .addGap(0, 0, Short.MAX_VALUE)))
+                .addGroup(triggerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(selectedTriggerDescScrollPane)
+                    .addGroup(triggerPanelLayout.createSequentialGroup()
+                        .addGroup(triggerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                            .addComponent(triggerListLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .addComponent(triggersLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(triggerListScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 125, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(loadedTriggerDropDown, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(includeTriggerFromDropDownBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(removeTriggerFromListBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(triggerListScrollPane))
+                    .addComponent(loadedTriggerDropDown, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(includeTriggerFromDropDownBtn, javax.swing.GroupLayout.Alignment.LEADING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(removeTriggerFromListBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         triggerPanelLayout.setVerticalGroup(
@@ -1214,17 +1143,17 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
                 .addGroup(triggerPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(triggerPanelLayout.createSequentialGroup()
                         .addComponent(triggersLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(18, 18, 18)
                         .addComponent(triggerListLabel))
                     .addComponent(triggerListScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 124, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED, 17, Short.MAX_VALUE)
                 .addComponent(loadedTriggerDropDown, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(includeTriggerFromDropDownBtn)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(removeTriggerFromListBtn)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(loadedTriggerDescrScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(selectedTriggerDescScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 86, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
@@ -1314,11 +1243,9 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
             menuPanelsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, menuPanelsLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(triggerPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(triggerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 380, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(editorPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(eventPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(editorPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
         menuPanelsLayout.setVerticalGroup(
@@ -1327,8 +1254,7 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(menuPanelsLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(editorPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(triggerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 341, Short.MAX_VALUE)
-                    .addComponent(eventPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(triggerPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 341, Short.MAX_VALUE))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1340,7 +1266,7 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
             }
         });
 
-        jScrollPane1.setViewportView(textEditorPane);
+        textEditorScrollPane.setViewportView(textEditorPane);
 
         javax.swing.GroupLayout triggerEditorLayout = new javax.swing.GroupLayout(triggerEditor.getContentPane());
         triggerEditor.getContentPane().setLayout(triggerEditorLayout);
@@ -1349,9 +1275,9 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
             .addGroup(triggerEditorLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(triggerEditorLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1)
+                    .addComponent(textEditorScrollPane)
                     .addComponent(menuPanels, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(hidePanelsBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(hidePanelsBtn, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 611, Short.MAX_VALUE))
                 .addContainerGap())
         );
         triggerEditorLayout.setVerticalGroup(
@@ -1362,7 +1288,7 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(hidePanelsBtn)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 309, Short.MAX_VALUE)
+                .addComponent(textEditorScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 476, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -1689,22 +1615,10 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
     private javax.swing.JButton entityRemoveToolBtn;
     private javax.swing.JComboBox entityTypeDropDown;
     private javax.swing.JLabel entityTypeLabel;
-    private javax.swing.JList eventList;
-    private javax.swing.JLabel eventListLabel;
-    private javax.swing.JScrollPane eventListScrollPane;
-    private javax.swing.JPanel eventPanel;
-    private javax.swing.JLabel eventsLabel;
     private javax.swing.JButton hidePanelsBtn;
-    private javax.swing.JButton includeEventFromDropDownBtn;
     private javax.swing.JButton includeTriggerFromDropDownBtn;
-    private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JButton loadMapBtn;
     private javax.swing.JFileChooser loadMapChooser;
-    private javax.swing.JTextArea loadedEventDescrArea;
-    private javax.swing.JScrollPane loadedEventDescrScrollPane;
-    private javax.swing.JComboBox loadedEventsDropDown;
-    private javax.swing.JTextArea loadedTriggerDescrArea;
-    private javax.swing.JScrollPane loadedTriggerDescrScrollPane;
     private javax.swing.JComboBox loadedTriggerDropDown;
     private javax.swing.JLabel locationLabel;
     private javax.swing.JLabel locationLabelX;
@@ -1723,12 +1637,13 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
     private javax.swing.JLabel newVarValueLabel;
     private javax.swing.JButton openMapHeaderBtn;
     private javax.swing.JButton openTriggerBtn;
-    private javax.swing.JButton removeEventFromListBtn;
     private javax.swing.JButton removeTriggerFromListBtn;
     private javax.swing.JButton saveEntityNameBtn;
     private javax.swing.JButton saveMapBtn;
     private javax.swing.JButton saveMapHeaderBtn;
     private javax.swing.JButton saveTriggerBtn;
+    private javax.swing.JTextArea selectedTriggerDescPane;
+    private javax.swing.JScrollPane selectedTriggerDescScrollPane;
     private javax.swing.JSeparator separator1;
     private javax.swing.JSeparator separator2;
     private javax.swing.JSeparator separator3;
@@ -1739,6 +1654,7 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
     private javax.swing.JLabel testConsoleLabel;
     private javax.swing.JScrollPane testConsoleScrollPane;
     private javax.swing.JTextPane textEditorPane;
+    private javax.swing.JScrollPane textEditorScrollPane;
     private javax.swing.JLabel tilesetCurrentToolLabel;
     private javax.swing.JComboBox tilesetDropDown;
     private javax.swing.JButton tilesetFillToolBtn;

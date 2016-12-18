@@ -46,7 +46,10 @@ public abstract class FileUtils {
     }
     
     public static final String getNameWithoutExtension (String filename) {
-        return filename.substring(0,filename.lastIndexOf("."));
+        if (filename.contains("."))
+            return filename.substring(0,filename.lastIndexOf("."));
+        else
+            return filename;
     }
     
     

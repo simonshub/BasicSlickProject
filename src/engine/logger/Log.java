@@ -125,9 +125,9 @@ public abstract class Log {
     public static void writeToLog (String log_file, String line, boolean divider, boolean silent) {
         try {
             Writer log = new BufferedWriter (new FileWriter (log_file, true));
-            log.append((divider ? "\n"+DIVIDER : "") +
-                       getTimestamp() + "    " + line + "\n" +
-                       (divider ? DIVIDER : ""));
+            if (divider) log.append(getTimestamp() + "    " + DIVIDER);
+            log.append(getTimestamp() + "    " + line + "\n");
+            if (divider) log.append(getTimestamp() + "    " + DIVIDER);
             if (!silent)
                 System.out.println(line);
             log.close();

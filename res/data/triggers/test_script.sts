@@ -1,14 +1,7 @@
+@ descr A test trigger which prints it's passed event into the console. Also, includes the 'sum_folder/test_script' trigger.
 @ event attack
 @ event update
 @ bind java.lang.System cmd
-@ load sum_folder/test_script.sts
+@ load sum_folder/test_script
 
-if (event == 'attack') {
-	console(attacker.name);
-	cmd.out.println('UPDATE LOOP PRINT WOOP');
-} else {
-	console('UPDATE LOOP PRINT WOOP');
-	cmd.out.println('UPDATE LOOP PRINT WOOP');
-	cmd.out.println(hello_man);
-	cmd.out.println(get_entity_type('protagonist').actor_name);
-}
+console(event);

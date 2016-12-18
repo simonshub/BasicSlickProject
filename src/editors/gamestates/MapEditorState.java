@@ -13,7 +13,6 @@ import engine.environment.ResMgr;
 import engine.game.entities.EntityType;
 import engine.logger.Log;
 import java.io.File;
-import java.util.HashMap;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -224,6 +223,7 @@ public class MapEditorState extends BasicGameState implements MouseListener {
                 if (ResMgr.hasTrigger(trig))
                     currentMap.trigger_store.put(trig, ResMgr.getTrigger(trig));
             map_toolbar.triggers_changed = false;
+            map_toolbar.updateTriggerList(map_toolbar.triggerNamesList.toArray(new String [currentMap.trigger_store.keySet().size()]));
         }
         
         if (!map_toolbar.load.isEmpty()) {
@@ -233,10 +233,11 @@ public class MapEditorState extends BasicGameState implements MouseListener {
             map_toolbar.triggerNamesList.clear();
             for (String trig : currentMap.trigger_store.keySet()) {
                 map_toolbar.triggerNamesList.add(trig);
-                map_toolbar.forceUpdateTriggerList();
+                map_toolbar.updateTriggerList(map_toolbar.triggerNamesList.toArray(new String [currentMap.trigger_store.keySet().size()]));
             }
             
             map_toolbar.load = "";
+            map_toolbar.updateTriggerList(map_toolbar.triggerNamesList.toArray(new String [currentMap.trigger_store.keySet().size()]));
         }
     }
     

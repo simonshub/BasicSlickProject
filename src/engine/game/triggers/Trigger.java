@@ -18,8 +18,6 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.Set;
-import javax.script.Bindings;
-import javax.script.ScriptContext;
 import javax.script.ScriptEngine;
 import javax.script.ScriptException;
 
@@ -28,72 +26,59 @@ import javax.script.ScriptException;
  */
 
 public class Trigger {
-    public Set<String> events;
     public String name;
     public String code;
     public String description;
+    public Set<String> events;
+    public Set<String> loaded_triggers;
     public ScriptEngine engine;
-    public Bindings engine_bindings;
     public boolean async;
     
     
     
     public Trigger () throws TriggerException {
-        Log.log(Log.TRIG, "loading master trigger");
+        Log.log(Log.TRIG, "loading master trigger", true);
         name = "master";
         code = "";
         description = "Master trigger - this code is included automatically for every trigger.";
         async = false;
         events = new HashSet<> ();
+        loaded_triggers = new HashSet<> ();
         engine = TriggerMgr.engine_mgr.getEngineByName(TriggerMgr.SCRIPT_ENGINE_NAME);
-        engine_bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
-        loadScript(TriggerMgr.MASTER_SCRIPT_PATH, false);
+        readScript(new File (TriggerMgr.MASTER_SCRIPT_PATH));
     }
     public Trigger (String name, String path) throws TriggerException {
-        Log.log(Log.TRIG, "loading trigger '"+name+"' at path '"+path+"'");
+        Log.log(Log.TRIG, "loading trigger '"+name+"' at path '"+path+"'", true);
         this.name = name;
         code = "";
         description = "";
         async = false;
         events = new HashSet<> ();
+        loaded_triggers = new HashSet<> ();
         engine = TriggerMgr.engine_mgr.getEngineByName(TriggerMgr.SCRIPT_ENGINE_NAME);
-        engine_bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
-        loadScript(path, true);
+        loaded_triggers.add(TriggerMgr.master_trigger.name);
+        readScript(path);
     }
     public Trigger (String name, File file) throws TriggerException {
-        Log.log(Log.TRIG, "loading trigger '"+name+"' at path '"+FileUtils.getTriggerPath(file)+"'");
+        Log.log(Log.TRIG, "loading trigger '"+name+"' at path '"+FileUtils.getTriggerPath(file)+"'", true);
         this.name = name;
         code = "";
         description = "";
         async = false;
         events = new HashSet<> ();
+        loaded_triggers = new HashSet<> ();
         engine = TriggerMgr.engine_mgr.getEngineByName(TriggerMgr.SCRIPT_ENGINE_NAME);
-        engine_bindings = engine.getBindings(ScriptContext.ENGINE_SCOPE);
-        loadScript(file, true);
+        loaded_triggers.add(TriggerMgr.master_trigger.name);
+        readScript(file);
     }
     
     
     
-    public final void loadScript (String path, boolean require_master) throws TriggerException {
-        Trigger.this.loadScript (new File (path), require_master);
+    public final void readScript (String path) throws TriggerException {
+        readScript(new File (path));
     }
-    public final void loadScript (File file, boolean require_master) throws TriggerException {
+    public final void readScript (File file) throws TriggerException {
         try {
-            if (require_master){
-                Log.log(Log.TRIG, "including master trigger for '"+this.name+"'");
-                this.engine_bindings.putAll(TriggerMgr.master_trigger.engine_bindings);
-                this.events.addAll(TriggerMgr.master_trigger.events);
-                this.engine.eval(TriggerMgr.master_trigger.code);
-            }
-            
-            if (ResMgr.trigger_lib.containsKey(name)) {
-                Log.log(Log.TRIG, "reading existing trigger '"+name+"' for '"+this.name+"'");
-                this.engine_bindings.putAll(ResMgr.trigger_lib.get(name).engine_bindings);
-                this.events.addAll(ResMgr.trigger_lib.get(name).events);
-                this.engine.eval(ResMgr.trigger_lib.get(name).code);
-                return;
-            }
-            
             BufferedReader r = new BufferedReader (new FileReader (file));
             String line;
             while ((line=r.readLine())!=null) {
@@ -120,8 +105,8 @@ public class Trigger {
                                 Log.log(Log.TRIG, "added event '"+words[1].trim()+"' in trigger '"+name+"'");
                                 break;
                             case "load" :
-                                loadScript(Consts.TRIGGER_DUMP_FOLDER+words[1].trim(), false);
-                                Log.log(Log.TRIG, "read trigger '"+FileUtils.getNameWithoutExtension(words[1].trim())+"' for trigger '"+name+"'");
+                                loaded_triggers.add(FileUtils.getNameWithoutExtension(words[1].trim()));
+                                Log.log(Log.TRIG, "loaded trigger '"+FileUtils.getNameWithoutExtension(words[1].trim())+"' for trigger '"+name+"'");
                                 break;
                             default :
                                 throw new TriggerException ();
@@ -136,7 +121,8 @@ public class Trigger {
                         }
                     } else {
                         if (words[0].trim().toLowerCase().equals("descr")) {
-                            this.description = line.replaceFirst("@","").replaceFirst("descr","");
+                            this.description = line.replaceFirst("@","").replaceFirst("descr","").trim();
+                            Log.log(Log.TRIG, "added description '"+this.description+"' for trigger '"+name+"'");
                         } else {
                             throw new TriggerException ();
                         }
@@ -151,9 +137,9 @@ public class Trigger {
             Log.err(Log.TRIG,"trigger '"+file.getPath().replace("\\", "/")+"' could not be parsed! - IOException",ex);
         } catch (TriggerException ex) {
             Log.err(Log.TRIG,"trigger '"+file.getPath().replace("\\", "/")+"' could not be parsed! - Script pre-eval line syntax error",ex);
-        } catch (ScriptException ex) {
+        } /*catch (ScriptException ex) {
             Log.err(Log.TRIG,"trigger '"+file.getPath().replace("\\", "/")+"' could not be parsed! - ScriptException",ex);
-        } /*catch (ClassNotFoundException ex) {
+        } catch (ClassNotFoundException ex) {
             Log.log(Log.TRIG,Log.LogLevel.ERROR,"trigger '"+file.getPath().replace("\\", "/")+"' could not be parsed! - ClassNotFoundException");
         }*/
     }
@@ -188,15 +174,28 @@ public class Trigger {
     
     
     public void run () {
-        String eval_code = (Consts.TRIGGER_EVENT_DECLARATION + code).replace(TriggerMgr.EVENT_NAME_PLACEHOLDER, TriggerMgr.FORCED_EXECUTION_EVENT);
+        run (TriggerMgr.FORCED_EXECUTION_EVENT);
+    }
+    public void run (String event) {
+        String eval_code = "";
+        eval_code += TriggerMgr.master_trigger.code + "\n\n";
+        
+        for (String trig_name : loaded_triggers) {
+            if (!trig_name.equals(TriggerMgr.master_trigger.name)) {
+                eval_code += ResMgr.getTrigger(trig_name).code + "\n\n";
+            }
+        }
+        eval_code += this.code + "\n\n";
+        eval_code = (Consts.TRIGGER_EVENT_DECLARATION + eval_code).replace(TriggerMgr.EVENT_NAME_PLACEHOLDER, event);
         
         try {
             if (this.async) {
+                final String async_code = eval_code;
                 Thread t = new Thread (() -> {
                     try {
-                        engine.eval(eval_code);
+                        engine.eval(async_code);
                     } catch (ScriptException ex) {
-                        Log.err(Log.TRIG,"while trying to evaluate some code at async ...\nCODE:\n"+code,ex);
+                        Log.err(Log.TRIG,"while trying to evaluate some async code ...\nCODE:\n"+code,ex);
                     }
                 });
                 t.start();
@@ -206,5 +205,14 @@ public class Trigger {
         } catch (ScriptException ex) {
             Log.err(Log.TRIG,"while trying to run some code ...\nCODE:\n"+eval_code,ex);
         }
+    }
+    
+    
+    
+    @Override
+    public String toString () {
+        return "Trigger :\tname="+this.name+"\n"+
+                "\t\tdescription="+this.description+"\n"+
+                "\t\tcode;\n"+this.code+"\n";
     }
 }

@@ -349,7 +349,7 @@ public class GameMap {
                 } else if (line.trim().startsWith("persistent")) {
                     this.persistent = Boolean.parseBoolean(line.trim().substring(line.trim().indexOf(":")+1).trim());
                 } else if (line.trim().startsWith("uses trigger ")) {
-                    String trig_name = line.trim().substring("uses trigger ".length()+1);
+                    String trig_name = line.trim().substring("uses trigger ".length());
                     if (ResMgr.hasTrigger(trig_name)) {
                         this.trigger_store.put(trig_name, ResMgr.getTrigger(trig_name)) ;
                         Log.log(Log.MAP, "included trigger '"+trig_name+"'");

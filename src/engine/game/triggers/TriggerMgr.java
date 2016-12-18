@@ -96,7 +96,7 @@ public abstract class TriggerMgr {
                 String trig_name = FileUtils.getTriggerName(f);
                 try {
                     ResMgr.trigger_lib.put(trig_name, new Trigger (trig_name, f));
-                    Log.log(Log.TRIG, "loaded trigger with name '"+trig_name+"' at path '"+FileUtils.getTriggerPath(f)+"'");
+                    Log.log(Log.TRIG, "loaded trigger with name '"+trig_name+"' at path '"+FileUtils.getTriggerPath(f)+"'", true);
                 } catch (TriggerException ex) {
                     Log.err(Log.TRIG, "could not load trigger with name '"+trig_name+"' at path '"+FileUtils.getTriggerPath(f)+"'", ex);
                 }

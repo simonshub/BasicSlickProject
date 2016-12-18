@@ -1,1 +1,4 @@
-var hello_man = 'hello!';
+@ descr A test trigger which creates a variable and prints it's contents.
+
+var hello_man = 'Hello World !';
+console(hello_man);
