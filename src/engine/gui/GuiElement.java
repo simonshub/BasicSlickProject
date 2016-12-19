@@ -5,6 +5,7 @@
  */
 package engine.gui;
 
+import engine.utils.Callable;
 import engine.environment.ResMgr;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;

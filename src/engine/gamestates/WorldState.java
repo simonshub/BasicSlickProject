@@ -5,7 +5,7 @@
  */
 package engine.gamestates;
 
-import engine.gui.Callable;
+import engine.utils.Callable;
 import engine.gui.GuiController;
 import engine.gui.GuiElement;
 import org.newdawn.slick.GameContainer;
