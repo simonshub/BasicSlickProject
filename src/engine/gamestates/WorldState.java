@@ -6,8 +6,8 @@
 package engine.gamestates;
 
 import engine.utils.Callable;
-import engine.gui.GuiController;
-import engine.gui.GuiElement;
+import engine.gui.GuiController_DEPRICATED;
+import engine.gui.GuiElement_DEPRICATED;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.SlickException;
@@ -20,7 +20,7 @@ import org.newdawn.slick.state.StateBasedGame;
  */
 public class WorldState extends BasicGameState {
     public static final int ID=2;
-    public GuiController gui;
+    public GuiController_DEPRICATED gui;
     
     @Override
     public int getID() {
@@ -31,11 +31,11 @@ public class WorldState extends BasicGameState {
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
         //much like constructor
         
-        gui = new GuiController ();
+        gui = new GuiController_DEPRICATED ();
         
         
         //add GUI elements here like so;
-        /*gui.addElement(new GuiElement (x, y, idleImgPath, mouseOverImgPath, mouseClickImgPath, soundPath,
+        /*gui.addElement(new GuiElement_DEPRICATED (x, y, idleImgPath, mouseOverImgPath, mouseClickImgPath, soundPath,
                 new Callable () {
                     @Override
                     public void call() {
@@ -44,7 +44,7 @@ public class WorldState extends BasicGameState {
                 }
         ));*/
         
-        /*gui.addElement(new GuiElement (0, 0, "", "", "", "",
+        /*gui.addElement(new GuiElement_DEPRICATED (0, 0, "", "", "", "",
                 new Callable () {
                     @Override
                     public void call() {

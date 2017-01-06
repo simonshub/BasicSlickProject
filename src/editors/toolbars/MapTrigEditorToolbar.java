@@ -568,6 +568,12 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
         testConsoleLabel = new javax.swing.JLabel();
         testConsoleScrollPane = new javax.swing.JScrollPane();
         testConsoleArea = new javax.swing.JTextArea();
+        createNewTriggerDialog = new javax.swing.JDialog();
+        createNewTriggerNameLabel = new javax.swing.JLabel();
+        createNewTriggerNameField = new javax.swing.JTextField();
+        createNewTriggerErrorLabel = new javax.swing.JLabel();
+        createNewTriggerCancelBtn = new javax.swing.JButton();
+        createNewTriggerAddBtn = new javax.swing.JButton();
         modeDropDown = new javax.swing.JComboBox();
         saveMapBtn = new javax.swing.JButton();
         newMapBtn = new javax.swing.JButton();
@@ -1170,6 +1176,11 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
 
         newTriggerBtn.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         newTriggerBtn.setText("Create New Trigger");
+        newTriggerBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newTriggerBtnActionPerformed(evt);
+            }
+        });
 
         openTriggerBtn.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         openTriggerBtn.setText("Open Trigger In Editor");
@@ -1350,6 +1361,61 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
                 .addComponent(testConsoleScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 225, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(closeTestConsoleBtn)
+                .addContainerGap())
+        );
+
+        createNewTriggerNameLabel.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        createNewTriggerNameLabel.setText("New Trigger Name:");
+
+        createNewTriggerNameField.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        createNewTriggerNameField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
+
+        createNewTriggerErrorLabel.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        createNewTriggerErrorLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        createNewTriggerErrorLabel.setText("ERROR LABEL");
+
+        createNewTriggerCancelBtn.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        createNewTriggerCancelBtn.setText("Cancel");
+
+        createNewTriggerAddBtn.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
+        createNewTriggerAddBtn.setText("Add");
+        createNewTriggerAddBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                createNewTriggerAddBtnActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout createNewTriggerDialogLayout = new javax.swing.GroupLayout(createNewTriggerDialog.getContentPane());
+        createNewTriggerDialog.getContentPane().setLayout(createNewTriggerDialogLayout);
+        createNewTriggerDialogLayout.setHorizontalGroup(
+            createNewTriggerDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(createNewTriggerDialogLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(createNewTriggerDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(createNewTriggerDialogLayout.createSequentialGroup()
+                        .addComponent(createNewTriggerCancelBtn)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 139, Short.MAX_VALUE)
+                        .addComponent(createNewTriggerAddBtn))
+                    .addComponent(createNewTriggerErrorLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(createNewTriggerDialogLayout.createSequentialGroup()
+                        .addComponent(createNewTriggerNameLabel)
+                        .addGap(18, 18, 18)
+                        .addComponent(createNewTriggerNameField)))
+                .addContainerGap())
+        );
+        createNewTriggerDialogLayout.setVerticalGroup(
+            createNewTriggerDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(createNewTriggerDialogLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(createNewTriggerDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(createNewTriggerNameField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(createNewTriggerNameLabel))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(createNewTriggerErrorLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(createNewTriggerDialogLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(createNewTriggerCancelBtn)
+                    .addComponent(createNewTriggerAddBtn))
                 .addContainerGap())
         );
 
@@ -1572,6 +1638,24 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_saveTriggerBtnActionPerformed
 
+    private void newTriggerBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newTriggerBtnActionPerformed
+        
+    }//GEN-LAST:event_newTriggerBtnActionPerformed
+
+    private void createNewTriggerAddBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createNewTriggerAddBtnActionPerformed
+        String name = createNewTriggerNameField.getText();
+        
+        if (name==null || name.isEmpty()) {
+            
+        } else {
+            for (Character c : name.toCharArray()) {
+                if (!(Character.isAlphabetic(c) || Character.isDigit(c) || c=='_' || c=='/')) {
+                    createNewTriggerErrorLabel.setText("Error: Name contains illegal characters");
+                }
+            }
+        }
+    }//GEN-LAST:event_createNewTriggerAddBtnActionPerformed
+
     
      
     public static void main(String args[]) {
@@ -1614,6 +1698,12 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
     private javax.swing.JComboBox backgroundTilesetDropDown;
     private javax.swing.JLabel backgroundTilesetLabel;
     private javax.swing.JButton closeTestConsoleBtn;
+    private javax.swing.JButton createNewTriggerAddBtn;
+    private javax.swing.JButton createNewTriggerCancelBtn;
+    private javax.swing.JDialog createNewTriggerDialog;
+    private javax.swing.JLabel createNewTriggerErrorLabel;
+    private javax.swing.JTextField createNewTriggerNameField;
+    private javax.swing.JLabel createNewTriggerNameLabel;
     private javax.swing.JLabel currentlyLoadedTriggerLabel;
     private javax.swing.JButton deleteVarBtn;
     private javax.swing.JFrame editEntityFrame;

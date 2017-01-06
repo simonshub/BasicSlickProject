@@ -3,75 +3,292 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
+
 package engine.gui;
 
-import engine.utils.Callable;
 import engine.environment.ResMgr;
+import engine.game.actors.AnimatedSprite;
+import engine.utils.Location;
+import engine.utils.Rect;
+import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
-import org.newdawn.slick.SpriteSheet;
 
 /**
- *
- * @author XyRoN (Emil SimoN)
+ * @author Emil Simon
  */
+
 public class GuiElement {
-    public int x, y;
-    public String grfx;
-    public Color grfx_color = Color.white;
+    public String name;
+    public Rect rect;
+    public boolean is_clicked;
+    public boolean is_mouse_over;
+    public boolean visible, enabled;
     
-    public boolean show = true;
-    public boolean hovered = false;
-    public boolean btn_down = false;
+    public String on_mouse_up_trigger;
+    public String on_mouse_down_trigger;
+    public String on_hover_trigger;
+    public String on_unhover_trigger;
     
-    public String text = "";
-    public String text_font;
-    public Color text_color = Color.white;
-    public int text_x, text_y;
+    public String tooltip_text;
+    public String hover_sprite_name;
+    public String click_sprite_name;
     
-    public Callable onMouseDown = null;
-    public Callable onMouseUp = null;
-    public Callable onHover = null;
-    public Callable onUnhover = null;
+    public String sprite_name;
+    public Color filter;
+    public Color overlay;
+    public Color underlay;
     
-    public void draw () {
-        if (grfx!=null)
-            ResMgr.getSprite(grfx).draw(x, y, grfx_color);
+    private Animation sprite;
+    private Animation hover_sprite;
+    private Animation click_sprite;
+    
+    
+    
+    public GuiElement () {
+        name = "";
+        rect = new Rect ();
+        is_clicked = false;
+        is_mouse_over = false;
+        visible = true;
+        enabled = true;
         
-        if (!text.equals("") && (ResMgr.font_lib.get(text_font) != null))
-            ResMgr.font_lib.get(text_font).drawString(text_x, text_y, text, text_color);
+        on_mouse_up_trigger = "";
+        on_mouse_down_trigger = "";
+        on_hover_trigger = "";
+        on_unhover_trigger = "";
+        
+        tooltip_text = "";
+        hover_sprite_name = "";
+        click_sprite_name = "";
+        
+        sprite_name = "";
+        filter = new Color (1f,1f,1f);
+        overlay = new Color (1f,1f,1f,0f);
+        underlay = new Color (1f,1f,1f,0f);
+        
+        sprite = null;
+        hover_sprite = null;
+        click_sprite = null;
+    }
+    public GuiElement (String name) {
+        this.name = name;
+        rect = new Rect ();
+        is_clicked = false;
+        is_mouse_over = false;
+        visible = true;
+        enabled = true;
+        
+        on_mouse_up_trigger = "";
+        on_mouse_down_trigger = "";
+        on_hover_trigger = "";
+        on_unhover_trigger = "";
+        
+        tooltip_text = "";
+        hover_sprite_name = "";
+        click_sprite_name = "";
+        
+        sprite_name = "";
+        filter = new Color (1f,1f,1f);
+        overlay = new Color (1f,1f,1f,0f);
+        underlay = new Color (1f,1f,1f,0f);
+        
+        sprite = null;
+        hover_sprite = null;
+        click_sprite = null;
     }
     
-    public void update (GameContainer gc) {
-        int mouseX = gc.getInput().getMouseX();
-        int mouseY = gc.getInput().getMouseY();
-        SpriteSheet s = ResMgr.getSprite(grfx);
+    
+    
+    public void render (GameContainer gc, Graphics g) {
+        if (!visible || rect.width==0 || rect.height==0)
+            return;
         
-        if (!((ResMgr.font_lib.get(text_font) == null) || text.isEmpty() || (text == null))) {
-            text_x = x + s.getWidth()/2 - ResMgr.font_lib.get(text_font).getWidth(text)/2;
-            text_y = y + s.getHeight()/2 - ResMgr.font_lib.get(text_font).getHeight(text)/2;
-        }
+        g.setColor(underlay);
+        g.drawRect(rect.x, rect.y, rect.width, rect.height);
         
-        if (((mouseX > x) && (mouseX < x + s.getWidth())) && ((mouseY > y) && (mouseY < y + s.getHeight()))) {
-            if (!hovered) {
-                hovered = true;
-                onHover.call();
+        if (is_clicked && !click_sprite_name.isEmpty()) {
+            if (click_sprite != null) {
+                click_sprite.draw(rect.x, rect.y, rect.width, rect.height, filter);
             }
-            
-            if (gc.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON) && !btn_down) {
-                btn_down = true;
-                onMouseDown.call();
-            } else if (!gc.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON) && btn_down) {
-                btn_down = false;
-                onMouseUp.call();
+        } else if (is_mouse_over && !hover_sprite_name.isEmpty()) {
+            if (hover_sprite != null) {
+                hover_sprite.draw(rect.x, rect.y, rect.width, rect.height, filter);
             }
         } else {
-            if (hovered) {
-                hovered = false;
-                btn_down = false;
-                onUnhover.call();
+            if (sprite != null) {
+                sprite.draw(rect.x, rect.y, rect.width, rect.height, filter);
             }
         }
+        
+        g.setColor(overlay);
+        g.drawRect(rect.x, rect.y, rect.width, rect.height);
+        
+        if (is_mouse_over && !tooltip_text.isEmpty()) {
+            //SHOW TOOLTIP
+            if (ResMgr.hasFont(GuiController.TOOLTIP_FONT)) {
+                g.setFont(ResMgr.getFont(GuiController.TOOLTIP_FONT));
+                
+                Rect tooltip_rect = new Rect (gc.getInput().getMouseX()+GuiController.TOOLTIP_X_OFFSET-GuiController.TOOLTIP_X_MARGIN,
+                                              gc.getInput().getMouseY()+GuiController.TOOLTIP_Y_OFFSET-GuiController.TOOLTIP_Y_MARGIN,
+                                              ResMgr.getFont(GuiController.TOOLTIP_FONT).getWidth(tooltip_text)+GuiController.TOOLTIP_X_MARGIN*2,
+                                              ResMgr.getFont(GuiController.TOOLTIP_FONT).getHeight(tooltip_text)+GuiController.TOOLTIP_Y_MARGIN*2);
+                
+                if (ResMgr.hasSprite(GuiController.TOOLTIP_BACKGROUND_SPRITE)) {
+                    ResMgr.getSprite(GuiController.TOOLTIP_BACKGROUND_SPRITE).draw(tooltip_rect.x, tooltip_rect.y, tooltip_rect.width, tooltip_rect.height);
+                }
+                
+                g.setColor(Color.white);
+                g.drawString(tooltip_text, tooltip_rect.x+GuiController.TOOLTIP_X_MARGIN, tooltip_rect.y+GuiController.TOOLTIP_Y_MARGIN);
+            }
+        }
+    }
+    
+    public void update (GameContainer gc, GuiController parent) {
+        if (!enabled)
+            return;
+        
+        if (rect.containsLocation(parent.mouse_position)) {
+            if (!is_mouse_over && !on_hover_trigger.isEmpty() && ResMgr.hasTrigger(on_hover_trigger))
+                ResMgr.getTrigger(on_hover_trigger).run("gui_hover");
+            
+            is_mouse_over=true;
+            
+            if (!gc.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON)) {
+                if (is_clicked && !on_mouse_up_trigger.isEmpty() && ResMgr.hasTrigger(on_mouse_up_trigger))
+                    ResMgr.getTrigger(on_mouse_up_trigger).run("gui_mouseup");
+                
+                is_clicked = false;
+            } else {
+                if (!is_clicked && !on_mouse_down_trigger.isEmpty() && ResMgr.hasTrigger(on_mouse_down_trigger))
+                    ResMgr.getTrigger(on_mouse_down_trigger).run("gui_mousedown");
+                
+                is_clicked = true;
+            }
+        } else {
+            if (is_mouse_over && !on_unhover_trigger.isEmpty() && ResMgr.hasTrigger(on_unhover_trigger))
+                ResMgr.getTrigger(on_unhover_trigger).run("gui_unhover");
+            
+            is_mouse_over=false;
+        }
+    }
+    
+    
+    
+    public void hide () {
+        this.visible = false;
+    }
+    public void show () {
+        this.visible = true;
+    }
+    public void enable () {
+        this.enabled = true;
+    }
+    public void disable () {
+        this.enabled = false;
+    }
+    
+    
+    
+    public GuiElement setTooltip (String text) {
+        this.tooltip_text = text;
+        return this;
+    }
+    
+    public GuiElement setGraphics (String sprite, String hover, String click) {
+        if (ResMgr.hasAnimatedSprite(sprite))
+            this.setSprite(sprite);
+        if (ResMgr.hasAnimatedSprite(hover))
+            this.setHoverSprite(hover);
+        if (ResMgr.hasAnimatedSprite(click))
+            this.setClickSprite(click);
+        
+        return this;
+    }
+    
+    public GuiElement setSprite (String sprite) {
+        if (!ResMgr.hasAnimatedSprite(sprite))
+            return this;
+        
+        this.sprite_name = sprite;
+        this.sprite = ResMgr.getAnimatedSprite(sprite).makeAnim();
+        this.sprite.setAutoUpdate(true);
+        return this;
+    }
+    public GuiElement setSprite (AnimatedSprite sprite) {
+        this.sprite_name = sprite.name;
+        this.sprite = sprite.makeAnim();
+        return this;
+    }
+    
+    public GuiElement setHoverSprite (String sprite) {
+        if (!ResMgr.hasAnimatedSprite(sprite))
+            return this;
+        
+        this.hover_sprite_name = sprite;
+        this.hover_sprite = ResMgr.getAnimatedSprite(sprite).makeAnim();
+        this.hover_sprite.setAutoUpdate(true);
+        return this;
+    }
+    public GuiElement setHoverSprite (AnimatedSprite sprite) {
+        this.hover_sprite_name = sprite.name;
+        this.hover_sprite = sprite.makeAnim();
+        return this;
+    }
+    
+    public GuiElement setClickSprite (String sprite) {
+        if (!ResMgr.hasAnimatedSprite(sprite))
+            return this;
+        
+        this.click_sprite_name = sprite;
+        this.click_sprite = ResMgr.getAnimatedSprite(sprite).makeAnim();
+        this.click_sprite.setAutoUpdate(true);
+        return this;
+    }
+    public GuiElement setClickSprite (AnimatedSprite sprite) {
+        this.click_sprite_name = sprite.name;
+        this.click_sprite = sprite.makeAnim();
+        return this;
+    }
+    
+    public GuiElement setFilter (float r, float g, float b, float a) {
+        this.filter = new Color (r,g,b,a);
+        return this;
+    }
+    public GuiElement setOverlay (float r, float g, float b, float a) {
+        this.overlay = new Color (r,g,b,a);
+        return this;
+    }
+    public GuiElement setUnderlay (float r, float g, float b, float a) {
+        this.underlay = new Color (r,g,b,a);
+        return this;
+    }
+    
+    public GuiElement setOnHover (String trigger) {
+        this.on_hover_trigger = trigger;
+        return this;
+    }
+    public GuiElement setOnUnhover (String trigger) {
+        this.on_unhover_trigger = trigger;
+        return this;
+    }
+    public GuiElement setOnMouseUp (String trigger) {
+        this.on_mouse_up_trigger = trigger;
+        return this;
+    }
+    public GuiElement setOnMouseDown (String trigger) {
+        this.on_mouse_down_trigger = trigger;
+        return this;
+    }
+    
+    public GuiElement setVisible (boolean visible) {
+        this.visible = visible;
+        return this;
+    }
+    public GuiElement setEnabled (boolean enabled) {
+        this.enabled = enabled;
+        return this;
     }
 }

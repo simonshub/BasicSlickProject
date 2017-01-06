@@ -9,9 +9,12 @@ import editors.gamestates.ActorEditorState;
 import editors.gamestates.EntityEditorState;
 import editors.gamestates.MapEditorState;
 import engine.environment.ResMgr;
+import engine.gui.GuiController_DEPRICATED;
+import engine.gui.GuiElement_DEPRICATED;
+import engine.environment.Settings;
 import engine.gui.GuiController;
 import engine.gui.GuiElement;
-import engine.environment.Settings;
+import engine.utils.Rect;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -28,6 +31,7 @@ public class MenuState extends BasicGameState {
     public enum Substate { Main, NewGame, LoadGame, Options, ExitConfirm };
     public Substate current_context = Substate.Main;
     
+//    public GuiController_DEPRICATED gui;
     public GuiController gui;
     
     public static final int ID=0;
@@ -41,30 +45,69 @@ public class MenuState extends BasicGameState {
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
         //much like constructor
         
+//        gui = new GuiController_DEPRICATED ();
+//        
+//        //TEST BUTTON
+//        GuiElement_DEPRICATED test = new GuiElement_DEPRICATED ();
+//        
+//        test.grfx = "gui_button";
+//        test.x = 0;
+//        test.y = 0;
+//        test.text_font = "normal_font";
+//        test.text_color = Color.black;
+//        test.text = "Hello!";
+//        test.onHover = () -> { test.text_color = Color.gray; test.grfx = "gui_button"; System.out.println("Mouse Hover"); };
+//        test.onUnhover = () -> { test.text_color = Color.black; test.grfx = "gui_button"; System.out.println("Mouse Unhover"); };
+//        test.onMouseDown = () -> { System.out.println("Mouse Down"); };
+//        test.onMouseUp = () -> { ResMgr.sound_lib.get("click").play(1f, Settings.sfx_volume); System.out.println("Mouse Up"); };
+//        
+//        gui.addElement(test);
+        
         gui = new GuiController ();
         
-        //TEST BUTTON
-        GuiElement test = new GuiElement ();
-        
-        test.grfx = "gui_button";
-        test.x = 0;
-        test.y = 0;
-        test.text_font = "normal_font";
-        test.text_color = Color.black;
-        test.text = "Hello!";
-        test.onHover = () -> { test.text_color = Color.gray; test.grfx = "gui_button_hover"; System.out.println("Mouse Hover"); };
-        test.onUnhover = () -> { test.text_color = Color.black; test.grfx = "gui_button"; System.out.println("Mouse Unhover"); };
-        test.onMouseDown = () -> { System.out.println("Mouse Down"); };
-        test.onMouseUp = () -> { ResMgr.sound_lib.get("click").play(1f, Settings.sfx_volume); System.out.println("Mouse Up"); };
-        
+        GuiElement test = new GuiElement ("test_button_1");
+        test.setSprite("gui_button");
+        test.setHoverSprite("gui_button_hover");
+        test.setClickSprite("gui_button");
+        test.setTooltip("Hello There!");
+        test.rect = new Rect (0,0,300,100);
+        test.on_hover_trigger = "gui_test";
+        test.on_unhover_trigger = "gui_test";
+        test.on_mouse_up_trigger = "gui_test";
+        test.on_mouse_down_trigger = "gui_test";
         gui.addElement(test);
+        
+        GuiElement test2 = new GuiElement ("test_button_2");
+        test2.setSprite("gui_button");
+        test2.setHoverSprite("gui_button_hover");
+        test2.setClickSprite("gui_button");
+        test2.setTooltip("Hello There Too!");
+        test2.rect = new Rect (300,300,300,100);
+        test2.on_hover_trigger = "gui_test";
+        test2.on_unhover_trigger = "gui_test";
+        test2.on_mouse_up_trigger = "gui_test";
+        test2.on_mouse_down_trigger = "gui_test";
+        gui.addElement(test2);
+        
+        GuiElement test3 = new GuiElement ("test_button_3");
+        test3.setSprite("gui_button");
+        test3.setHoverSprite("gui_button_hover");
+        test3.setClickSprite("gui_button");
+        test3.setTooltip("HU >:0");
+        test3.rect = new Rect (350,350,300,300);
+        test3.on_hover_trigger = "gui_test";
+        test3.on_unhover_trigger = "gui_test";
+        test3.on_mouse_up_trigger = "gui_test";
+        test3.on_mouse_down_trigger = "gui_test";
+        gui.addElement(test3);
     }
      
     @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics grphcs) throws SlickException {
         //called on game's frame draw; PUT RENDERING/DRAWING CODE HERE
         
-        gui.draw();
+//        gui.draw();
+        gui.render(gc, grphcs);
     }
      
     @Override

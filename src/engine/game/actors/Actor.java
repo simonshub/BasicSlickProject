@@ -10,8 +10,6 @@ import engine.environment.Consts;
 import engine.logger.Log;
 import engine.environment.ResMgr;
 import engine.environment.Settings;
-import engine.game.entities.Entity;
-import engine.game.maps.Camera;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;

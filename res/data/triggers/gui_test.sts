@@ -1,0 +1,10 @@
+@ descr A test trigger which prints it's passed event into the console. Also, includes the 'sum_folder/test_script' trigger.
+
+if (event == 'gui_hover')
+	console('Element hovered');
+else if (event == 'gui_unhover')
+	console('Element unhovered');
+else if (event == 'gui_mousedown')
+	console('Element pressed');
+else if (event == 'gui_mouseup')
+	console('Element clicked');
