@@ -6,7 +6,6 @@
 package engine.game.triggers;
 
 import java.util.HashMap;
-import javax.script.ScriptEngine;
 
 /**
  *
@@ -14,7 +13,7 @@ import javax.script.ScriptEngine;
  */
 public class TriggerEvent {
     public String eventName;
-    public HashMap<String,Object> params;
+    public HashMap<String,String> params;
     
     
     
@@ -25,23 +24,26 @@ public class TriggerEvent {
     
     
     
-    public void addParam (String var_name, Object var_value) {
+    public TriggerEvent addParam (String var_name, String var_value) {
         params.put(var_name, var_value);
+        return this;
+    }
+    public TriggerEvent param (String var_name, String var_value) {
+        params.put(var_name, var_value);
+        return this;
     }
     
-    public void injectParams (ScriptEngine engine) {
+    
+    
+    public String getEventDefinition () {
+        String code = "var event = {" + "\n";
+        code += "\tvar name: '"+eventName+"'\n";
+        
         for (String key : params.keySet()) {
-            engine.put(key, params.get(key));
+            code += "\tvar "+key+": '"+params.get(key)+"'\n";
         }
+        
+        code += "}\n\n\n";
+        return code;
     }
-    
-//    public String getParamsCode () {
-//        String code = "";
-//        
-//        for (String key : params.keySet()) {
-//            code += "var "+key+" = "+params.get(key).toString();
-//        }
-//        
-//        return code;
-//    }
 }

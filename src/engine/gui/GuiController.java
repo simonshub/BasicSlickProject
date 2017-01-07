@@ -32,6 +32,8 @@ public class GuiController {
     
     public GuiController () {
         guiElements = new ArrayList<> ();
+        mouse_position = new Location ();
+        visible = true;
     }
     
     
@@ -55,5 +57,24 @@ public class GuiController {
         for (GuiElement el : guiElements) {
             el.update(gc, this);
         }
+    }
+    
+    public GuiElement[] getElementsByName (String name) {
+        List<GuiElement> result = new ArrayList<> ();
+        
+        for (GuiElement el : guiElements) {
+            if (el.name.equals(name))
+                result.add(el);
+        }
+        
+        return (GuiElement[]) result.toArray();
+    }
+    
+    public GuiElement getFirstElementByName (String name) {
+        for (GuiElement el : guiElements) {
+            if (el.name.equals(name))
+                return el;
+        }
+        return null;
     }
 }

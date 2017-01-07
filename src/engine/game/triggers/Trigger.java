@@ -149,22 +149,24 @@ public class Trigger {
     public void update (TriggerEvent[] event_list, GameMap context) {
         for (TriggerEvent event : event_list) {
             if (events.contains(event.eventName)) {
+                String context_code = context.trigger_header + code;
+                String event_code = event.getEventDefinition() + context_code;
+                
                 try {
-                    event.injectParams(engine);
                     if (this.async) {
                         Thread t = new Thread (() -> {
                             try {
-                                engine.eval(code);
+                                engine.eval(event_code);
                             } catch (ScriptException ex) {
-                                Log.err(Log.TRIG,"while trying to evaluate some code at async event '"+event+"' ...\nCODE:\n"+code,ex);
+                                Log.err(Log.TRIG,"while trying to evaluate some code at async event '"+event+"' ...\nCODE:\n"+event_code,ex);
                             }
                         });
                         t.start();
                     } else {
-                        engine.eval(code);
+                        engine.eval(event_code);
                     }
                 } catch (ScriptException ex) {
-                    Log.err(Log.TRIG,"while trying to evaluate some code at event '"+event+"' ...\nCODE:\n"+code,ex);
+                    Log.err(Log.TRIG,"while trying to evaluate some code at event '"+event+"' ...\nCODE:\n"+event_code,ex);
                 }
                 break;
             }
