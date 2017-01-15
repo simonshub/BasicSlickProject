@@ -34,6 +34,7 @@ public class MapEditorState extends BasicGameState implements MouseListener {
     public int dragX,dragY;
     public int dragOriginX,dragOriginY;
     public int tilePainterX,tilePainterY;
+    public boolean snapToGrid;
     
     
 
@@ -51,6 +52,7 @@ public class MapEditorState extends BasicGameState implements MouseListener {
         dragOriginY=-1;
         tilePainterX=-1;
         tilePainterY=-1;
+        snapToGrid = false;
     }
     
     
@@ -76,21 +78,31 @@ public class MapEditorState extends BasicGameState implements MouseListener {
             g.setColor(Color.white);
             //g.drawString("Selector: "+tilePainterX+","+tilePainterY, 32, 128);
         } else if ((map_toolbar.editMode == MapTrigEditorToolbar.EditMode.ENTITIES) && (map_toolbar.entityTool == MapTrigEditorToolbar.EntityTool.PLACE)) {
+            int mouse_x = gc.getInput().getMouseX();
+            int mouse_y = gc.getInput().getMouseY();
+            if (snapToGrid) {
+                mouse_x -= gc.getInput().getMouseX()%map_toolbar.getGridX()
+                        - (gc.getInput().getMouseX()%map_toolbar.getGridX() > map_toolbar.getGridX()/2 ? map_toolbar.getGridX() : 0);
+                mouse_y -= gc.getInput().getMouseY()%map_toolbar.getGridY()
+                        - (gc.getInput().getMouseY()%map_toolbar.getGridY() > map_toolbar.getGridY()/2 ? map_toolbar.getGridY() : 0);
+            }
+            
             EntityType cur_entity = map_toolbar.getSelectedEntityType();
             Color filter = new Color (1f,1f,1f,0.5f);
             Color collider_filter = new Color (0f,1f,0f,0.5f);
             
             if (!currentMap.canPlaceEntity(cur_entity,
-                                         (gc.getInput().getMouseX() + currentMap.cam.location.x),
-                                         (gc.getInput().getMouseY() + currentMap.cam.location.y))) {
+                                         (mouse_x + currentMap.cam.location.x),
+                                         (mouse_y + currentMap.cam.location.y), currentMap.getBounds())) {
                 filter = new Color (1f,0f,0f,0.5f);
                 collider_filter = new Color (1f,0f,0f,0.5f);
             }
             
-            cur_entity.getActor().render(gc.getInput().getMouseX()-cur_entity.originX, gc.getInput().getMouseY()-cur_entity.originY,
-                            filter, cur_entity.getActor().default_anim, currentMap.cam.zoom);
+            cur_entity.getActor().render(mouse_x-cur_entity.originX,
+                                         mouse_y-cur_entity.originY,
+                                         filter, cur_entity.getActor().default_anim, currentMap.cam.zoom);
             
-            cur_entity.collider.renderExplicit(g, gc.getInput().getMouseX(), gc.getInput().getMouseY(), collider_filter);
+            cur_entity.collider.renderExplicit(g, mouse_x, mouse_y, collider_filter);
         }
         
     }
@@ -191,12 +203,20 @@ public class MapEditorState extends BasicGameState implements MouseListener {
         }
         
         if ((map_toolbar.editMode == MapTrigEditorToolbar.EditMode.ENTITIES) && (map_toolbar.entityTool == MapTrigEditorToolbar.EntityTool.PLACE) && (gc.getInput().isMousePressed(Input.MOUSE_LEFT_BUTTON))) {
+            snapToGrid = map_toolbar.getSnapToGrid();
+            
+            int mouse_x = gc.getInput().getMouseX();
+            int mouse_y = gc.getInput().getMouseY();
+            if (snapToGrid) {
+                mouse_x -= gc.getInput().getMouseX()%map_toolbar.getGridX()
+                        - (gc.getInput().getMouseX()%map_toolbar.getGridX() > map_toolbar.getGridX()/2 ? map_toolbar.getGridX() : 0);
+                mouse_y -= gc.getInput().getMouseY()%map_toolbar.getGridY()
+                        - (gc.getInput().getMouseY()%map_toolbar.getGridY() > map_toolbar.getGridY()/2 ? map_toolbar.getGridY() : 0);;
+            }
             if (currentMap.canPlaceEntity(map_toolbar.getSelectedEntityType(),
-                                         (gc.getInput().getMouseX() + currentMap.cam.location.x),
-                                         (gc.getInput().getMouseY() + currentMap.cam.location.y)))
-                currentMap.placeEntity(map_toolbar.getSelectedEntityType(),
-                                      (gc.getInput().getMouseX() + currentMap.cam.location.x),
-                                      (gc.getInput().getMouseY() + currentMap.cam.location.y));
+                                         (mouse_x + currentMap.cam.location.x),
+                                         (mouse_y + currentMap.cam.location.y), currentMap.getBounds()))
+                currentMap.placeEntity(map_toolbar.getSelectedEntityType(), mouse_x + currentMap.cam.location.x, mouse_y + currentMap.cam.location.y);
         }
         
         if ((map_toolbar.editMode == MapTrigEditorToolbar.EditMode.ENTITIES) && (map_toolbar.entityTool == MapTrigEditorToolbar.EntityTool.EDIT) && (gc.getInput().isMousePressed(Input.MOUSE_LEFT_BUTTON))) {

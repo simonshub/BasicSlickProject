@@ -8,8 +8,14 @@ package engine.gui;
 
 import engine.environment.ResMgr;
 import engine.game.actors.AnimatedSprite;
-import engine.utils.Location;
+import engine.game.triggers.TriggerEvent;
+import engine.logger.Log;
 import engine.utils.Rect;
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -20,7 +26,7 @@ import org.newdawn.slick.Input;
  * @author Emil Simon
  */
 
-public class GuiElement {
+public abstract class GuiElement {
     public String name;
     public Rect rect;
     public boolean is_clicked;
@@ -125,7 +131,9 @@ public class GuiElement {
         
         g.setColor(overlay);
         g.drawRect(rect.x, rect.y, rect.width, rect.height);
-        
+    }
+    
+    public boolean renderTooltip (GameContainer gc, Graphics g) {
         if (is_mouse_over && !tooltip_text.isEmpty()) {
             //SHOW TOOLTIP
             if (ResMgr.hasFont(GuiController.TOOLTIP_FONT)) {
@@ -142,8 +150,10 @@ public class GuiElement {
                 
                 g.setColor(Color.white);
                 g.drawString(tooltip_text, tooltip_rect.x+GuiController.TOOLTIP_X_MARGIN, tooltip_rect.y+GuiController.TOOLTIP_Y_MARGIN);
+                return true;
             }
         }
+        return false;
     }
     
     public void update (GameContainer gc, GuiController parent) {
@@ -152,24 +162,24 @@ public class GuiElement {
         
         if (rect.containsLocation(parent.mouse_position)) {
             if (!is_mouse_over && !on_hover_trigger.isEmpty() && ResMgr.hasTrigger(on_hover_trigger))
-                ResMgr.getTrigger(on_hover_trigger).run("gui_hover");
+                ResMgr.getTrigger(on_hover_trigger).run(new TriggerEvent("gui_hover").addParam("element", this.name));
             
             is_mouse_over=true;
             
             if (!gc.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON)) {
                 if (is_clicked && !on_mouse_up_trigger.isEmpty() && ResMgr.hasTrigger(on_mouse_up_trigger))
-                    ResMgr.getTrigger(on_mouse_up_trigger).run("gui_mouseup");
+                    ResMgr.getTrigger(on_mouse_up_trigger).run(new TriggerEvent("gui_mouseup").addParam("element", this.name));
                 
                 is_clicked = false;
             } else {
                 if (!is_clicked && !on_mouse_down_trigger.isEmpty() && ResMgr.hasTrigger(on_mouse_down_trigger))
-                    ResMgr.getTrigger(on_mouse_down_trigger).run("gui_mousedown");
+                    ResMgr.getTrigger(on_mouse_down_trigger).run(new TriggerEvent("gui_mousedown").addParam("element", this.name));
                 
                 is_clicked = true;
             }
         } else {
             if (is_mouse_over && !on_unhover_trigger.isEmpty() && ResMgr.hasTrigger(on_unhover_trigger))
-                ResMgr.getTrigger(on_unhover_trigger).run("gui_unhover");
+                ResMgr.getTrigger(on_unhover_trigger).run(new TriggerEvent("gui_unhover").addParam("element", this.name));
             
             is_mouse_over=false;
         }

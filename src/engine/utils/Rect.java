@@ -49,6 +49,12 @@ public class Rect {
                (loc.x <= this.x+this.width) &&
                (loc.y <= this.y+this.height);
     }
+    public boolean containsLocation (int x, int y) {
+        return (x >= this.x) &&
+               (y >= this.y) &&
+               (x <= this.x+this.width) &&
+               (y <= this.y+this.height);
+    }
     public Location upperLeft () {
         return new Location (x,y);
     }

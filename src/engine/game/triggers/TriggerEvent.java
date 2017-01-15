@@ -37,10 +37,10 @@ public class TriggerEvent {
     
     public String getEventDefinition () {
         String code = "var event = {" + "\n";
-        code += "\tvar name: '"+eventName+"'\n";
+        code += "\tname: '"+eventName+"',\n";
         
         for (String key : params.keySet()) {
-            code += "\tvar "+key+": '"+params.get(key)+"'\n";
+            code += "\t"+key+": '"+params.get(key)+"',\n";
         }
         
         code += "}\n\n\n";

@@ -1,6 +1,16 @@
 
+/* 
+ * 
+ * MASTER SCRIPT
+ * 
+ * This script is included into every other trigger script automatically.
+ * Place any code you want to affect the entire game here.
+ * 
+ */
 
 
+
+// custom 
 var actor = Java.type('engine.game.actors.Actor');
 var entity = Java.type('engine.game.entities.Entity');
 var entity_type = Java.type('engine.game.entities.EntityType');

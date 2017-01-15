@@ -12,6 +12,7 @@ import engine.environment.ResMgr;
 import engine.environment.Settings;
 import engine.gui.GuiController;
 import engine.gui.GuiElement;
+import engine.gui.elements.SButton;
 import engine.utils.Rect;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -62,7 +63,7 @@ public class MenuState extends BasicGameState {
         
         gui = new GuiController ();
         
-        GuiElement test = new GuiElement ("test_button_1");
+        SButton test = new SButton ("test_button_1");
         test.setSprite("gui_button");
         test.setHoverSprite("gui_button_hover");
         test.setClickSprite("gui_button");
@@ -74,7 +75,7 @@ public class MenuState extends BasicGameState {
         test.on_mouse_down_trigger = "gui_test";
         gui.addElement(test);
         
-        GuiElement test2 = new GuiElement ("test_button_2");
+        SButton test2 = new SButton ("test_button_2");
         test2.setSprite("gui_button");
         test2.setHoverSprite("gui_button_hover");
         test2.setClickSprite("gui_button");
@@ -86,7 +87,7 @@ public class MenuState extends BasicGameState {
         test2.on_mouse_down_trigger = "gui_test";
         gui.addElement(test2);
         
-        GuiElement test3 = new GuiElement ("test_button_3");
+        SButton test3 = new SButton ("test_button_3");
         test3.setSprite("gui_button");
         test3.setHoverSprite("gui_button_hover");
         test3.setClickSprite("gui_button");

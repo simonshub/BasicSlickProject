@@ -6,7 +6,6 @@
 
 package engine.game.triggers;
 
-import engine.environment.Consts;
 import engine.environment.ResMgr;
 import engine.game.maps.GameMap;
 import engine.logger.Log;
@@ -178,7 +177,7 @@ public class Trigger {
     public void run () {
         run (TriggerMgr.FORCED_EXECUTION_EVENT);
     }
-    public void run (String event) {
+    public void run (TriggerEvent event) {
         String eval_code = "";
         eval_code += TriggerMgr.master_trigger.code + "\n\n";
         
@@ -188,7 +187,7 @@ public class Trigger {
             }
         }
         eval_code += this.code + "\n\n";
-        eval_code = (Consts.TRIGGER_EVENT_DECLARATION + eval_code).replace(TriggerMgr.EVENT_NAME_PLACEHOLDER, event);
+        eval_code = (event.getEventDefinition() + eval_code).replace(TriggerMgr.EVENT_NAME_PLACEHOLDER, event.eventName);
         
         try {
             if (this.async) {

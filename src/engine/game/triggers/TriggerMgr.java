@@ -25,11 +25,11 @@ import javax.script.ScriptEngineManager;
 
 public abstract class TriggerMgr {
     public static final String SCRIPT_ENGINE_NAME = "nashorn";
-    public static final String FORCED_EXECUTION_EVENT = "_forced_run";
     public static final String MASTER_SCRIPT_PATH = Consts.TRIGGER_DUMP_FOLDER+"master.sts";
     public static final String EVENT_LIST_SCRIPT_PATH = Consts.TRIGGER_DUMP_FOLDER+"event_list.sts";
     
-    public static final String EVENT_NAME_PLACEHOLDER = "_EVENT_NAME";
+    public static final String EVENT_NAME_PLACEHOLDER = "$event";
+    public static final TriggerEvent FORCED_EXECUTION_EVENT = new TriggerEvent ("_forced_run");
     
     public static ScriptEngineManager engine_mgr;
     public static Trigger master_trigger;

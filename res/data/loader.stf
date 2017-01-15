@@ -1,6 +1,6 @@
 # list of stuff to load up at game start
 
-#   GAME WIDE CONSTANTS - DO NOT ALTER
+#   GAME WIDE CONSTANTS
 sprite:tooltip 'res/gui/menu/tooltip_bkg.png' 256 256
 font:tooltip 'Times New Roman' 20 plain
 

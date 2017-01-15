@@ -13,6 +13,7 @@ import engine.environment.Settings;
 import engine.game.entities.EntityType;
 import engine.game.triggers.Trigger;
 import engine.logger.Log;
+import engine.utils.Rect;
 import engine.utils.StringUtils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -100,7 +101,10 @@ public class GameMap {
     
     
     
-    public boolean canPlaceEntity (EntityType entity_type, int x, int y) {
+    public boolean canPlaceEntity (EntityType entity_type, int x, int y, Rect map_bounds) {
+        if (!map_bounds.containsLocation(x,y))
+            return false;
+        
         for (Entity e : entities.values()) {
             if (e.intersectsCollider(entity_type, x, y))
                 return false;
@@ -228,6 +232,12 @@ public class GameMap {
     
     public void update(GameContainer gc, StateBasedGame sbg, int i) {
         
+    }
+    
+    
+    
+    public Rect getBounds () {
+        return new Rect (0, 0, this.tiles_width*Consts.TILESET_FRAME_WIDTH, this.tiles_height*Consts.TILESET_FRAME_HEIGHT);
     }
     
     

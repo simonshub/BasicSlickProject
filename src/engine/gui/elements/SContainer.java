@@ -6,10 +6,44 @@
 
 package engine.gui.elements;
 
+import engine.gui.GuiController;
+import engine.gui.GuiElement;
+import java.util.ArrayList;
+import java.util.List;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+
 /**
  * @author Emil Simon
  */
 
-public class SContainer {
-
+public class SContainer extends GuiElement {
+    List<GuiElement> elements;
+    
+    
+    
+    public SContainer () {
+        super();
+        
+        elements = new ArrayList<> ();
+    }
+    
+    
+    @Override
+    public void render (GameContainer gc, Graphics g) {
+        super.render(gc, g);
+        
+        for (GuiElement el : elements) {
+            el.render(gc, g);
+        }
+    }
+    
+    @Override
+    public void update (GameContainer gc, GuiController parent) {
+        super.update(gc,parent);
+        
+        for (GuiElement el : elements) {
+            el.update(gc,parent);
+        }
+    }
 }

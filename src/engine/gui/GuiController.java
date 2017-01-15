@@ -8,6 +8,7 @@ package engine.gui;
 
 import engine.utils.Location;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -48,6 +49,10 @@ public class GuiController {
         
         for (GuiElement el : guiElements)
             el.render(gc, g);
+        
+        for (int i=guiElements.size()-1;i>=0;i--) {
+            if (guiElements.get(i).renderTooltip(gc,g)) break;
+        }
     }
     
     public void update (GameContainer gc) {

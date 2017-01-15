@@ -1,10 +1,14 @@
 @ descr A test trigger which prints it's passed event into the console. Also, includes the 'sum_folder/test_script' trigger.
 
-if (event == 'gui_hover')
-	console('Element hovered');
-else if (event == 'gui_unhover')
-	console('Element unhovered');
-else if (event == 'gui_mousedown')
-	console('Element pressed');
-else if (event == 'gui_mouseup')
-	console('Element clicked');
+console(JSON.stringify(event));
+
+if (event.name == 'gui_hover')
+	console(event.element+' hovered');
+else if (event.name == 'gui_unhover')
+	console(event["element"]+' unhovered');
+else if (event.name == 'gui_mousedown')
+	console(event["element"]+' pressed');
+else if (event.name == 'gui_mouseup')
+	console(event["element"]+' clicked');
+	
+	

@@ -19,13 +19,13 @@ import org.newdawn.slick.Input;
  */
 
 public class SButton extends GuiElement {
-    
+    public String text;
     public String sound_name;
     
     
     
-    public SButton () {
-        super();
+    public SButton (String name) {
+        super(name);
         
         sound_name = "";
     }
