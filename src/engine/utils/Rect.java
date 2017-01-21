@@ -67,4 +67,13 @@ public class Rect {
     public Location lowerRight () {
         return new Location (x+width,y+height);
     }
+    public Location center () {
+        return new Location (x+width/2,y+height/2);
+    }
+    public int centerX () {
+        return x+width/2;
+    }
+    public int centerY () {
+        return y+height/2;
+    }
 }

@@ -5,4 +5,4 @@
 @ load sum_folder/test_script
 
 console('$event');
-console(JSON.stringify(event));
+object(event);

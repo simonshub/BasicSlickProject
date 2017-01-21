@@ -35,6 +35,9 @@ function console (text) {
 function error (text) {
 	_log.error(text);
 }
+function object (obj) {
+	_log.console(JSON.stringify(obj));
+}
 
 
 

@@ -7,13 +7,12 @@
 package engine.gui.elements;
 
 import engine.environment.ResMgr;
-import engine.environment.Settings;
 import engine.gui.GuiController;
 import engine.gui.GuiElement;
 import engine.logger.Log;
+import org.newdawn.slick.Font;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
 
 /**
  * @author Emil Simon
@@ -52,8 +51,14 @@ public class SLabel extends GuiElement {
     @Override
     public void render (GameContainer gc, Graphics g) {
         super.render(gc, g);
-        g.setFont(null);
-        g.drawString(name, x, y);
+        
+        Font f = ResMgr.hasFont(font) ? ResMgr.getFont(font) : null;
+        if (f==null) return;
+        
+        int width = f.getWidth(text);
+        int height = f.getHeight(text);
+        g.setFont(f);
+        g.drawString(name, rect.centerX()-width/2, rect.centerY()-height/2);
     }
     
     @Override
