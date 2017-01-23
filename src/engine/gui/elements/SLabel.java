@@ -62,7 +62,7 @@ public class SLabel extends GuiElement {
     }
     
     @Override
-    public void update (GameContainer gc, GuiController parent) {
-        super.update(gc,parent);
+    public boolean update (GameContainer gc, GuiController parent) {
+        return super.update(gc,parent);
     }
 }

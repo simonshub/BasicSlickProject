@@ -39,11 +39,12 @@ public class SContainer extends GuiElement {
     }
     
     @Override
-    public void update (GameContainer gc, GuiController parent) {
+    public boolean update (GameContainer gc, GuiController parent) {
         super.update(gc,parent);
         
         for (GuiElement el : elements) {
-            el.update(gc,parent);
+            if (el.update(gc,parent)) return true;
         }
+        return false;
     }
 }

@@ -8,7 +8,6 @@ package engine.gui;
 
 import engine.utils.Location;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -60,7 +59,7 @@ public class GuiController {
         mouse_position.y = gc.getInput().getMouseY();
         
         for (GuiElement el : guiElements) {
-            el.update(gc, this);
+            if (el.update(gc, this)) break;
         }
     }
     

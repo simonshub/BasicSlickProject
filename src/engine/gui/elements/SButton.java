@@ -19,7 +19,7 @@ import org.newdawn.slick.Input;
  */
 
 public class SButton extends GuiElement {
-    public String text;
+    public SLabel label;
     public String sound_name;
     
     
@@ -37,15 +37,19 @@ public class SButton extends GuiElement {
     }
     
     @Override
-    public void update (GameContainer gc, GuiController parent) {
+    public boolean update (GameContainer gc, GuiController parent) {
         if (rect.containsLocation(parent.mouse_position) && gc.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON) && !is_clicked && ResMgr.hasSound(sound_name))
             ResMgr.getSound(sound_name).play(1f, Settings.sfx_volume);
         
-        super.update(gc,parent);
+        return super.update(gc,parent);
     }
     
     
     
+    public SButton setText (String text) {
+        this.label = (SLabel) new SLabel (this.name+"_label").setText(text).setRect(rect);
+        return this;
+    }
     public SButton setOnClick (String sound, String trigger) {
         this.sound_name = sound;
         this.on_mouse_up_trigger = trigger;

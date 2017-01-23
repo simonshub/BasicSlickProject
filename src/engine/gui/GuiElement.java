@@ -9,13 +9,8 @@ package engine.gui;
 import engine.environment.ResMgr;
 import engine.game.actors.AnimatedSprite;
 import engine.game.triggers.TriggerEvent;
-import engine.logger.Log;
+import engine.utils.Location;
 import engine.utils.Rect;
-import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -156,9 +151,9 @@ public abstract class GuiElement {
         return false;
     }
     
-    public void update (GameContainer gc, GuiController parent) {
+    public boolean update (GameContainer gc, GuiController parent) {
         if (!enabled)
-            return;
+            return false;
         
         if (rect.containsLocation(parent.mouse_position)) {
             if (!is_mouse_over && !on_hover_trigger.isEmpty() && ResMgr.hasTrigger(on_hover_trigger))
@@ -177,11 +172,13 @@ public abstract class GuiElement {
                 
                 is_clicked = true;
             }
+            return true;
         } else {
             if (is_mouse_over && !on_unhover_trigger.isEmpty() && ResMgr.hasTrigger(on_unhover_trigger))
                 ResMgr.getTrigger(on_unhover_trigger).run(new TriggerEvent("gui_unhover").addParam("element", this.name));
             
             is_mouse_over=false;
+            return false;
         }
     }
     
@@ -201,6 +198,21 @@ public abstract class GuiElement {
     }
     
     
+    
+    public GuiElement setRect (Rect rect) {
+        this.rect = rect;
+        return this;
+    }
+    public GuiElement setLocation (Location loc) {
+        rect.x = loc.x;
+        rect.y = loc.y;
+        return this;
+    }
+    public GuiElement setSize (int width, int height) {
+        rect.width = width;
+        rect.height = height;
+        return this;
+    }
     
     public GuiElement setTooltip (String text) {
         this.tooltip_text = text;
