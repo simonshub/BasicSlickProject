@@ -6,6 +6,7 @@
 
 package engine.game.triggers;
 
+import engine.environment.Consts;
 import engine.environment.ResMgr;
 import engine.game.maps.GameMap;
 import engine.logger.Log;
@@ -32,6 +33,7 @@ public class Trigger {
     public Set<String> loaded_triggers;
     public ScriptEngine engine;
     public boolean async;
+    public boolean active_read;
     
     
     
@@ -41,6 +43,7 @@ public class Trigger {
         code = "";
         description = "Master trigger - this code is included automatically for every trigger.";
         async = false;
+        active_read = false;
         events = new HashSet<> ();
         loaded_triggers = new HashSet<> ();
         engine = TriggerMgr.engine_mgr.getEngineByName(TriggerMgr.SCRIPT_ENGINE_NAME);
@@ -52,6 +55,7 @@ public class Trigger {
         code = "";
         description = "";
         async = false;
+        active_read = false;
         events = new HashSet<> ();
         loaded_triggers = new HashSet<> ();
         engine = TriggerMgr.engine_mgr.getEngineByName(TriggerMgr.SCRIPT_ENGINE_NAME);
@@ -64,6 +68,7 @@ public class Trigger {
         code = "";
         description = "";
         async = false;
+        active_read = false;
         events = new HashSet<> ();
         loaded_triggers = new HashSet<> ();
         engine = TriggerMgr.engine_mgr.getEngineByName(TriggerMgr.SCRIPT_ENGINE_NAME);
@@ -77,54 +82,60 @@ public class Trigger {
         readScript(new File (path));
     }
     public final void readScript (File file) throws TriggerException {
+        code = "";
+        
         try {
             BufferedReader r = new BufferedReader (new FileReader (file));
             String line;
             while ((line=r.readLine())!=null) {
                 if (line.trim().startsWith("@")) {
                     String[] words = line.substring(1).trim().split(" ");
-                    if (words.length == 3) {
-                        switch (words[0].trim().toLowerCase()) {
-                            case "bind" :
-                                code += "var " + words[2].trim() + " = Java.type('"+words[1].trim()+"');" + "\n";
+                    switch (words.length) {
+                        case 3:
+                            switch (words[0].trim().toLowerCase()) {
+                                case "bind" :
+                                    code += "var " + words[2].trim() + " = Java.type('"+words[1].trim()+"');" + "\n";
 //                                engine_bindings.put(words[2].trim(), Class.forName(words[1].trim()));
-                                Log.log(Log.TRIG, "bound '"+words[1].trim()+"' to '"+words[2].trim()+"' in trigger '"+name+"'");
-                                break;
-                            case "global" :
-                                engine.put(words[1].trim(), words[2].trim());
-                                Log.log(Log.TRIG, "bound '"+words[1].trim()+"' to '"+words[2].trim()+"' in trigger '"+name+"'");
-                                break;
-                            default :
+                                    Log.log(Log.TRIG, "bound '"+words[1].trim()+"' to '"+words[2].trim()+"' in trigger '"+name+"'");
+                                    break;
+                                case "global" :
+                                    engine.put(words[1].trim(), words[2].trim());
+                                    Log.log(Log.TRIG, "bound '"+words[1].trim()+"' to '"+words[2].trim()+"' in trigger '"+name+"'");
+                                    break;
+                                default :
+                                    throw new TriggerException ();
+                            }   break;
+                        case 2:
+                            switch (words[0].trim().toLowerCase()) {
+                                case "event" :
+                                    events.add(words[1].trim());
+                                    Log.log(Log.TRIG, "added event '"+words[1].trim()+"' in trigger '"+name+"'");
+                                    break;
+                                case "load" :
+                                    loaded_triggers.add(FileUtils.getNameWithoutExtension(words[1].trim()));
+                                    Log.log(Log.TRIG, "loaded trigger '"+FileUtils.getNameWithoutExtension(words[1].trim())+"' for trigger '"+name+"'");
+                                    break;
+                                default :
+                                    throw new TriggerException ();
+                            }   break;
+                        case 1:
+                            switch (words[0].trim().toLowerCase()) {
+                                case "async" :
+                                    this.async = true;
+                                    break;
+                                case "dynamic" :
+                                    this.active_read = true;
+                                    break;
+                                default :
+                                    throw new TriggerException ();
+                            }   break;
+                        default:
+                            if (words[0].trim().toLowerCase().equals("descr") && !active_read) {
+                                this.description = line.replaceFirst("@","").replaceFirst("descr","").trim();
+                                Log.log(Log.TRIG, "added description '"+this.description+"' for trigger '"+name+"'");
+                            } else {
                                 throw new TriggerException ();
-                        }
-                    } else if (words.length == 2) {
-                        switch (words[0].trim().toLowerCase()) {
-                            case "event" :
-                                events.add(words[1].trim());
-                                Log.log(Log.TRIG, "added event '"+words[1].trim()+"' in trigger '"+name+"'");
-                                break;
-                            case "load" :
-                                loaded_triggers.add(FileUtils.getNameWithoutExtension(words[1].trim()));
-                                Log.log(Log.TRIG, "loaded trigger '"+FileUtils.getNameWithoutExtension(words[1].trim())+"' for trigger '"+name+"'");
-                                break;
-                            default :
-                                throw new TriggerException ();
-                        }
-                    } else if (words.length == 1) {
-                        switch (words[0].trim().toLowerCase()) {
-                            case "async" :
-                                this.async = true;
-                                break;
-                            default :
-                                throw new TriggerException ();
-                        }
-                    } else {
-                        if (words[0].trim().toLowerCase().equals("descr")) {
-                            this.description = line.replaceFirst("@","").replaceFirst("descr","").trim();
-                            Log.log(Log.TRIG, "added description '"+this.description+"' for trigger '"+name+"'");
-                        } else {
-                            throw new TriggerException ();
-                        }
+                            }   break;
                     }
                 } else {
                     code += line + "\n";
@@ -136,11 +147,7 @@ public class Trigger {
             Log.err(Log.TRIG,"trigger '"+file.getPath().replace("\\", "/")+"' could not be parsed! - IOException",ex);
         } catch (TriggerException ex) {
             Log.err(Log.TRIG,"trigger '"+file.getPath().replace("\\", "/")+"' could not be parsed! - Script pre-eval line syntax error",ex);
-        } /*catch (ScriptException ex) {
-            Log.err(Log.TRIG,"trigger '"+file.getPath().replace("\\", "/")+"' could not be parsed! - ScriptException",ex);
-        } catch (ClassNotFoundException ex) {
-            Log.log(Log.TRIG,Log.LogLevel.ERROR,"trigger '"+file.getPath().replace("\\", "/")+"' could not be parsed! - ClassNotFoundException");
-        }*/
+        }
     }
     
     
@@ -180,16 +187,21 @@ public class Trigger {
     public void run (TriggerEvent event) {
         String eval_code = "";
         eval_code += TriggerMgr.master_trigger.code + "\n\n";
+        eval_code += event.getEventDefinition();
         
         for (String trig_name : loaded_triggers) {
             if (!trig_name.equals(TriggerMgr.master_trigger.name)) {
                 eval_code += ResMgr.getTrigger(trig_name).code + "\n\n";
             }
         }
-        eval_code += this.code + "\n\n";
-        eval_code = (event.getEventDefinition() + eval_code).replace(TriggerMgr.EVENT_NAME_PLACEHOLDER, event.eventName);
         
         try {
+            if (this.active_read)
+                this.readScript(Consts.TRIGGER_DUMP_FOLDER+"/"+name+"."+Consts.TRIGGER_FILE_EXTENSION);
+            
+            eval_code += this.code + "\n\n";
+            eval_code = eval_code.replace(TriggerMgr.EVENT_NAME_PLACEHOLDER, event.eventName);
+            
             if (this.async) {
                 final String async_code = eval_code;
                 Thread t = new Thread (() -> {
@@ -204,6 +216,8 @@ public class Trigger {
                 engine.eval(eval_code);
             }
         } catch (ScriptException ex) {
+            Log.err(Log.TRIG,"while trying to run some code ...\nCODE:\n"+eval_code,ex);
+        } catch (TriggerException ex) {
             Log.err(Log.TRIG,"while trying to run some code ...\nCODE:\n"+eval_code,ex);
         }
     }

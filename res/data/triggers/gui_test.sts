@@ -1,4 +1,5 @@
-@ descr A test trigger which prints it's passed event into the console. Also, includes the 'sum_folder/test_script' trigger.
+@ descr A test trigger which prints its passed event into the console. Also, includes the 'sum_folder/test_script' trigger.
+@ dynamic
 
 object(event);
 
@@ -12,3 +13,5 @@ else if (event.name == 'gui_mouseup')
 	console(event["element"]+' clicked');
 	
 	
+
+console(JSON.stringify(event.element.rect));

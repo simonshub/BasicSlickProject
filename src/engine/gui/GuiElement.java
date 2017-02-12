@@ -151,34 +151,36 @@ public abstract class GuiElement {
         return false;
     }
     
-    public boolean update (GameContainer gc, GuiController parent) {
+    public void update (GameContainer gc, GuiController parent) {
         if (!enabled)
-            return false;
+            return;
+        
+        if (!parent.focusedElement.isEmpty())
+            return;
         
         if (rect.containsLocation(parent.mouse_position)) {
             if (!is_mouse_over && !on_hover_trigger.isEmpty() && ResMgr.hasTrigger(on_hover_trigger))
-                ResMgr.getTrigger(on_hover_trigger).run(new TriggerEvent("gui_hover").addParam("element", this.name));
+                ResMgr.getTrigger(on_hover_trigger).run(new TriggerEvent("gui_hover").addParam("element", this));
             
             is_mouse_over=true;
             
             if (!gc.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON)) {
                 if (is_clicked && !on_mouse_up_trigger.isEmpty() && ResMgr.hasTrigger(on_mouse_up_trigger))
-                    ResMgr.getTrigger(on_mouse_up_trigger).run(new TriggerEvent("gui_mouseup").addParam("element", this.name));
+                    ResMgr.getTrigger(on_mouse_up_trigger).run(new TriggerEvent("gui_mouseup").addParam("element", this));
                 
                 is_clicked = false;
             } else {
                 if (!is_clicked && !on_mouse_down_trigger.isEmpty() && ResMgr.hasTrigger(on_mouse_down_trigger))
-                    ResMgr.getTrigger(on_mouse_down_trigger).run(new TriggerEvent("gui_mousedown").addParam("element", this.name));
+                    ResMgr.getTrigger(on_mouse_down_trigger).run(new TriggerEvent("gui_mousedown").addParam("element", this));
                 
                 is_clicked = true;
             }
-            return true;
+            parent.focusedElement = this.name;
         } else {
             if (is_mouse_over && !on_unhover_trigger.isEmpty() && ResMgr.hasTrigger(on_unhover_trigger))
-                ResMgr.getTrigger(on_unhover_trigger).run(new TriggerEvent("gui_unhover").addParam("element", this.name));
+                ResMgr.getTrigger(on_unhover_trigger).run(new TriggerEvent("gui_unhover").addParam("element", this));
             
             is_mouse_over=false;
-            return false;
         }
     }
     

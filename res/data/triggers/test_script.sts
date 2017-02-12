@@ -1,8 +1,13 @@
-@ descr A test trigger which prints it's passed event into the console. Also, includes the 'sum_folder/test_script' trigger.
+@ descr A test trigger which prints its passed event into the console. Also, includes the 'sum_folder/test_script' trigger.
 @ event attack
 @ event update
 @ bind java.lang.System cmd
 @ load sum_folder/test_script
+@ dynamic
+
+/*
+ * Use @ dynamic wisely; it is increadibly performance intensive...
+ */
 
 console('$event');
 object(event);

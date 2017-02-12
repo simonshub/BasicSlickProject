@@ -11,7 +11,6 @@ import editors.gamestates.MapEditorState;
 import engine.environment.ResMgr;
 import engine.environment.Settings;
 import engine.gui.GuiController;
-import engine.gui.GuiElement;
 import engine.gui.elements.SButton;
 import engine.utils.Rect;
 import org.newdawn.slick.GameContainer;

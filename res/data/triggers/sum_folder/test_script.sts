@@ -1,4 +1,5 @@
-@ descr A test trigger which creates a variable and prints it's contents.
+@ descr A test trigger which creates a variable and prints its contents.
+@ dynamic
 
 var hello_man = 'Hello World !';
 console(hello_man);

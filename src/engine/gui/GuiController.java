@@ -25,6 +25,8 @@ public class GuiController {
     public static final int TOOLTIP_Y_MARGIN = 6;
     
     public boolean visible;
+    public boolean lockFocus;
+    public String focusedElement;
     public Location mouse_position;
     public List<GuiElement> guiElements;
     
@@ -34,6 +36,8 @@ public class GuiController {
         guiElements = new ArrayList<> ();
         mouse_position = new Location ();
         visible = true;
+        focusedElement = "";
+        lockFocus = false;
     }
     
     
@@ -55,11 +59,15 @@ public class GuiController {
     }
     
     public void update (GameContainer gc) {
+        if (!visible)
+            return;
+        
         mouse_position.x = gc.getInput().getMouseX();
         mouse_position.y = gc.getInput().getMouseY();
+        if (!lockFocus) focusedElement = "";
         
         for (GuiElement el : guiElements) {
-            if (el.update(gc, this)) break;
+            el.update(gc, this);
         }
     }
     

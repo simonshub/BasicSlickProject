@@ -10,13 +10,26 @@
 
 
 
-// custom 
+// custom Java class bindings
 var actor = Java.type('engine.game.actors.Actor');
 var entity = Java.type('engine.game.entities.Entity');
 var entity_type = Java.type('engine.game.entities.EntityType');
 var trigger = Java.type('engine.game.triggers.Trigger');
+var event = Java.type('engine.game.triggers.TriggerEvent');
 var game_map = Java.type('engine.game.maps.GameMap');
 var tile_net = Java.type('engine.game.maps.TileNet');
+
+var gui = Java.type('engine.gui.GuiController');
+var gui_element = Java.type('engine.gui.GuiElement');
+var gui_button = Java.type('engine.gui.elements.SButton');
+var gui_container = Java.type('engine.gui.elements.SContainer');
+var gui_dropdown = Java.type('engine.gui.elements.SDropDown');
+var gui_label = Java.type('engine.gui.elements.SLabel');
+var gui_spinner = Java.type('engine.gui.elements.SSpinner');
+var gui_table = Java.type('engine.gui.elements.STable');
+var gui_textarea = Java.type('engine.gui.elements.STextArea');
+var gui_textfield = Java.type('engine.gui.elements.STextField');
+var gui_togglebutton = Java.type('engine.gui.elements.SToggleButton');
 
 
 

@@ -16,7 +16,9 @@ import java.util.List;
 public abstract class StringUtils {
     
     public static final String capitalizeFirstChar (String str) {
-       return Character.toString(str.charAt(0)).toUpperCase() + str.substring(1);
+        if (str.isEmpty())
+            return "";
+        return Character.toString(str.charAt(0)).toUpperCase() + str.substring(1);
     }
     
     
