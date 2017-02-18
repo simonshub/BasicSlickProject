@@ -44,8 +44,9 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
     public TileLabel tilePreview;
     public JSyntaxPane triggerEditPane;
     
-    public boolean changed = false;
     public boolean save = false;
+    public boolean changed = false;
+    public boolean play_test = false;
     public boolean triggers_changed = false;
     public String load = "";
     public String oldVarName = "";
@@ -609,6 +610,8 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
         newMapBtn = new javax.swing.JButton();
         loadMapBtn = new javax.swing.JButton();
         separator1 = new javax.swing.JSeparator();
+        separator6 = new javax.swing.JSeparator();
+        playTestBtn = new javax.swing.JButton();
 
         tilesetFrame.setTitle("Tiles");
 
@@ -751,11 +754,11 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
         gridLabel.setText("Grid:");
 
         gridYSpinner.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        gridYSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(32), Integer.valueOf(1), null, Integer.valueOf(8)));
+        gridYSpinner.setModel(new javax.swing.SpinnerNumberModel(32, 1, null, 8));
         gridYSpinner.setPreferredSize(new java.awt.Dimension(50, 20));
 
         gridXSpinner.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
-        gridXSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(32), Integer.valueOf(1), null, Integer.valueOf(8)));
+        gridXSpinner.setModel(new javax.swing.SpinnerNumberModel(32, 1, null, 8));
 
         gridXLabel.setFont(new java.awt.Font("Calibri", 0, 12)); // NOI18N
         gridXLabel.setText("X");
@@ -988,7 +991,7 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(variablesLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(varsTableScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 237, Short.MAX_VALUE)
+                .addComponent(varsTableScroll, javax.swing.GroupLayout.DEFAULT_SIZE, 296, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(varsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -1160,7 +1163,7 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
                 .addContainerGap())
         );
 
-        loadMapChooser.setCurrentDirectory(new java.io.File("C:\\Program Files\\NetBeans 8.0.2\\res\\data\\maps"));
+        loadMapChooser.setCurrentDirectory(new java.io.File("C:\\Program Files\\NetBeans 8.2\\res\\data\\maps"));
         loadMapChooser.setFileFilter(new MapFileFilter ());
         loadMapChooser.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1551,6 +1554,13 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
             }
         });
 
+        playTestBtn.setText("Play!");
+        playTestBtn.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                playTestBtnActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -1565,7 +1575,9 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
                         .addComponent(loadMapBtn)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(saveMapBtn))
-                    .addComponent(modeDropDown, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(modeDropDown, javax.swing.GroupLayout.Alignment.TRAILING, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(separator6)
+                    .addComponent(playTestBtn, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -1580,6 +1592,10 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
                 .addComponent(separator1, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(modeDropDown, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(separator6, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(playTestBtn)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1764,6 +1780,10 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_createNewTriggerAddBtnActionPerformed
 
+    private void playTestBtnActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_playTestBtnActionPerformed
+        play_test = true;
+    }//GEN-LAST:event_playTestBtnActionPerformed
+
     
      
     public static void main(String args[]) {
@@ -1867,6 +1887,7 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
     private javax.swing.JLabel newVarValueLabel;
     private javax.swing.JButton openMapHeaderBtn;
     private javax.swing.JButton openTriggerBtn;
+    private javax.swing.JButton playTestBtn;
     private javax.swing.JButton removeTriggerFromListBtn;
     private javax.swing.JButton saveEntityNameBtn;
     private javax.swing.JButton saveMapBtn;
@@ -1879,6 +1900,7 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
     private javax.swing.JSeparator separator3;
     private javax.swing.JSeparator separator4;
     private javax.swing.JSeparator separator5;
+    private javax.swing.JSeparator separator6;
     private javax.swing.JButton showQuickReferenceBtn;
     private javax.swing.JCheckBox snapToGridBox;
     private javax.swing.JScrollPane syntaxPanelNest;

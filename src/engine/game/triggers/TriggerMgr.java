@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.script.ScriptEngineManager;
+import org.newdawn.slick.GameContainer;
 
 /**
  * @author Emil Simon
@@ -28,11 +29,13 @@ public abstract class TriggerMgr {
     public static final String MASTER_SCRIPT_PATH = Consts.TRIGGER_DUMP_FOLDER+"master.sts";
     
     public static final String EVENT_NAME_PLACEHOLDER = "$event";
-    public static final TriggerEvent FORCED_EXECUTION_EVENT = new TriggerEvent ("_forced_run");
-    public static final TriggerEvent GUI_HOVER_EVENT = new TriggerEvent ("_gui_hover");
-    public static final TriggerEvent GUI_UNHOVER_EVENT = new TriggerEvent ("_gui_unhover");
-    public static final TriggerEvent GUI_MOUSEDOWN_EVENT = new TriggerEvent ("_gui_mousedown");
-    public static final TriggerEvent GUI_MOUSEUP_EVENT = new TriggerEvent ("_gui_mouseup");
+    public static final TriggerEvent FORCED_EXECUTION_EVENT = new TriggerEvent ("forced_run");
+    public static final TriggerEvent GUI_HOVER_EVENT = new TriggerEvent ("gui_hover");
+    public static final TriggerEvent GUI_UNHOVER_EVENT = new TriggerEvent ("gui_unhover");
+    public static final TriggerEvent GUI_MOUSEDOWN_EVENT = new TriggerEvent ("gui_mousedown");
+    public static final TriggerEvent GUI_MOUSEUP_EVENT = new TriggerEvent ("gui_mouseup");
+    public static final TriggerEvent GAME_LOOP = new TriggerEvent ("update");
+    public static final TriggerEvent BEFORE_GAME_LOOP = new TriggerEvent ("before_update");
     
     public static ScriptEngineManager engine_mgr;
     public static Trigger master_trigger;
@@ -65,9 +68,9 @@ public abstract class TriggerMgr {
     
     
     
-    public static void update (GameMap context) {
+    public static void update (GameContainer gc, GameMap context, int delta) {
         for (Trigger trig : ResMgr.trigger_lib.values()) {
-            trig.update((TriggerEvent[]) fired_events.toArray(),context);
+            trig.update(fired_events.toArray(new TriggerEvent [fired_events.size()]), context, delta);
         }
         
         fired_events.clear();

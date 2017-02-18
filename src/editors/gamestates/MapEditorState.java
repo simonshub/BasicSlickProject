@@ -9,8 +9,10 @@ package editors.gamestates;
 import editors.toolbars.MapTrigEditorToolbar;
 import engine.game.maps.GameMap;
 import engine.environment.Consts;
+import engine.environment.Data;
 import engine.environment.ResMgr;
 import engine.game.entities.EntityType;
+import engine.gamestates.CombatState;
 import engine.logger.Log;
 import java.io.File;
 import org.newdawn.slick.Color;
@@ -60,6 +62,10 @@ public class MapEditorState extends BasicGameState implements MouseListener {
     @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
         currentMap.render(gc,sbg,g);
+        
+        if (map_toolbar==null)
+            return;
+        
         if (map_toolbar.entityTool == MapTrigEditorToolbar.EntityTool.DELETE) {
             if (currentMap.getMouseOverEntity(gc) != null)
                 currentMap.getMouseOverEntity(gc).renderWithFilter(gc, sbg, g, currentMap.cam, new Color (1f,0f,0f,0.5f));
@@ -109,6 +115,14 @@ public class MapEditorState extends BasicGameState implements MouseListener {
      
     @Override
     public void update(GameContainer gc, StateBasedGame sbg, int i) throws SlickException {
+        if (map_toolbar.play_test) {
+            Data.loadMap(currentMap);
+            map_toolbar.dispose();
+            map_toolbar = null;
+            sbg.enterState(CombatState.ID);
+            return;
+        }
+        
         switch (map_toolbar.editMode) {
             case TILES :
                 currentMap.devmode_current_tileset = map_toolbar.getCurrentTileset();
@@ -211,7 +225,7 @@ public class MapEditorState extends BasicGameState implements MouseListener {
                 mouse_x -= gc.getInput().getMouseX()%map_toolbar.getGridX()
                         - (gc.getInput().getMouseX()%map_toolbar.getGridX() > map_toolbar.getGridX()/2 ? map_toolbar.getGridX() : 0);
                 mouse_y -= gc.getInput().getMouseY()%map_toolbar.getGridY()
-                        - (gc.getInput().getMouseY()%map_toolbar.getGridY() > map_toolbar.getGridY()/2 ? map_toolbar.getGridY() : 0);;
+                        - (gc.getInput().getMouseY()%map_toolbar.getGridY() > map_toolbar.getGridY()/2 ? map_toolbar.getGridY() : 0);
             }
             if (currentMap.canPlaceEntity(map_toolbar.getSelectedEntityType(),
                                          (mouse_x + currentMap.cam.location.x),

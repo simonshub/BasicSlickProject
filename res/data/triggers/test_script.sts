@@ -9,5 +9,8 @@
  * Use @ dynamic wisely; it is increadibly performance intensive...
  */
 
-console('$event');
 object(event);
+
+if (event.name == "update") {
+	
+}

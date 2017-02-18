@@ -5,6 +5,8 @@
  */
 package engine.gamestates;
 
+import engine.environment.Data;
+import engine.game.triggers.TriggerMgr;
 import engine.gui.GuiController;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -36,6 +38,8 @@ public class CombatState extends BasicGameState {
     public void render(GameContainer gc, StateBasedGame sbg, Graphics grphcs) throws SlickException {
         //called on game's frame draw; PUT RENDERING/DRAWING CODE HERE
         
+        if (Data.playing)
+            Data.currentMap.render(gc, sbg, grphcs);
         gui.render(gc,grphcs);
     }
      
@@ -43,6 +47,10 @@ public class CombatState extends BasicGameState {
     public void update(GameContainer gc, StateBasedGame sbg, int i) throws SlickException {
         //called on game's logical update loop; PUT GAME/LOGIC CODE HERE
         
+        if (Data.playing) {
+            Data.currentMap.update(gc, sbg, i);
+            TriggerMgr.update(gc, Data.currentMap, i);
+        }
         gui.update(gc);
     }
     

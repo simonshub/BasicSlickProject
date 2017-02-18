@@ -12,6 +12,7 @@ import engine.environment.ResMgr;
 import engine.environment.Settings;
 import engine.game.entities.EntityType;
 import engine.game.triggers.Trigger;
+import engine.game.triggers.TriggerMgr;
 import engine.logger.Log;
 import engine.utils.Rect;
 import engine.utils.StringUtils;
@@ -231,7 +232,13 @@ public class GameMap {
     
     
     public void update(GameContainer gc, StateBasedGame sbg, int i) {
+        TriggerMgr.fire(TriggerMgr.BEFORE_GAME_LOOP);
         
+        for (Entity ent : entities.values()) {
+            ent.update(gc, sbg, i);
+        }
+        
+        TriggerMgr.fire(TriggerMgr.GAME_LOOP);
     }
     
     

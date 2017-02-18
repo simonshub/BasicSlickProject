@@ -15,6 +15,8 @@ import engine.logger.Log;
 import engine.environment.Settings;
 import engine.game.actors.Actor;
 import engine.game.actors.AnimatedSprite;
+import engine.game.triggers.Trigger;
+import engine.game.triggers.TriggerEvent;
 import java.util.HashMap;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -34,6 +36,7 @@ public class Entity implements Comparable<Entity> {
     public HashMap<String, EntityVar> vars;
     public Location location;
     public Vector result_force;
+    public String behaviour;
     
     
     
@@ -83,6 +86,9 @@ public class Entity implements Comparable<Entity> {
                     case "force" :
                         result_force.fromString(words[1]);
                         break;
+                        
+                    case "behaviour" :
+                        behaviour = words[1].trim();
 
                     case "var" :
                         String[] var_properties = words[1].trim().split(" ");
@@ -245,6 +251,9 @@ public class Entity implements Comparable<Entity> {
     
     
     public void update(GameContainer gc, StateBasedGame sbg, int i) {
+        if (ResMgr.hasTrigger(behaviour)) {
+            ResMgr.getTrigger(behaviour).run(new TriggerEvent ("behaviour"));
+        }
     }
     
     

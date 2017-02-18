@@ -66,8 +66,11 @@ public class GuiController {
         mouse_position.y = gc.getInput().getMouseY();
         if (!lockFocus) focusedElement = "";
         
-        for (GuiElement el : guiElements) {
-            el.update(gc, this);
+        for (int i=guiElements.size()-1;i>=0;i--) {
+            GuiElement el = guiElements.get(i);
+            if (el.update(gc, this)) {
+                if (!lockFocus) focusedElement = el.name;
+            }
         }
     }
     

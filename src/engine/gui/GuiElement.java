@@ -151,14 +151,11 @@ public abstract class GuiElement {
         return false;
     }
     
-    public void update (GameContainer gc, GuiController parent) {
+    public boolean update (GameContainer gc, GuiController parent) {
         if (!enabled)
-            return;
+            return false;
         
-        if (!parent.focusedElement.isEmpty())
-            return;
-        
-        if (rect.containsLocation(parent.mouse_position)) {
+        if (rect.containsLocation(parent.mouse_position) && (parent.focusedElement.equals(this.name) || parent.focusedElement.isEmpty())) {
             if (!is_mouse_over && !on_hover_trigger.isEmpty() && ResMgr.hasTrigger(on_hover_trigger))
                 ResMgr.getTrigger(on_hover_trigger).run(new TriggerEvent("gui_hover").addParam("element", this));
             
@@ -182,6 +179,8 @@ public abstract class GuiElement {
             
             is_mouse_over=false;
         }
+        
+        return is_clicked;
     }
     
     

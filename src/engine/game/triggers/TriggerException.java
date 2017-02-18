@@ -11,5 +11,7 @@ package engine.game.triggers;
  */
 
 public class TriggerException extends Exception {
-    
+    public TriggerException (String message) {
+        super(message);
+    }
 }

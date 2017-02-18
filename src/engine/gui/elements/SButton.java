@@ -37,11 +37,11 @@ public class SButton extends GuiElement {
     }
     
     @Override
-    public void update (GameContainer gc, GuiController parent) {
+    public boolean update (GameContainer gc, GuiController parent) {
         if (rect.containsLocation(parent.mouse_position) && gc.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON) && !is_clicked && ResMgr.hasSound(sound_name))
             ResMgr.getSound(sound_name).play(1f, Settings.sfx_volume);
         
-        super.update(gc,parent);
+        return super.update(gc,parent);
     }
     
     

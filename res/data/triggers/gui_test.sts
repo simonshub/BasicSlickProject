@@ -1,17 +1,11 @@
-@ descr A test trigger which prints its passed event into the console. Also, includes the 'sum_folder/test_script' trigger.
+@ descr A test trigger which prints its passed event into the console.
 @ dynamic
 
-object(event);
-
 if (event.name == 'gui_hover')
-	console(event.element+' hovered');
+	console(JSON.stringify(event.element.rect)+' hovered');
 else if (event.name == 'gui_unhover')
-	console(event["element"]+' unhovered');
+	console(JSON.stringify(event.element.rect)+' unhovered');
 else if (event.name == 'gui_mousedown')
-	console(event["element"]+' pressed');
+	console(JSON.stringify(event.element.rect)+' pressed');
 else if (event.name == 'gui_mouseup')
-	console(event["element"]+' clicked');
-	
-	
-
-console(JSON.stringify(event.element.rect));
+	console(JSON.stringify(event.element.rect)+' clicked');

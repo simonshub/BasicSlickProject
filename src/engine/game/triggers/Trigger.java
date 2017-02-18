@@ -95,7 +95,6 @@ public class Trigger {
                             switch (words[0].trim().toLowerCase()) {
                                 case "bind" :
                                     code += "var " + words[2].trim() + " = Java.type('"+words[1].trim()+"');" + "\n";
-//                                engine_bindings.put(words[2].trim(), Class.forName(words[1].trim()));
                                     Log.log(Log.TRIG, "bound '"+words[1].trim()+"' to '"+words[2].trim()+"' in trigger '"+name+"'");
                                     break;
                                 case "global" :
@@ -103,7 +102,7 @@ public class Trigger {
                                     Log.log(Log.TRIG, "bound '"+words[1].trim()+"' to '"+words[2].trim()+"' in trigger '"+name+"'");
                                     break;
                                 default :
-                                    throw new TriggerException ();
+                                    throw new TriggerException ("cannot discern "+words[0].trim().toLowerCase());
                             }   break;
                         case 2:
                             switch (words[0].trim().toLowerCase()) {
@@ -116,7 +115,7 @@ public class Trigger {
                                     Log.log(Log.TRIG, "loaded trigger '"+FileUtils.getNameWithoutExtension(words[1].trim())+"' for trigger '"+name+"'");
                                     break;
                                 default :
-                                    throw new TriggerException ();
+                                    throw new TriggerException ("cannot discern "+words[0].trim().toLowerCase());
                             }   break;
                         case 1:
                             switch (words[0].trim().toLowerCase()) {
@@ -127,14 +126,16 @@ public class Trigger {
                                     this.active_read = true;
                                     break;
                                 default :
-                                    throw new TriggerException ();
+                                    throw new TriggerException ("cannot discern "+words[0].trim().toLowerCase());
                             }   break;
                         default:
-                            if (words[0].trim().toLowerCase().equals("descr") && !active_read) {
-                                this.description = line.replaceFirst("@","").replaceFirst("descr","").trim();
-                                Log.log(Log.TRIG, "added description '"+this.description+"' for trigger '"+name+"'");
+                            if (words[0].trim().toLowerCase().equals("descr")) {
+                                if (!active_read) {
+                                    this.description = line.replaceFirst("@","").replaceFirst("descr","").trim();
+                                    Log.log(Log.TRIG, "added description '"+this.description+"' for trigger '"+name+"'");
+                                }
                             } else {
-                                throw new TriggerException ();
+                                throw new TriggerException ("cannot discern "+words[0].trim().toLowerCase());
                             }   break;
                     }
                 } else {
@@ -152,11 +153,11 @@ public class Trigger {
     
     
     
-    public void update (TriggerEvent[] event_list, GameMap context) {
+    public void update (TriggerEvent[] event_list, GameMap context, int delta) {
         for (TriggerEvent event : event_list) {
             if (events.contains(event.eventName)) {
                 String context_code = context.trigger_header + code;
-                String event_code = event.getEventDefinition() + context_code;
+                String event_code = "var delta="+delta+";\n\n" + event.getEventDefinition() + context_code;
                 
                 try {
                     if (this.async) {
