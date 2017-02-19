@@ -7,6 +7,7 @@
 package engine.game.triggers;
 
 import engine.environment.Consts;
+import engine.environment.Data;
 import engine.environment.ResMgr;
 import engine.game.maps.GameMap;
 import engine.logger.Log;
@@ -30,6 +31,7 @@ public class Trigger {
     public String code;
     public String description;
     public Set<String> events;
+    public Set<String> globals;
     public Set<String> loaded_triggers;
     public ScriptEngine engine;
     public boolean async;
@@ -45,6 +47,7 @@ public class Trigger {
         async = false;
         active_read = false;
         events = new HashSet<> ();
+        globals = new HashSet<> ();
         loaded_triggers = new HashSet<> ();
         engine = TriggerMgr.engine_mgr.getEngineByName(TriggerMgr.SCRIPT_ENGINE_NAME);
         readScript(new File (TriggerMgr.MASTER_SCRIPT_PATH));
@@ -57,6 +60,7 @@ public class Trigger {
         async = false;
         active_read = false;
         events = new HashSet<> ();
+        globals = new HashSet<> ();
         loaded_triggers = new HashSet<> ();
         engine = TriggerMgr.engine_mgr.getEngineByName(TriggerMgr.SCRIPT_ENGINE_NAME);
         loaded_triggers.add(TriggerMgr.master_trigger.name);
@@ -70,6 +74,7 @@ public class Trigger {
         async = false;
         active_read = false;
         events = new HashSet<> ();
+        globals = new HashSet<> ();
         loaded_triggers = new HashSet<> ();
         engine = TriggerMgr.engine_mgr.getEngineByName(TriggerMgr.SCRIPT_ENGINE_NAME);
         loaded_triggers.add(TriggerMgr.master_trigger.name);
@@ -98,7 +103,8 @@ public class Trigger {
                                     Log.log(Log.TRIG, "bound '"+words[1].trim()+"' to '"+words[2].trim()+"' in trigger '"+name+"'");
                                     break;
                                 case "global" :
-                                    engine.put(words[1].trim(), words[2].trim());
+//                                    engine.put(words[1].trim(), words[2].trim());
+                                    globals.add("var " + words[1].trim() + " = "+words[2].trim()+";" + "\n\n");
                                     Log.log(Log.TRIG, "bound '"+words[1].trim()+"' to '"+words[2].trim()+"' in trigger '"+name+"'");
                                     break;
                                 default :
@@ -150,44 +156,56 @@ public class Trigger {
             Log.err(Log.TRIG,"trigger '"+file.getPath().replace("\\", "/")+"' could not be parsed! - Script pre-eval line syntax error",ex);
         }
     }
-    
-    
-    
-    public void update (TriggerEvent[] event_list, GameMap context, int delta) {
-        for (TriggerEvent event : event_list) {
-            if (events.contains(event.eventName)) {
-                String context_code = context.trigger_header + code;
-                String event_code = "var delta="+delta+";\n\n" + event.getEventDefinition() + context_code;
-                
-                try {
-                    if (this.async) {
-                        Thread t = new Thread (() -> {
-                            try {
-                                engine.eval(event_code);
-                            } catch (ScriptException ex) {
-                                Log.err(Log.TRIG,"while trying to evaluate some code at async event '"+event+"' ...\nCODE:\n"+event_code,ex);
-                            }
-                        });
-                        t.start();
-                    } else {
-                        engine.eval(event_code);
-                    }
-                } catch (ScriptException ex) {
-                    Log.err(Log.TRIG,"while trying to evaluate some code at event '"+event+"' ...\nCODE:\n"+event_code,ex);
+    public void activeRead (String filePath) throws TriggerException {
+        code = "";
+        
+        try {
+            File file = new File (filePath);
+            BufferedReader r = new BufferedReader (new FileReader (file));
+            String line;
+            while ((line=r.readLine())!=null) {
+                // ignores precompile commands
+                if (!line.trim().startsWith("@")) {
+                    code += line + "\n";
                 }
-                break;
             }
+        } catch (FileNotFoundException ex) {
+            Log.err(Log.TRIG,"trigger '"+filePath.replace("\\", "/")+"' could not be parsed! - File not found!",ex);
+        } catch (IOException ex) {
+            Log.err(Log.TRIG,"trigger '"+filePath.replace("\\", "/")+"' could not be parsed! - IOException",ex);
         }
     }
     
     
     
     public void run () {
-        run (TriggerMgr.FORCED_EXECUTION_EVENT);
+        run (TriggerMgr.FORCED_EXECUTION_EVENT, Data.currentMap, -1);
     }
-    public void run (TriggerEvent event) {
+    public void run (boolean one_off, TriggerEvent... event_list) {
+        for (TriggerEvent run_event : event_list) {
+            if (events.contains(run_event.eventName)) {
+                this.run(run_event, Data.currentMap, 0);
+                if (one_off) return;
+            }
+        }
+    }
+    public void runConditionally (GameMap context, int delta, boolean one_off, TriggerEvent... event_list) {
+        for (TriggerEvent run_event : event_list) {
+            if (events.contains(run_event.eventName)) {
+                this.run(run_event, context, delta);
+                if (one_off) return;
+            }
+        }
+    }
+    public void run (TriggerEvent event, GameMap context, int delta) {
         String eval_code = "";
         eval_code += TriggerMgr.master_trigger.code + "\n\n";
+        if (delta>0)
+            eval_code += "var delta = "+((float)delta*Data.gameSpeed)+";" + "\n\n";
+        if (context!=null && context.trigger_header!=null)
+            eval_code += context.trigger_header+"\n\n";
+        if (!globals.isEmpty())
+            for (String line : globals) eval_code += line;
         eval_code += event.getEventDefinition();
         
         for (String trig_name : loaded_triggers) {
@@ -198,7 +216,7 @@ public class Trigger {
         
         try {
             if (this.active_read)
-                this.readScript(Consts.TRIGGER_DUMP_FOLDER+"/"+name+"."+Consts.TRIGGER_FILE_EXTENSION);
+                this.activeRead(Consts.TRIGGER_DUMP_FOLDER+"/"+this.name+"."+Consts.TRIGGER_FILE_EXTENSION);
             
             eval_code += this.code + "\n\n";
             eval_code = eval_code.replace(TriggerMgr.EVENT_NAME_PLACEHOLDER, event.eventName);
@@ -216,9 +234,7 @@ public class Trigger {
             } else {
                 engine.eval(eval_code);
             }
-        } catch (ScriptException ex) {
-            Log.err(Log.TRIG,"while trying to run some code ...\nCODE:\n"+eval_code,ex);
-        } catch (TriggerException ex) {
+        } catch (ScriptException | TriggerException ex) {
             Log.err(Log.TRIG,"while trying to run some code ...\nCODE:\n"+eval_code,ex);
         }
     }

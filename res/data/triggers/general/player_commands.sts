@@ -1,0 +1,36 @@
+@ descr player control script
+@ event update
+@ global player_entity get_entity('hero')
+//@ dynamic
+
+
+var moving = false;
+	
+if (any_key()) {
+	if (is_key_down('KEY_A')) {
+		player_entity.move(-get_var_realtime(player_entity, "speed"),0);
+		player_entity.playAnim("walk",false);
+		moving = true;
+	}
+	if (is_key_down('KEY_D')) {
+		player_entity.move(get_var_realtime(player_entity, "speed"),0);
+		player_entity.playAnim("walk",false);
+		moving = true;
+	}
+	if (is_key_down('KEY_W')) {
+		player_entity.move(0,-get_var_realtime(player_entity, "speed"));
+		player_entity.playAnim("walk",false);
+		moving = true;
+	}
+	if (is_key_down('KEY_S')) {
+		player_entity.move(0,get_var_realtime(player_entity, "speed"));
+		player_entity.playAnim("walk",false);
+		moving = true;
+	}
+}
+
+if (!moving) {
+	player_entity.playAnim("idle",false);
+}
+
+moving = false;

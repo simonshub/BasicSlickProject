@@ -6,6 +6,7 @@
 
 package engine.utils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,6 +26,15 @@ public abstract class StringUtils {
     
     public static final String[] listToArray (List<String> list) {
         return Arrays.copyOf(list.toArray(), list.size(), String[].class);
+    }
+    
+    public static final String[] removeEmpty (String... list) {
+        List<String> result = new ArrayList<> ();
+        for (String s : list) {
+            if (!s.isEmpty())
+                result.add(s);
+        }
+        return result.toArray(new String [result.size()]);
     }
     
     

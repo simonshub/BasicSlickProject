@@ -157,25 +157,25 @@ public abstract class GuiElement {
         
         if (rect.containsLocation(parent.mouse_position) && (parent.focusedElement.equals(this.name) || parent.focusedElement.isEmpty())) {
             if (!is_mouse_over && !on_hover_trigger.isEmpty() && ResMgr.hasTrigger(on_hover_trigger))
-                ResMgr.getTrigger(on_hover_trigger).run(new TriggerEvent("gui_hover").addParam("element", this));
+                ResMgr.getTrigger(on_hover_trigger).run(true, new TriggerEvent("gui_hover").addParam("element", this));
             
             is_mouse_over=true;
             
             if (!gc.getInput().isMouseButtonDown(Input.MOUSE_LEFT_BUTTON)) {
                 if (is_clicked && !on_mouse_up_trigger.isEmpty() && ResMgr.hasTrigger(on_mouse_up_trigger))
-                    ResMgr.getTrigger(on_mouse_up_trigger).run(new TriggerEvent("gui_mouseup").addParam("element", this));
+                    ResMgr.getTrigger(on_mouse_up_trigger).run(true, new TriggerEvent("gui_mouseup").addParam("element", this));
                 
                 is_clicked = false;
             } else {
                 if (!is_clicked && !on_mouse_down_trigger.isEmpty() && ResMgr.hasTrigger(on_mouse_down_trigger))
-                    ResMgr.getTrigger(on_mouse_down_trigger).run(new TriggerEvent("gui_mousedown").addParam("element", this));
+                    ResMgr.getTrigger(on_mouse_down_trigger).run(true, new TriggerEvent("gui_mousedown").addParam("element", this));
                 
                 is_clicked = true;
             }
             parent.focusedElement = this.name;
         } else {
             if (is_mouse_over && !on_unhover_trigger.isEmpty() && ResMgr.hasTrigger(on_unhover_trigger))
-                ResMgr.getTrigger(on_unhover_trigger).run(new TriggerEvent("gui_unhover").addParam("element", this));
+                ResMgr.getTrigger(on_unhover_trigger).run(true, new TriggerEvent("gui_unhover").addParam("element", this));
             
             is_mouse_over=false;
         }

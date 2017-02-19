@@ -3,13 +3,16 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-package engine.gamestates;
+package editors.gamestates;
 
+import editors.toolbars.ScriptConsole;
 import engine.environment.Data;
 import engine.game.triggers.TriggerMgr;
 import engine.gui.GuiController;
+import engine.logger.Log;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
@@ -18,9 +21,13 @@ import org.newdawn.slick.state.StateBasedGame;
  *
  * @author XyRoN (Emil SimoN)
  */
-public class CombatState extends BasicGameState {
-    public static final int ID=1;
+public class MapTestState extends BasicGameState {
+    public static final int ID=104;
     public GuiController gui;
+    
+    public ScriptConsole script_console;
+    
+    
     
     @Override
     public int getID() {
@@ -52,6 +59,27 @@ public class CombatState extends BasicGameState {
             TriggerMgr.update(Data.currentMap, i);
         }
         gui.update(gc);
+        if (gc.getInput().isKeyDown(Input.KEY_ESCAPE)) {
+            Data.playing = false;
+            Data.unloadMap();
+            sbg.enterState(MapEditorState.ID);
+        }
+        script_console.updateConsole();
     }
-    
+     
+    @Override
+    public void enter (GameContainer gc, StateBasedGame sbg) throws SlickException {
+        super.enter(gc, sbg);
+        
+        try {
+            script_console = new ScriptConsole ();
+            Thread t = new Thread ( () -> {
+                script_console.setVisible(true);
+            });
+            t.start();
+        } catch (Exception e) {
+            Log.err(Log.MAP,"while trying to create script console",e);
+            e.printStackTrace();
+        }
+    }
 }

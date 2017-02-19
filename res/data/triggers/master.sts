@@ -13,6 +13,7 @@
 // custom Java class bindings
 var actor = Java.type('engine.game.actors.Actor');
 var entity = Java.type('engine.game.entities.Entity');
+var entity_var = Java.type('engine.game.entities.EntityVar');
 var entity_type = Java.type('engine.game.entities.EntityType');
 var trigger = Java.type('engine.game.triggers.Trigger');
 var event = Java.type('engine.game.triggers.TriggerEvent');
@@ -40,23 +41,32 @@ var _log = Java.type('engine.logger.Log');
 var _log_level = Java.type('engine.logger.Log.LogLevel');
 var _log_type = Java.type('engine.logger.LogType');
 var _data = Java.type('engine.environment.Data');
+var _manager = Java.type('engine.game.triggers.TriggerMgr');
+
+
+
+var game_speed = _data.gameSpeed;
 
 
 
 function console (text) {
-	_log.console(text);
+	_manager.console(text);
 }
 function error (text) {
-	_log.error(text);
+	_manager.console("ERROR: "+text);
 }
 function object (obj) {
-	_log.console(JSON.stringify(obj));
+	return JSON.stringify(obj);
 }
 
 
 
 function get_entity_type (name) {
 	return _res.getEntityType(name);
+}
+function get_entity (name) {
+	var ent = _data.currentMap.getEntity(name);
+	return ent;
 }
 function get_actor (name) {
 	return _res.getActor(name);
@@ -67,9 +77,27 @@ function get_map (name) {
 
 
 
-function get_playing_map (name) {
+function get_var (ent, varname) {
+	return ent.getVar(varname).value;
+}
+function get_var_realtime (ent, varname) {
+	return ent.getVar(varname).value*delta;
+}
+
+
+
+function get_playing_map () {
 	return _data.currentMap.name;
 }
 function load_map (name) {
-	return _data.currentMap.name;
+	return _data.loadMap(name);
+}
+
+
+
+function is_key_down (key) {
+	return _manager.isKeyDown(key);
+}
+function any_key () {
+	return _manager.isAnyKeyDown();
 }

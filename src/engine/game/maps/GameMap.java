@@ -49,7 +49,7 @@ public class GameMap {
     public int tiles_width, tiles_height; // IN TILES
     public HashMap <String, Entity> entities;
     public HashMap <String, Integer> entity_counters;
-    public HashMap <String, Trigger> trigger_store;
+    public HashMap <String, Trigger> trigger_store; // URGENT TO-DO: REFACTOR ENTIRE ResMgr.hasTrigger / ResMgr.getTrigger stuff with has/get from this !!!
     
     public String devmode_current_tileset;
     public static final int INFO_DRAW_OFFSET_X = 32;
@@ -163,7 +163,7 @@ public class GameMap {
         g.drawString("background_tileset: "+background_tileset, INFO_DRAW_OFFSET_X, INFO_DRAW_OFFSET_Y+32);
     }
     
-    public void render (GameContainer gc, StateBasedGame sbg, Graphics g) {
+    public void render (GameContainer gc, StateBasedGame sbg, Graphics g, boolean renderDebug) {
         g.setColor(Color.white);
 
         int start_render_x = (int)(Math.max(cam.location.x/Consts.TILESET_FRAME_WIDTH*cam.zoom, 0));
@@ -202,11 +202,13 @@ public class GameMap {
                         }
                     }
                 }
-
-                if (devmode_current_tileset!=null) {
-                    if ((!devmode_current_tileset.isEmpty())) {
-//                        if (tile_net!=null)
-                            tile_net.render(gc, sbg, g, cam, devmode_current_tileset);
+                
+                if (renderDebug) {
+                    if (devmode_current_tileset!=null) {
+                        if ((!devmode_current_tileset.isEmpty())) {
+    //                        if (tile_net!=null)
+                                tile_net.render(gc, sbg, g, cam, devmode_current_tileset);
+                        }
                     }
                 }
             }
@@ -222,10 +224,12 @@ public class GameMap {
             entity.render(gc, sbg, g, cam);
         });
         
-        if (Settings.debug_draw_entity_debug) {
-            sorted_ents.stream().forEach((entity) -> {
-                entity.renderDebug(gc, sbg, g, cam, new Color (1f,1f,1f,0.5f));
-            });
+        if (renderDebug) {
+            if (Settings.debug_draw_entity_debug) {
+                sorted_ents.stream().forEach((entity) -> {
+                    entity.renderDebug(gc, sbg, g, cam, new Color (1f,1f,1f,0.5f));
+                });
+            }
         }
     }
     
@@ -245,6 +249,14 @@ public class GameMap {
     
     public Rect getBounds () {
         return new Rect (0, 0, this.tiles_width*Consts.TILESET_FRAME_WIDTH, this.tiles_height*Consts.TILESET_FRAME_HEIGHT);
+    }
+    
+    public Entity[] getEntities () {
+        return entities.values().toArray(new Entity [entities.size()]);
+    }
+    
+    public Entity getEntity (String name) {
+        return entities.get(name);
     }
     
     

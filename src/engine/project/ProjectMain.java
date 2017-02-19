@@ -95,7 +95,7 @@ public class ProjectMain extends StateBasedGame {
 //                                             input.equals("1"));
         }
         
-        ResMgr.init();
+        ResMgr.init(gc);
         
         gc.setVSync(Settings.grfx_vsync);
         
@@ -107,10 +107,7 @@ public class ProjectMain extends StateBasedGame {
             this.addState (new ActorEditorState ());
             this.addState (new EntityEditorState ());
             this.addState (new MapEditorState ());
-        }
-        
-        if (Settings.devmode) {
-            ResMgr.trigger_lib.get("test_script").run();
+            this.addState (new MapTestState ());
         }
         
         this.enterState(MenuState.ID);

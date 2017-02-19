@@ -7,6 +7,7 @@
 package engine.game.entities;
 
 import engine.environment.Consts;
+import engine.environment.Data;
 import engine.environment.ResMgr;
 import engine.game.maps.Camera;
 import engine.utils.Location;
@@ -15,7 +16,6 @@ import engine.logger.Log;
 import engine.environment.Settings;
 import engine.game.actors.Actor;
 import engine.game.actors.AnimatedSprite;
-import engine.game.triggers.Trigger;
 import engine.game.triggers.TriggerEvent;
 import java.util.HashMap;
 import org.newdawn.slick.Color;
@@ -38,9 +38,14 @@ public class Entity implements Comparable<Entity> {
     public Vector result_force;
     public String behaviour;
     
+    private float x_falloff, y_falloff;
+    
     
     
     public Entity (EntityType type, int counter, int locX, int locY) {
+        x_falloff = 0;
+        y_falloff = 0;
+        
         this.parent_type = type;
         this.name = this.parent_type.entity_type_name + "_" + String.format("%06d", counter);
         this.vars = new HashMap <> (type.vars);
@@ -51,6 +56,9 @@ public class Entity implements Comparable<Entity> {
     }
 
     public Entity (Entity parent, int counter) {
+        x_falloff = 0;
+        y_falloff = 0;
+        
         this.parent_type = parent.parent_type;
         this.name = parent_type.entity_type_name + "_" + String.format("%06d", counter);
         this.vars = new HashMap <> (parent.vars);
@@ -61,6 +69,9 @@ public class Entity implements Comparable<Entity> {
     }
     
     public Entity (String[] lines) {
+        x_falloff = 0;
+        y_falloff = 0;
+        
         this.name = "";
         this.vars = new HashMap <> ();
         this.location = new Location (0,0);
@@ -173,6 +184,15 @@ public class Entity implements Comparable<Entity> {
                 Log.log(Log.ENTITY,"added variable '"+name+"' with value: ("+type.toString()+") '"+value+"'");
         }
     }
+    public final EntityVar getVar (String name) {
+        return vars.get(name);
+    }
+    
+    public void playAnim (String anim, boolean one_off) {
+        this.current_anim = anim;
+        //if (one_off)
+            
+    }
     
    
     
@@ -202,6 +222,22 @@ public class Entity implements Comparable<Entity> {
                    2, 2);
     }
     
+    public boolean move (float d_x, float d_y) {
+        x_falloff += d_x % 1;
+        y_falloff += d_y % 1;
+        
+        if ((x_falloff >= 1.0f) || (x_falloff <= -1.0f)) {
+            d_x += (int) x_falloff;
+            x_falloff -= (int) x_falloff;
+        }
+        if ((y_falloff >= 1.0f) || (y_falloff <= -1.0f)) {
+            d_y += (int) y_falloff;
+            y_falloff -= (int) y_falloff;
+        }
+        
+        return this.moveWithCollisionDetection(Data.currentMap.entities, (int)d_x, (int)d_y);
+    }
+    
     public boolean moveWithCollisionDetection (Entity[] entity_list, int d_x, int d_y) {
         Location old_loc = location;
         location = location.offset(d_x,d_y);
@@ -217,6 +253,7 @@ public class Entity implements Comparable<Entity> {
         Location old_loc = location;
         location = location.offset(d_x,d_y);
         for (Entity e : entity_list.values()) {
+            if (e.name.equals(this.name)) continue;
             if (e.intersectsCollider(this)) {
                 location = old_loc;
                 return false;
@@ -252,7 +289,7 @@ public class Entity implements Comparable<Entity> {
     
     public void update(GameContainer gc, StateBasedGame sbg, int i) {
         if (ResMgr.hasTrigger(behaviour)) {
-            ResMgr.getTrigger(behaviour).run(new TriggerEvent ("behaviour"));
+            ResMgr.getTrigger(behaviour).run(true, new TriggerEvent ("behaviour"));
         }
     }
     

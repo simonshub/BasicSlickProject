@@ -1,9 +1,6 @@
-@ descr A test trigger which prints its passed event into the console. Also, includes the 'sum_folder/test_script' trigger.
-@ event attack
-@ event update
-@ bind java.lang.System cmd
-@ load sum_folder/test_script
-@ dynamic
+@ descr A test trigger which prints its passed event into the console.
+//@ event update
+//@ dynamic
 
 /*
  * Use @ dynamic wisely; it is increadibly performance intensive...

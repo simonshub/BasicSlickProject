@@ -23,6 +23,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.HashMap;
+import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Sound;
 import org.newdawn.slick.SpriteSheet;
@@ -54,7 +55,7 @@ public abstract class ResMgr {
     
     
     
-    public static void init () {
+    public static void init (GameContainer gc) {
         sound_lib = new HashMap<> ();
         sprite_lib = new HashMap<> ();
         font_lib = new HashMap<> ();
@@ -74,6 +75,10 @@ public abstract class ResMgr {
                 writeSettings();
             }
             readSettings();
+            Log.log(Log.GENERAL,"Done!");
+            
+            Log.log(Log.GENERAL,"Initializing game data ...");
+            Data.init(gc);
             Log.log(Log.GENERAL,"Done!");
             
             Log.log(Log.GENERAL,"Auto-detecting trigger scripts ...");

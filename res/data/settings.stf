@@ -9,5 +9,7 @@ debug_actors 1
 debug_entities 1
 debug_maps 1
 debug_triggers 1
+debug_triggers_console 1
 debug_draw_tile_net 1
 devmode 1
+editor_autoload_mapname untitled.map

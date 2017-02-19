@@ -21,6 +21,7 @@ import javax.swing.AbstractListModel;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultListSelectionModel;
 import javax.swing.ImageIcon;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -33,7 +34,7 @@ import org.simon.util.swing.JSyntaxPane;
  * @author Emil Simon
  */
 public class MapTrigEditorToolbar extends javax.swing.JFrame {
-    public enum EditMode { TILES, ENTITIES, TRIGGERS, GUI };
+    public enum EditMode { TILES, ENTITIES, TRIGGERS, GUI, MAP };
     public enum TilesetTool { PAINT, FILL };
     public enum EntityTool { PLACE, EDIT, DELETE };
     
@@ -337,6 +338,12 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
                 guiDesigner.setLocationRelativeTo(this);
                 guiDesigner.setLocation(250, 0);
                 break;
+            case "map" :
+                guiDesigner.setSize(700, 900);
+                guiDesigner.setVisible(true);
+                guiDesigner.setLocationRelativeTo(this);
+                guiDesigner.setLocation(250, 0);
+                break;
             default :
                 break;
         }
@@ -605,6 +612,7 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
         jTextField1 = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
         jComboBox1 = new javax.swing.JComboBox();
+        mapOptionsFrame = new javax.swing.JFrame();
         modeDropDown = new javax.swing.JComboBox();
         saveMapBtn = new javax.swing.JButton();
         newMapBtn = new javax.swing.JButton();
@@ -1530,6 +1538,17 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
                 .addContainerGap(166, Short.MAX_VALUE))
         );
 
+        javax.swing.GroupLayout mapOptionsFrameLayout = new javax.swing.GroupLayout(mapOptionsFrame.getContentPane());
+        mapOptionsFrame.getContentPane().setLayout(mapOptionsFrameLayout);
+        mapOptionsFrameLayout.setHorizontalGroup(
+            mapOptionsFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 400, Short.MAX_VALUE)
+        );
+        mapOptionsFrameLayout.setVerticalGroup(
+            mapOptionsFrameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 300, Short.MAX_VALUE)
+        );
+
         setDefaultCloseOperation(javax.swing.WindowConstants.DO_NOTHING_ON_CLOSE);
         setTitle("Map Editor");
 
@@ -1875,6 +1894,7 @@ public class MapTrigEditorToolbar extends javax.swing.JFrame {
     private javax.swing.JLabel locationLabelY;
     private javax.swing.JFormattedTextField locationXField;
     private javax.swing.JFormattedTextField locationYField;
+    private javax.swing.JFrame mapOptionsFrame;
     private javax.swing.JPanel menuPanels;
     private javax.swing.JComboBox modeDropDown;
     private javax.swing.JButton newMapBtn;

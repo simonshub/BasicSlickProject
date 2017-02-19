@@ -11,8 +11,8 @@ import engine.game.maps.GameMap;
 import engine.environment.Consts;
 import engine.environment.Data;
 import engine.environment.ResMgr;
+import engine.environment.Settings;
 import engine.game.entities.EntityType;
-import engine.gamestates.CombatState;
 import engine.logger.Log;
 import java.io.File;
 import org.newdawn.slick.Color;
@@ -47,7 +47,11 @@ public class MapEditorState extends BasicGameState implements MouseListener {
      
     @Override
     public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
-        currentMap = new GameMap ("untitled",100,100,false);
+        if (Settings.editor_autoload_mapname.isEmpty()) {
+            currentMap = new GameMap ("untitled",100,100,false);
+        } else {
+            currentMap = new GameMap (new File (Consts.MAP_DUMP_FOLDER+Settings.editor_autoload_mapname));
+        }
         dragX=-1;
         dragY=-1;
         dragOriginX=-1;
@@ -61,7 +65,7 @@ public class MapEditorState extends BasicGameState implements MouseListener {
     
     @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-        currentMap.render(gc,sbg,g);
+        currentMap.render(gc,sbg,g,true);
         
         if (map_toolbar==null)
             return;
@@ -119,7 +123,7 @@ public class MapEditorState extends BasicGameState implements MouseListener {
             Data.loadMap(currentMap);
             map_toolbar.dispose();
             map_toolbar = null;
-            sbg.enterState(CombatState.ID);
+            sbg.enterState(MapTestState.ID);
             return;
         }
         

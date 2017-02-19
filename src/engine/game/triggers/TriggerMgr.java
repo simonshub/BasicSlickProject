@@ -7,7 +7,9 @@
 package engine.game.triggers;
 
 import engine.environment.Consts;
+import engine.environment.Data;
 import engine.environment.ResMgr;
+import engine.environment.Settings;
 import engine.game.maps.GameMap;
 import engine.logger.Log;
 import engine.utils.FileUtils;
@@ -15,10 +17,14 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.script.ScriptEngineManager;
 import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Input;
 
 /**
  * @author Emil Simon
@@ -37,13 +43,18 @@ public abstract class TriggerMgr {
     public static final TriggerEvent GAME_LOOP = new TriggerEvent ("update");
     public static final TriggerEvent BEFORE_GAME_LOOP = new TriggerEvent ("before_update");
     
-    public static ScriptEngineManager engine_mgr;
+    public static Trigger cmd;
     public static Trigger master_trigger;
+    public static GameContainer gc;
+    public static ScriptEngineManager engine_mgr;
     public static List<TriggerEvent> fired_events;
+    
+    public static String console;
     
     
     
     public static void init () {
+        TriggerMgr.gc = Data.gameContainer;
         engine_mgr = new ScriptEngineManager ();
         fired_events = new ArrayList<> ();
         try {
@@ -61,6 +72,14 @@ public abstract class TriggerMgr {
             
             master_trigger = new Trigger ();
             master_trigger.run();
+            
+            cmd = new Trigger ();
+            cmd.name = "console";
+            cmd.active_read = false;
+            cmd.description = "";
+            cmd.code = "";
+            
+            console = "";
         } catch (IOException | TriggerException ex) {
             Log.err(Log.GENERAL, "could not create or read master trigger at '"+MASTER_SCRIPT_PATH+"' file!", ex);
         }
@@ -68,9 +87,59 @@ public abstract class TriggerMgr {
     
     
     
-    public static void update (GameContainer gc, GameMap context, int delta) {
+    public static void runCode (String code) {
+        console("running code '"+code+"' ...");
+        cmd.code = code;
+        cmd.run();
+        console("OK!");
+    }
+    
+    public static void console (String text) {
+        if (Settings.debug_triggers_console)
+            Log.log(Log.TRIG, text);
+        
+        console += text+"\n";
+    }
+    
+    public static void clearConsole () {
+        console = "";
+    }
+    
+    
+    
+    public static boolean isKeyDown (String key) {
+        for (Field f : Input.class.getFields()) {
+            if (f.getName().equalsIgnoreCase(key)) {
+                try {
+                    int key_code = f.getInt(Input.class);
+                    return gc.getInput().isKeyDown(key_code);
+                } catch (IllegalArgumentException | IllegalAccessException ex) {
+                    Log.err(Log.TRIG, "cannot access members for Input", ex);
+                }
+            }
+        }
+        
+        return false;
+    }
+    public static boolean isAnyKeyDown () {
+        for (Field f : Input.class.getFields()) {
+            try {
+                if (f.getName().startsWith("KEY_") || f.getName().startsWith("MOUSE_"))
+                    if (gc.getInput().isKeyDown(f.getInt(Input.class)))
+                        return true;
+            } catch (IllegalArgumentException | IllegalAccessException ex) {
+                Log.err(Log.TRIG, "cannot access members for Input", ex);
+            }
+        }
+    
+        return false;
+    }
+    
+    
+    
+    public static void update (GameMap context, int delta) {
         for (Trigger trig : ResMgr.trigger_lib.values()) {
-            trig.update(fired_events.toArray(new TriggerEvent [fired_events.size()]), context, delta);
+            trig.runConditionally(context, delta, true, fired_events.toArray(new TriggerEvent [fired_events.size()]));
         }
         
         fired_events.clear();

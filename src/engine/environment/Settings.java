@@ -7,6 +7,7 @@
 package engine.environment;
 
 import engine.logger.Log;
+import engine.utils.StringUtils;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -32,9 +33,11 @@ public abstract class Settings {
     public static boolean debug_maps = true;
     public static boolean debug_triggers = true;
     public static boolean debug_draw_tile_net = true;
+    public static boolean debug_triggers_console = true;
     public static boolean debug_draw_entity_debug = true;
     public static boolean devmode = true;
     
+    public static String editor_autoload_mapname = "";
     public static boolean force_default_settings = false;
     
     
@@ -47,7 +50,7 @@ public abstract class Settings {
 
             while ((line=br.readLine ())!=null) {
                 if (!line.startsWith("#")) { // COMMENT
-                    String[] lines=line.split(" ");
+                    String[] lines=StringUtils.removeEmpty(line.split(" "));
                     switch (lines[0]) {
                         case "title" :
                             title = line.substring(line.indexOf('\'')+1, line.lastIndexOf('\''));
@@ -102,6 +105,14 @@ public abstract class Settings {
                         case "devmode" :
                             devmode = Integer.valueOf(lines[1])>0;
                             Log.log(Log.GENERAL,"Dev Mode set to "+devmode);
+                            break;
+                        case "editor_autoload_mapname" :
+                            editor_autoload_mapname = lines[1];
+                            Log.log(Log.GENERAL,"Editor AutoLoad Map set to '"+editor_autoload_mapname+"'");
+                            break;
+                        case "debug_triggers_console" :
+                            debug_triggers_console = Integer.valueOf(lines[1])>0;
+                            Log.log(Log.GENERAL,"Trigger Console Logging set to "+debug_triggers_console);
                             break;
                         default:
                             break;
