@@ -1,12 +1,18 @@
 @ descr player control script
+@ event keyboard
 @ event update
+@ event attack_end
 @ global player_entity get_entity('hero')
-//@ dynamic
+@ dynamic
 
 
-var moving = false;
-	
-if (any_key()) {
+if (event.name == "attack_end") {
+	player_entity.setVar('attacking','false','bool');
+	player_entity.playAnim("idle",false);
+	//return 0;
+} else {
+	var moving = false;
+
 	if (is_key_down('KEY_A')) {
 		player_entity.move(-get_var_realtime(player_entity, "speed"),0);
 		player_entity.playAnim("walk",false);
@@ -27,10 +33,13 @@ if (any_key()) {
 		player_entity.playAnim("walk",false);
 		moving = true;
 	}
-}
 
-if (!moving) {
-	player_entity.playAnim("idle",false);
-}
+	if (is_key_down('KEY_SPACE')) {
+		player_entity.setVar('attacking','true','bool');
+		player_entity.playAnim("attack",false);
+	} else if (!moving) {
+		player_entity.playAnim("idle",false);
+	}
 
-moving = false;
+	moving = false;
+}

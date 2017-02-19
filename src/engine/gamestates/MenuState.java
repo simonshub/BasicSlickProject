@@ -12,6 +12,7 @@ import engine.environment.ResMgr;
 import engine.environment.Settings;
 import engine.gui.GuiController;
 import engine.gui.elements.SButton;
+import engine.gui.elements.SLabel;
 import engine.utils.Rect;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -62,41 +63,46 @@ public class MenuState extends BasicGameState {
         
         gui = new GuiController ();
         
-        SButton test = new SButton ("test_button_1");
-        test.setSprite("gui_button");
-        test.setHoverSprite("gui_button_hover");
-        test.setClickSprite("gui_button");
-        test.setTooltip("Hello There!");
-        test.rect = new Rect (0,0,300,100);
-        test.on_hover_trigger = "gui_test";
-        test.on_unhover_trigger = "gui_test";
-        test.on_mouse_up_trigger = "gui_test";
-        test.on_mouse_down_trigger = "gui_test";
-        gui.addElement(test);
+        int title_height = 100;
+        int btn_height = 100;
+        int btn_margin = 50;
         
-        SButton test2 = new SButton ("test_button_2");
-        test2.setSprite("gui_button");
-        test2.setHoverSprite("gui_button_hover");
-        test2.setClickSprite("gui_button");
-        test2.setTooltip("Hello There Too!");
-        test2.rect = new Rect (300,300,300,100);
-        test2.on_hover_trigger = "gui_test";
-        test2.on_unhover_trigger = "gui_test";
-        test2.on_mouse_up_trigger = "gui_test";
-        test2.on_mouse_down_trigger = "gui_test";
-        gui.addElement(test2);
+        SLabel titleLabel = ((SLabel) new SLabel ("title_label").setText("SOME BIG TITLE")
+//                .setTextAlignment("center","center") // - doesn't do anything yet
+                .setFont("title")
+                .setRect(new Rect (0,0,Settings.screen_res_w,title_height))
+                .setOverlay(1.0f, 1.0f, 1.0f, 0.3f));
+        gui.addElement(titleLabel);
         
-        SButton test3 = new SButton ("test_button_3");
-        test3.setSprite("gui_button");
-        test3.setHoverSprite("gui_button_hover");
-        test3.setClickSprite("gui_button");
-        test3.setTooltip("HU >:0");
-        test3.rect = new Rect (350,350,300,300);
-        test3.on_hover_trigger = "gui_test";
-        test3.on_unhover_trigger = "gui_test";
-        test3.on_mouse_up_trigger = "gui_test";
-        test3.on_mouse_down_trigger = "gui_test";
-        gui.addElement(test3);
+        SButton actorEditorBtn = (((SButton) new SButton ("actor_editor_btn")
+                .setSprite("gui_button")
+                .setHoverSprite("gui_button_hover")
+                .setClickSprite("gui_button")
+                .setRect(new Rect (Settings.screen_res_w/2-200,title_height,400,100))
+                .setOnHover("gui_test").setOnUnhover("gui_test")
+                .setOnMouseUp("gui_test").setOnMouseDown("gui_test")
+                )).setOnClick("click", "gui/go_to_actedit").setText("Actor Editor");
+        gui.addElement(actorEditorBtn);
+        
+        SButton entityEditorBtn = (((SButton) new SButton ("entity_editor_btn")
+                .setSprite("gui_button")
+                .setHoverSprite("gui_button_hover")
+                .setClickSprite("gui_button")
+                .setRect(new Rect (Settings.screen_res_w/2-200,title_height+(btn_height+btn_margin),400,100))
+                .setOnHover("gui_test").setOnUnhover("gui_test")
+                .setOnMouseUp("gui_test").setOnMouseDown("gui_test")
+                )).setOnClick("click", "gui/go_to_entedit").setText("Entity Editor");
+        gui.addElement(entityEditorBtn);
+        
+        SButton mapEditorBtn = ((SButton) (new SButton ("map_editor_btn")
+                .setSprite("gui_button")
+                .setHoverSprite("gui_button_hover")
+                .setClickSprite("gui_button")
+                .setRect(new Rect (Settings.screen_res_w/2-200,title_height+(btn_height+btn_margin)*2,400,100))
+                .setOnHover("gui_test").setOnUnhover("gui_test")
+                .setOnMouseUp("gui_test").setOnMouseDown("gui_test")
+                )).setOnClick("click", "gui/go_to_mapedit").setText("Map Editor");
+        gui.addElement(mapEditorBtn);
     }
      
     @Override

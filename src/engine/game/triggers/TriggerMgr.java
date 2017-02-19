@@ -36,6 +36,7 @@ public abstract class TriggerMgr {
     
     public static final String EVENT_NAME_PLACEHOLDER = "$event";
     public static final TriggerEvent FORCED_EXECUTION_EVENT = new TriggerEvent ("forced_run");
+    public static final TriggerEvent KEYBOARD_EVENT = new TriggerEvent ("keyboard");
     public static final TriggerEvent GUI_HOVER_EVENT = new TriggerEvent ("gui_hover");
     public static final TriggerEvent GUI_UNHOVER_EVENT = new TriggerEvent ("gui_unhover");
     public static final TriggerEvent GUI_MOUSEDOWN_EVENT = new TriggerEvent ("gui_mousedown");
@@ -138,6 +139,10 @@ public abstract class TriggerMgr {
     
     
     public static void update (GameMap context, int delta) {
+        if (isAnyKeyDown()) {
+            fire(KEYBOARD_EVENT);
+        }
+        
         for (Trigger trig : ResMgr.trigger_lib.values()) {
             trig.runConditionally(context, delta, true, fired_events.toArray(new TriggerEvent [fired_events.size()]));
         }

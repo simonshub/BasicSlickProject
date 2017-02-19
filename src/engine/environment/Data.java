@@ -7,6 +7,7 @@ package engine.environment;
 
 import engine.game.maps.GameMap;
 import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.state.StateBasedGame;
 
 /**
  *
@@ -17,13 +18,15 @@ public abstract class Data {
     public static boolean playing;
     public static GameMap currentMap;
     public static GameContainer gameContainer;
+    public static StateBasedGame stateBasedGame;
     
     public static float gameSpeed=0.001f;
     
     
     
-    public static void init (GameContainer gc) {
+    public static void init (GameContainer gc, StateBasedGame sbg) {
         gameContainer = gc;
+        stateBasedGame = sbg;
         playing = false;
         currentMap = null;
     }
@@ -36,6 +39,10 @@ public abstract class Data {
     public static void unloadMap () {
         playing = false;
         currentMap = null;
+    }
+    
+    public static void changeState (int ID) {
+        stateBasedGame.enterState(ID);
     }
     
 }

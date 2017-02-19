@@ -28,5 +28,5 @@ sound:song 'res/music/song.ogg'
 
 font:small_font 'Times New Roman' 8 bold
 font:normal_font 'Times New Roman' 24 bold
-font:title 'Times New Roman' 72 bold
+font:title 'Times New Roman' 48 bold
 

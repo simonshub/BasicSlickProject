@@ -32,10 +32,15 @@ public class SLabel extends GuiElement {
     
     public SLabel (String name) {
         this.name = name;
+        this.font = "normal_font";
     }
     
     public SLabel setText (String text) {
         this.text = text;
+        return this;
+    }
+    public SLabel setFont (String font) {
+        this.font = font;
         return this;
     }
     public SLabel setTextAlignment (String horizontal, String vertical) {
@@ -55,14 +60,38 @@ public class SLabel extends GuiElement {
         Font f = ResMgr.hasFont(font) ? ResMgr.getFont(font) : null;
         if (f==null) return;
         
+        g.setFont(f);
+        g.setColor(filter);
         int width = f.getWidth(text);
         int height = f.getHeight(text);
-        g.setFont(f);
-        g.drawString(name, rect.centerX()-width/2, rect.centerY()-height/2);
+        g.drawString(text, rect.centerX()-width/2, rect.centerY()-height/2);
     }
     
     @Override
     public boolean update (GameContainer gc, GuiController parent) {
         return super.update(gc,parent);
+    }
+    
+    
+    
+    @Override
+    public void fromWritten(String[] lines) {
+        for (String line : lines) {
+            this.setAttribute(line);
+        }
+    }
+    
+    @Override
+    public String getWritten() {
+        String code = super.getWritten();
+        
+        // some code
+        
+        return code;
+    }
+    
+    @Override
+    public boolean setAttribute (String line) {
+        return true;
     }
 }

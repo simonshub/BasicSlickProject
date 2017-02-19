@@ -28,6 +28,7 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.Sound;
 import org.newdawn.slick.SpriteSheet;
 import org.newdawn.slick.TrueTypeFont;
+import org.newdawn.slick.state.StateBasedGame;
 
 /**
  * @author Emil Simon
@@ -55,7 +56,7 @@ public abstract class ResMgr {
     
     
     
-    public static void init (GameContainer gc) {
+    public static void init (GameContainer gc, StateBasedGame sbg) {
         sound_lib = new HashMap<> ();
         sprite_lib = new HashMap<> ();
         font_lib = new HashMap<> ();
@@ -78,7 +79,7 @@ public abstract class ResMgr {
             Log.log(Log.GENERAL,"Done!");
             
             Log.log(Log.GENERAL,"Initializing game data ...");
-            Data.init(gc);
+            Data.init(gc, sbg);
             Log.log(Log.GENERAL,"Done!");
             
             Log.log(Log.GENERAL,"Auto-detecting trigger scripts ...");

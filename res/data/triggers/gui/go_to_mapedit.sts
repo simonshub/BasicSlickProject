@@ -1,0 +1,10 @@
+@ descr A test trigger which prints its passed event into the console.
+@ event gui_mouseup
+//@ dynamic
+
+/*
+ * Use @ dynamic wisely; it is increadibly performance intensive...
+ */
+
+console('going to map editor...');
+change_state(_consts.MAP_EDITOR_STATE_ID);

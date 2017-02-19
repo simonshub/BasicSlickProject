@@ -9,8 +9,10 @@ package engine.gui;
 import engine.environment.ResMgr;
 import engine.game.actors.AnimatedSprite;
 import engine.game.triggers.TriggerEvent;
+import engine.logger.Log;
 import engine.utils.Location;
 import engine.utils.Rect;
+import engine.utils.StringUtils;
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -108,7 +110,7 @@ public abstract class GuiElement {
             return;
         
         g.setColor(underlay);
-        g.drawRect(rect.x, rect.y, rect.width, rect.height);
+        g.fillRect(rect.x, rect.y, rect.width, rect.height);
         
         if (is_clicked && !click_sprite_name.isEmpty()) {
             if (click_sprite != null) {
@@ -125,7 +127,7 @@ public abstract class GuiElement {
         }
         
         g.setColor(overlay);
-        g.drawRect(rect.x, rect.y, rect.width, rect.height);
+        g.fillRect(rect.x, rect.y, rect.width, rect.height);
     }
     
     public boolean renderTooltip (GameContainer gc, Graphics g) {
@@ -181,6 +183,119 @@ public abstract class GuiElement {
         }
         
         return is_clicked;
+    }
+    
+    
+    
+    public abstract void fromWritten (String[] lines);
+    
+    public String getWritten () {
+        String code = "";
+        
+        code += "\t"+"name:"+this.name+"\n";
+        code += "\t"+"rect:"+this.rect.x+" "+this.rect.y+" "+this.rect.width+" "+this.rect.height+"\n";
+        code += "\t"+"is_clicked:"+this.is_clicked+"\n";
+        code += "\t"+"is_mouse_over:"+this.is_mouse_over+"\n";
+        code += "\t"+"visible:"+this.visible+"\n";
+        code += "\t"+"enabled:"+this.enabled+"\n";
+        
+        code += "\t"+"on_mouse_up_trigger:"+this.on_mouse_up_trigger+"\n";
+        code += "\t"+"on_mouse_down_trigger:"+this.on_mouse_down_trigger+"\n";
+        code += "\t"+"on_hover_trigger:"+this.on_hover_trigger+"\n";
+        code += "\t"+"on_unhover_trigger:"+this.on_unhover_trigger+"\n";
+        
+        code += "\t"+"tooltip_text:"+this.tooltip_text+"\n";
+        
+        code += "\t"+"sprite_name:"+this.sprite_name+"\n";
+        code += "\t"+"filter:"+this.filter.r+" "+this.filter.g+" "+this.filter.b+" "+this.filter.a+"\n";
+        code += "\t"+"overlay:"+this.overlay.r+" "+this.overlay.g+" "+this.overlay.b+" "+this.overlay.a+"\n";
+        code += "\t"+"underlay:"+this.underlay.r+" "+this.underlay.g+" "+this.underlay.b+" "+this.underlay.a+"\n";
+        
+        code += "\t"+"sprite:"+this.sprite_name+"\n";
+        code += "\t"+"hover_sprite:"+this.hover_sprite_name+"\n";
+        code += "\t"+"click_sprite:"+this.click_sprite_name+"\n";
+        
+        return code;
+    }
+    
+    public boolean setAttribute (String line) {
+        String[] word = StringUtils.removeEmpty(StringUtils.trimAll(line.split(":")));
+        if (word.length != 2) {
+            Log.err(Log.GENERAL, "bad gui attribute line; '"+line+"'");
+            return false;
+        }
+        String[] args = StringUtils.removeEmpty(word[1].split(" "));
+        
+        switch (word[0]) {
+            case "name" :
+                if (args.length >= 1)
+                    this.name = word[1].trim();
+                break;
+            case "rect" :
+                if (args.length >= 4)
+                    this.rect = new Rect (Integer.parseInt(args[0]), Integer.parseInt(args[1]), Integer.parseInt(args[2]), Integer.parseInt(args[3]));
+                break;
+            case "visible" :
+                if (args.length >= 1)
+                    this.visible = Boolean.parseBoolean(args[0]);
+                break;
+            case "enabled" :
+                if (args.length >= 1)
+                    this.enabled = Boolean.parseBoolean(args[0]);
+                break;
+            case "on_mouse_up_trigger" :
+                if (args.length >= 1)
+                    this.on_mouse_up_trigger = args[0];
+                break;
+            case "on_mouse_down_trigger" :
+                if (args.length >= 1)
+                    this.on_mouse_down_trigger = args[0];
+                break;
+            case "on_hover_trigger" :
+                if (args.length >= 1)
+                    this.on_hover_trigger = args[0];
+                break;
+            case "on_unhover_trigger" :
+                if (args.length >= 1)
+                    this.on_unhover_trigger = args[0];
+                break;
+            case "tooltip_text" :
+                if (args.length >= 1)
+                    this.tooltip_text = args[0];
+                break;
+//            case "sprite_name" :
+//                if (args.length >= 1)
+//                    this.sprite_name = args[0];
+//                break;
+            case "filter" :
+                if (args.length >= 4)
+                    this.filter = new Color (Float.parseFloat(args[0]), Float.parseFloat(args[1]), Float.parseFloat(args[2]), Float.parseFloat(args[3]));
+                break;
+            case "overlay" :
+                if (args.length >= 4)
+                    this.overlay = new Color (Float.parseFloat(args[0]), Float.parseFloat(args[1]), Float.parseFloat(args[2]), Float.parseFloat(args[3]));
+                break;
+            case "underlay" :
+                if (args.length >= 4)
+                    this.underlay = new Color (Float.parseFloat(args[0]), Float.parseFloat(args[1]), Float.parseFloat(args[2]), Float.parseFloat(args[3]));
+                break;
+            case "sprite" :
+                if (args.length >= 1)
+                    this.setSprite(word[1].trim());
+                break;
+            case "hover_sprite" :
+                if (args.length >= 1)
+                    this.setHoverSprite(word[1].trim());
+                break;
+            case "click_sprite" :
+                if (args.length >= 1)
+                    this.setClickSprite(word[1].trim());
+                break;
+            default :
+                Log.err(Log.GENERAL, "unknown gui attribute in line; '"+line+"'");
+                return false;
+        }
+        return true;
     }
     
     

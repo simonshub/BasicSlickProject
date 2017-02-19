@@ -95,7 +95,7 @@ public class ProjectMain extends StateBasedGame {
 //                                             input.equals("1"));
         }
         
-        ResMgr.init(gc);
+        ResMgr.init(gc, this);
         
         gc.setVSync(Settings.grfx_vsync);
         

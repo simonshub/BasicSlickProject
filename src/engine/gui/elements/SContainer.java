@@ -8,6 +8,8 @@ package engine.gui.elements;
 
 import engine.gui.GuiController;
 import engine.gui.GuiElement;
+import engine.logger.Log;
+import engine.utils.StringUtils;
 import java.util.ArrayList;
 import java.util.List;
 import org.newdawn.slick.GameContainer;
@@ -18,7 +20,10 @@ import org.newdawn.slick.Graphics;
  */
 
 public class SContainer extends GuiElement {
-    List<GuiElement> elements;
+    public List<GuiElement> elements;
+    
+    protected boolean define_element;
+    protected ArrayList<String> element_lines;
     
     
     
@@ -47,5 +52,50 @@ public class SContainer extends GuiElement {
         }
         
         return result;
+    }
+    
+    
+    
+    @Override
+    public void fromWritten(String[] lines) {
+        for (String line : lines) {
+            this.setAttribute(line);
+        }
+    }
+    
+    @Override
+    public String getWritten() {
+        String code = super.getWritten();
+        
+        for (GuiElement el : elements) {
+            code += "element"+"\n";
+            code += el.getWritten();
+            code += "element_end"+"\n\n";
+        }
+        
+        return code;
+    }
+    
+    @Override
+    public boolean setAttribute (String line) {
+        String[] word = StringUtils.removeEmpty(StringUtils.trimAll(line.split(":")));
+        
+        if (define_element) {
+            element_lines.add(line);
+            return true;
+        }
+        
+        switch (word[0]) {
+            case "element" :
+                element_lines = new ArrayList<> ();
+                define_element = true;
+                return true;
+            case "end_element" :
+                define_element = false;
+//                elements.add(new GuiElement ());
+                return true;
+        }
+        
+        return super.setAttribute(line);
     }
 }

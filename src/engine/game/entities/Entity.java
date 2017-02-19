@@ -184,6 +184,14 @@ public class Entity implements Comparable<Entity> {
                 Log.log(Log.ENTITY,"added variable '"+name+"' with value: ("+type.toString()+") '"+value+"'");
         }
     }
+    public final void setVar (String name, String value, String type_name) {
+        try {
+            EntityVar.EntityVarType type = EntityVar.EntityVarType.valueOf(type_name.toUpperCase());
+            setVar(name,value,type);
+        } catch (IllegalArgumentException e) {
+            Log.err(Log.ENTITY, "cannot set var '"+name+"' of entity '"+this.name+"' with value '"+value+"' of type '"+type_name+"'");
+        }
+    }
     public final EntityVar getVar (String name) {
         return vars.get(name);
     }

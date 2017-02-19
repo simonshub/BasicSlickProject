@@ -37,7 +37,13 @@ public abstract class StringUtils {
         return result.toArray(new String [result.size()]);
     }
     
-    
+    public static final String[] trimAll (String... list) {
+        String[] result = new String [list.length];
+        for (int i=0;i<list.length;i++) {
+            result[i] = list[i].trim();
+        }
+        return result;
+    }
     
     public static final String concatLinesFromList (List<String> lines) {
         String res = "";

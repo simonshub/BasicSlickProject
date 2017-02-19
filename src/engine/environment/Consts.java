@@ -6,7 +6,8 @@
 
 package engine.environment;
 
-import engine.game.triggers.TriggerMgr;
+import editors.gamestates.*;
+import engine.gamestates.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -37,6 +38,15 @@ public abstract class Consts {
     public static final int TILESET_FRAME_HEIGHT = 32;
     
     public static final int ENTITY_OFFSCREEN_DRAW_MARGIN = 128;
+    
+    public static final int ACTOR_EDITOR_STATE_ID = ActorEditorState.ID;
+    public static final int ENTITY_EDITOR_STATE_ID = EntityEditorState.ID;
+    public static final int GUI_EDITOR_STATE_ID = GuiEditorState.ID;
+    public static final int MAP_EDITOR_STATE_ID = MapEditorState.ID;
+    public static final int MAP_TEST_STATE_ID = MapTestState.ID;
+    public static final int COMBAT_STATE_ID = CombatState.ID;
+    public static final int MENU_STATE_ID = MenuState.ID;
+    public static final int WORLD_STATE_ID = WorldState.ID;
     
     public static final String ACTOR_FILE_EXTENSION = "act";
     public static final String ENTITY_FILE_EXTENSION = "ent";

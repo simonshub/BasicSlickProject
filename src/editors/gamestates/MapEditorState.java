@@ -302,5 +302,18 @@ public class MapEditorState extends BasicGameState implements MouseListener {
             Log.err(Log.MAP,"while trying to create map editor toolbar",e);
             e.printStackTrace();
         }
+        
+//        if (Settings.editor_autoload_mapname.isEmpty()) {
+//            currentMap = new GameMap ("untitled",100,100,false);
+//        } else {
+            currentMap = new GameMap (new File (Consts.MAP_DUMP_FOLDER+Settings.editor_autoload_mapname));
+//        }
+        dragX=-1;
+        dragY=-1;
+        dragOriginX=-1;
+        dragOriginY=-1;
+        tilePainterX=-1;
+        tilePainterY=-1;
+        snapToGrid = false;
     }
 }

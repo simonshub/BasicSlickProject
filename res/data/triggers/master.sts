@@ -92,6 +92,12 @@ function get_playing_map () {
 function load_map (name) {
 	return _data.loadMap(name);
 }
+function unload_map () {
+	_data.unloadMap();
+}
+function change_state (id) {
+	_data.changeState(id);
+}
 
 
 
