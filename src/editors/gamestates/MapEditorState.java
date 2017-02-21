@@ -13,6 +13,7 @@ import engine.environment.Data;
 import engine.environment.ResMgr;
 import engine.environment.Settings;
 import engine.game.entities.EntityType;
+import engine.gamestates.MenuState;
 import engine.logger.Log;
 import java.io.File;
 import org.newdawn.slick.Color;
@@ -65,10 +66,10 @@ public class MapEditorState extends BasicGameState implements MouseListener {
     
     @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-        currentMap.render(gc,sbg,g,true);
-        
         if (map_toolbar==null)
             return;
+        
+        currentMap.render(gc,sbg,g, (map_toolbar.editMode == MapTrigEditorToolbar.EditMode.ENTITIES), (map_toolbar.editMode == MapTrigEditorToolbar.EditMode.TILES));
         
         if (map_toolbar.entityTool == MapTrigEditorToolbar.EntityTool.DELETE) {
             if (currentMap.getMouseOverEntity(gc) != null)
@@ -123,7 +124,14 @@ public class MapEditorState extends BasicGameState implements MouseListener {
             Data.loadMap(currentMap);
             map_toolbar.dispose();
             map_toolbar = null;
-            sbg.enterState(MapTestState.ID);
+            Data.changeState(MapTestState.ID);
+            return;
+        }
+        
+        if (gc.getInput().isKeyDown(Input.KEY_ESCAPE)) {
+            map_toolbar.dispose();
+            map_toolbar = null;
+            Data.changeState(MenuState.ID);
             return;
         }
         
@@ -143,35 +151,6 @@ public class MapEditorState extends BasicGameState implements MouseListener {
             Log.log(Log.MAP, "changed entity '"+map_toolbar.oldEntityName+"' name to '"+map_toolbar.getNewName()+"'");
             currentMap.changeEntityName(map_toolbar.oldEntityName, map_toolbar.getNewName());
             map_toolbar.oldEntityName = map_toolbar.getNewName();
-        }
-        
-        //called on game's logical update loop; PUT GAME/LOGIC CODE HERE
-        if (gc.getInput().isKeyDown(Input.KEY_LCONTROL) && gc.getInput().isKeyPressed(Input.KEY_A)) {
-            map_toolbar.dispose();
-            map_toolbar = null;
-            sbg.enterState(ActorEditorState.ID);
-            return;
-        }
-
-        if (gc.getInput().isKeyDown(Input.KEY_LCONTROL) && gc.getInput().isKeyPressed(Input.KEY_E)) {
-            map_toolbar.dispose();
-            map_toolbar = null;
-            sbg.enterState(EntityEditorState.ID);
-            return;
-        }
-
-        if (gc.getInput().isKeyDown(Input.KEY_LCONTROL) && gc.getInput().isKeyPressed(Input.KEY_M)) {
-            map_toolbar.dispose();
-            map_toolbar = null;
-            sbg.enterState(MapEditorState.ID);
-            return;
-        }
-
-        if (gc.getInput().isKeyDown(Input.KEY_LCONTROL) && gc.getInput().isKeyPressed(Input.KEY_T)) {
-            map_toolbar.dispose();
-            map_toolbar = null;
-            sbg.enterState(ActorEditorState.ID);
-            return;
         }
         
         if (gc.getInput().isMouseButtonDown(Input.MOUSE_RIGHT_BUTTON)) {

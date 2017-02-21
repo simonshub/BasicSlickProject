@@ -163,7 +163,11 @@ public class GameMap {
         g.drawString("background_tileset: "+background_tileset, INFO_DRAW_OFFSET_X, INFO_DRAW_OFFSET_Y+32);
     }
     
-    public void render (GameContainer gc, StateBasedGame sbg, Graphics g, boolean renderDebug) {
+    public void render (GameContainer gc, StateBasedGame sbg, Graphics g) {
+        this.render(gc,sbg,g,Settings.debug_draw_entity_debug,Settings.debug_draw_tile_net);
+    }
+    
+    public void render (GameContainer gc, StateBasedGame sbg, Graphics g, boolean renderDebugEntities, boolean renderDebugTiles) {
         g.setColor(Color.white);
 
         int start_render_x = (int)(Math.max(cam.location.x/Consts.TILESET_FRAME_WIDTH*cam.zoom, 0));
@@ -203,7 +207,7 @@ public class GameMap {
                     }
                 }
                 
-                if (renderDebug) {
+                if (renderDebugTiles) {
                     if (devmode_current_tileset!=null) {
                         if ((!devmode_current_tileset.isEmpty())) {
     //                        if (tile_net!=null)
@@ -224,7 +228,7 @@ public class GameMap {
             entity.render(gc, sbg, g, cam);
         });
         
-        if (renderDebug) {
+        if (renderDebugEntities) {
             if (Settings.debug_draw_entity_debug) {
                 sorted_ents.stream().forEach((entity) -> {
                     entity.renderDebug(gc, sbg, g, cam, new Color (1f,1f,1f,0.5f));
@@ -351,7 +355,7 @@ public class GameMap {
                 } else if (read_for_header) {
                     if (line.trim().contains("header end")) {
                         read_for_header = false;
-                        this.trigger_header = StringUtils.concatLinesFromList(header_lines);
+                        this.trigger_header = StringUtils.concatList(header_lines,"\n");
                         header_lines.clear();
                         
                         Log.log(Log.MAP, "read header code!");

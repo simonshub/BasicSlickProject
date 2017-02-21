@@ -7,6 +7,7 @@ package editors.gamestates;
 
 import editors.toolbars.ScriptConsole;
 import engine.environment.Data;
+import engine.environment.Settings;
 import engine.game.triggers.TriggerMgr;
 import engine.gui.GuiController;
 import engine.logger.Log;
@@ -46,7 +47,7 @@ public class MapTestState extends BasicGameState {
         //called on game's frame draw; PUT RENDERING/DRAWING CODE HERE
         
         if (Data.playing)
-            Data.currentMap.render(gc, sbg, grphcs, false);
+            Data.currentMap.render(gc, sbg, grphcs);
         gui.render(gc,grphcs);
     }
      

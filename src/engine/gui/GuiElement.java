@@ -187,7 +187,11 @@ public abstract class GuiElement {
     
     
     
-    public abstract void fromWritten (String[] lines);
+    public void fromWritten (String[] lines) {
+        for (String line : lines) {
+            this.setAttribute(line);
+        }
+    }
     
     public String getWritten () {
         String code = "";

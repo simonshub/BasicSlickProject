@@ -132,6 +132,7 @@ header define
 
 
 
+
 header end
 
 uses trigger sum_folder/space_test
@@ -251,7 +252,7 @@ entity define
 	var:text name String=rest of line,but with .trim() 
 	var:integer health 100 
 	var:text hp_label HP 
-	var:integer speed 100 
+	var:integer speed 125 
 
 
 entity end

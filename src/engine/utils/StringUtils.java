@@ -45,18 +45,18 @@ public abstract class StringUtils {
         return result;
     }
     
-    public static final String concatLinesFromList (List<String> lines) {
+    public static final String concatList (List<String> lines, String separator) {
         String res = "";
         for (String line : lines) {
-            res += line + "\n";
+            res += line + separator;
         }
         return res;
     }
     
-    public static final String concatLinesFromArray (String[] lines) {
+    public static final String concatArray (String[] lines, String separator) {
         String res = "";
         for (String line : lines) {
-            res += line + "\n";
+            res += line + separator;
         }
         return res;
     }

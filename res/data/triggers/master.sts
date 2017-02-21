@@ -98,6 +98,9 @@ function unload_map () {
 function change_state (id) {
 	_data.changeState(id);
 }
+function exit_game () {
+	_data.exitGame();
+}
 
 
 

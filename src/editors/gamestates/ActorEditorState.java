@@ -7,9 +7,11 @@
 package editors.gamestates;
 
 import editors.toolbars.ActorEditorToolbar;
+import engine.environment.Data;
 import engine.game.actors.AnimFrame;
 import engine.logger.Log;
 import engine.environment.ResMgr;
+import engine.gamestates.MenuState;
 import org.newdawn.slick.Animation;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -237,29 +239,10 @@ public class ActorEditorState extends BasicGameState {
      */
     @Override
     public void update(GameContainer gc, StateBasedGame sbg, int dt) throws SlickException {
-        //called on game's logical update loop; PUT GAME/LOGIC CODE HERE
-        if (gc.getInput().isKeyDown(Input.KEY_LCONTROL) && gc.getInput().isKeyPressed(Input.KEY_A)) {
+        if (gc.getInput().isKeyDown(Input.KEY_ESCAPE)) {
             actor_toolbar.dispose();
             actor_toolbar = null;
-            sbg.enterState(ActorEditorState.ID);
-        }
-
-        if (gc.getInput().isKeyDown(Input.KEY_LCONTROL) && gc.getInput().isKeyPressed(Input.KEY_E)) {
-            actor_toolbar.dispose();
-            actor_toolbar = null;
-            sbg.enterState(EntityEditorState.ID);
-        }
-
-        if (gc.getInput().isKeyDown(Input.KEY_LCONTROL) && gc.getInput().isKeyPressed(Input.KEY_M)) {
-            actor_toolbar.dispose();
-            actor_toolbar = null;
-            sbg.enterState(MapEditorState.ID);
-        }
-
-        if (gc.getInput().isKeyDown(Input.KEY_LCONTROL) && gc.getInput().isKeyPressed(Input.KEY_T)) {
-            actor_toolbar.dispose();
-            actor_toolbar = null;
-            sbg.enterState(ActorEditorState.ID);
+            Data.changeState(MenuState.ID);
         }
         
         if (actor_toolbar != null) {

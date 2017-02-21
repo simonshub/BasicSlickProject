@@ -45,4 +45,8 @@ public abstract class Data {
         stateBasedGame.enterState(ID);
     }
     
+    public static void exitGame () {
+        System.exit(0);
+    }
+    
 }

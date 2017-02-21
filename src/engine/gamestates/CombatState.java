@@ -39,7 +39,7 @@ public class CombatState extends BasicGameState {
         //called on game's frame draw; PUT RENDERING/DRAWING CODE HERE
         
         if (Data.playing)
-            Data.currentMap.render(gc, sbg, grphcs, false);
+            Data.currentMap.render(gc, sbg, grphcs, false, false);
         gui.render(gc,grphcs);
     }
      

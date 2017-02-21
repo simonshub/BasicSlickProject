@@ -63,9 +63,10 @@ public class MenuState extends BasicGameState {
         
         gui = new GuiController ();
         
-        int title_height = 100;
-        int btn_height = 100;
-        int btn_margin = 50;
+        int title_height = 96;
+        int btn_height = 64;
+        int btn_width = 256;
+        int btn_margin = 48;
         
         SLabel titleLabel = ((SLabel) new SLabel ("title_label").setText("SOME BIG TITLE")
 //                .setTextAlignment("center","center") // - doesn't do anything yet
@@ -78,31 +79,41 @@ public class MenuState extends BasicGameState {
                 .setSprite("gui_button")
                 .setHoverSprite("gui_button_hover")
                 .setClickSprite("gui_button")
-                .setRect(new Rect (Settings.screen_res_w/2-200,title_height,400,100))
+                .setRect(new Rect (Settings.screen_res_w/2-btn_width/2,title_height,btn_width,btn_height))
                 .setOnHover("gui_test").setOnUnhover("gui_test")
                 .setOnMouseUp("gui_test").setOnMouseDown("gui_test")
-                )).setOnClick("click", "gui/go_to_actedit").setText("Actor Editor");
+                )).setOnClick("click", "gui/go_to_actedit").setText("Actor Editor").setHotkey(Input.KEY_LCONTROL, Input.KEY_A);
         gui.addElement(actorEditorBtn);
         
         SButton entityEditorBtn = (((SButton) new SButton ("entity_editor_btn")
                 .setSprite("gui_button")
                 .setHoverSprite("gui_button_hover")
                 .setClickSprite("gui_button")
-                .setRect(new Rect (Settings.screen_res_w/2-200,title_height+(btn_height+btn_margin),400,100))
+                .setRect(new Rect (Settings.screen_res_w/2-btn_width/2,title_height+(btn_height+btn_margin),btn_width,btn_height))
                 .setOnHover("gui_test").setOnUnhover("gui_test")
                 .setOnMouseUp("gui_test").setOnMouseDown("gui_test")
-                )).setOnClick("click", "gui/go_to_entedit").setText("Entity Editor");
+                )).setOnClick("click", "gui/go_to_entedit").setText("Entity Editor").setHotkey(Input.KEY_LCONTROL, Input.KEY_S);
         gui.addElement(entityEditorBtn);
         
         SButton mapEditorBtn = ((SButton) (new SButton ("map_editor_btn")
                 .setSprite("gui_button")
                 .setHoverSprite("gui_button_hover")
                 .setClickSprite("gui_button")
-                .setRect(new Rect (Settings.screen_res_w/2-200,title_height+(btn_height+btn_margin)*2,400,100))
+                .setRect(new Rect (Settings.screen_res_w/2-btn_width/2,title_height+(btn_height+btn_margin)*2,btn_width,btn_height))
                 .setOnHover("gui_test").setOnUnhover("gui_test")
                 .setOnMouseUp("gui_test").setOnMouseDown("gui_test")
-                )).setOnClick("click", "gui/go_to_mapedit").setText("Map Editor");
+                )).setOnClick("click", "gui/go_to_mapedit").setText("Map Editor").setHotkey(Input.KEY_LCONTROL, Input.KEY_D);
         gui.addElement(mapEditorBtn);
+        
+        SButton exitBtn = ((SButton) (new SButton ("exit_btn")
+                .setSprite("gui_button")
+                .setHoverSprite("gui_button_hover")
+                .setClickSprite("gui_button")
+                .setRect(new Rect (Settings.screen_res_w/2-btn_width/2,title_height+(btn_height+btn_margin)*3,btn_width,btn_height))
+                .setOnHover("gui_test").setOnUnhover("gui_test")
+                .setOnMouseUp("gui_test").setOnMouseDown("gui_test")
+                )).setOnClick("click", "gui/exit").setText("Exit").setHotkey(Input.KEY_LCONTROL, Input.KEY_E);
+        gui.addElement(exitBtn);
     }
      
     @Override
@@ -117,20 +128,6 @@ public class MenuState extends BasicGameState {
     public void update(GameContainer gc, StateBasedGame sbg, int i) throws SlickException {
         //called on game's logical update loop; PUT GAME/LOGIC CODE HERE
         gui.update(gc);
-        
-        if (Settings.devmode) {
-            if (gc.getInput().isKeyDown(Input.KEY_LCONTROL) && gc.getInput().isKeyPressed(Input.KEY_A))
-                sbg.enterState(ActorEditorState.ID);
-
-            if (gc.getInput().isKeyDown(Input.KEY_LCONTROL) && gc.getInput().isKeyPressed(Input.KEY_E))
-                sbg.enterState(EntityEditorState.ID);
-
-            if (gc.getInput().isKeyDown(Input.KEY_LCONTROL) && gc.getInput().isKeyPressed(Input.KEY_M))
-                sbg.enterState(MapEditorState.ID);
-
-            if (gc.getInput().isKeyDown(Input.KEY_LCONTROL) && gc.getInput().isKeyPressed(Input.KEY_T))
-                sbg.enterState(ActorEditorState.ID);
-        }
     }
      
     @Override
